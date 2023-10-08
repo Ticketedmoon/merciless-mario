@@ -14,7 +14,6 @@
 #include "transform_system.h"
 #include "collision_system.h"
 
-#include "c_gravity.h"
 #include "c_sprite.h"
 #include "c_collision.h"
 #include "c_action.h"

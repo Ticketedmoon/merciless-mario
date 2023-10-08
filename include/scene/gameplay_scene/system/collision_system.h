@@ -16,7 +16,6 @@
 #include "c_transform.h"
 #include "c_collision.h"
 #include "c_sprite.h"
-#include "c_gravity.h"
 #include "c_action.h"
 
 class CollisionSystem : public System
@@ -28,7 +27,7 @@ class CollisionSystem : public System
 
     private:
 
-        static void checkForWindowCollision(const std::shared_ptr<Entity>& e);
+        static void checkForWindowCollision(const std::shared_ptr<Entity>& e, std::shared_ptr<CAction>& cAction);
         static void checkForPlatformCollision(const std::shared_ptr<CSprite>& playerSprite,
                 std::shared_ptr<CTransform>& playerTransform,
                 const std::shared_ptr<CAction>& playerAction,

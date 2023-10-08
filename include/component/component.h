@@ -16,8 +16,7 @@ class Component
             TRANSFORM = 1,
             COLLISION = 2,
             USER_INPUT = 3,
-            GRAVITY = 4,
-            COUNT = 5
+            COUNT = 4
         };
 };
 

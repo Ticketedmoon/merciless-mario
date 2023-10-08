@@ -97,7 +97,6 @@ void GameplayScene::createPlayer()
     player->addComponent(Component::Type::TRANSFORM, std::make_shared<CTransform>(position, velocity));
     player->addComponent(Component::Type::COLLISION, std::make_shared<CCollision>());
     player->addComponent(Component::Type::USER_INPUT, std::make_shared<CAction>());
-    player->addComponent(Component::Type::GRAVITY, std::make_shared<CGravity>(0.30f));
 }
 
 void GameplayScene::createPlatform(sf::Vector2f size, sf::Vector2f position)
