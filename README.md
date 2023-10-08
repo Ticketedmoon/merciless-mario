@@ -2,9 +2,9 @@
 
 A c++ game where the player plays as the classic NES 1983 protagonist with a few malevolent twists.
 
-### Dev Log
+### Dev Log 
 
-#### 2023-10-08
+Date: `08/10/2023`
 
 - Simple Movable player entity.
 - Collision with other game entities (Platforms)
