@@ -82,20 +82,22 @@ void GameplayScene::createPlayer()
 {
     std::shared_ptr<Entity>& player = m_entityManager.addEntity(Entity::Type::PLAYER);
 
+    sf::Vector2f position = sf::Vector2f(100, 200);
+    sf::Vector2f velocity = sf::Vector2f(0, 0);
+
     sf::RectangleShape playerShape{sf::Vector2f(50, 50)};
     playerShape.setOrigin(25, 25);
+    playerShape.setPosition(position);
     playerShape.setFillColor(sf::Color::Yellow);
     playerShape.setOutlineColor(sf::Color::White);
     playerShape.setOutlineThickness(2.0f);
 
-    sf::Vector2f position = sf::Vector2f(100, 100);
-    sf::Vector2f velocity = sf::Vector2f(0, 0);
 
     player->addComponent(Component::Type::SPRITE, std::make_shared<CSprite>(playerShape));
     player->addComponent(Component::Type::TRANSFORM, std::make_shared<CTransform>(position, velocity));
     player->addComponent(Component::Type::COLLISION, std::make_shared<CCollision>());
     player->addComponent(Component::Type::USER_INPUT, std::make_shared<CAction>());
-    player->addComponent(Component::Type::GRAVITY, std::make_shared<CGravity>(3.0f));
+    player->addComponent(Component::Type::GRAVITY, std::make_shared<CGravity>(0.30f));
 }
 
 void GameplayScene::createPlatform(sf::Vector2f size, sf::Vector2f position)
@@ -104,6 +106,7 @@ void GameplayScene::createPlatform(sf::Vector2f size, sf::Vector2f position)
 
     sf::RectangleShape platformShape(size);
     platformShape.setOrigin(size.x/2, size.y/2);
+    platformShape.setPosition(position);
     platformShape.setFillColor(sf::Color::Green);
     platformShape.setOutlineColor(sf::Color::White);
     platformShape.setOutlineThickness(3.0f);

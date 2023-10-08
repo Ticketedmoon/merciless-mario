@@ -23,14 +23,20 @@ class TransformSystem : public System
 
     private:
         static void reduceVelocity(std::shared_ptr<CTransform>& cTransform);
-        static void updateVelocity(const std::shared_ptr<CAction>& cAction, std::shared_ptr<CTransform>& cTransform,
-                std::shared_ptr<CGravity>& cGravity);
+        static void updateVelocity(const std::shared_ptr<CAction>& cAction, std::shared_ptr<CTransform>& cTransform);
         static void updatePosition(std::shared_ptr<CTransform>& cTransform);
         static void checkForWindowCollision(std::shared_ptr<CTransform>& cTransform,
                 const std::shared_ptr<CCollision>& cCollision);
-        static void applyGravity(std::shared_ptr<CTransform>& cTransform, const std::shared_ptr<CGravity>& cGravity);
+        static void applyGravity(std::shared_ptr<CTransform>& cTransform, const std::shared_ptr<CAction>& cAction,
+                const std::shared_ptr<CGravity>& cGravity);
 
     private:
+        static constexpr float MAX_JUMP_HEIGHT = -7.0f;
+        static constexpr float MAX_MOVEMENT_ACCELERATION = 0.025f;
+        static constexpr float MOVEMENT_ACCELERATION = 0.1f;
+        static constexpr float JUMP_ACCELERATION = 0.5f;
+        static constexpr float MAX_GRAVITY_ACCELERATION = 3.0f;
+
         EntityManager& m_entityManager;
 };
 

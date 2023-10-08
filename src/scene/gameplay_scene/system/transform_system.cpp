@@ -8,26 +8,24 @@ TransformSystem::TransformSystem(EntityManager& entityManager) : m_entityManager
 
 void TransformSystem::execute()
 {
-    std::vector<std::shared_ptr<Entity>> entities = m_entityManager
-            .getEntitiesByComponentTypes({Component::Type::USER_INPUT, Component::Type::TRANSFORM, Component::Type::COLLISION, Component::Type::GRAVITY});
-    for (std::shared_ptr e : entities)
+    std::shared_ptr<Entity>& player = m_entityManager.getEntityByType(Entity::Type::PLAYER);
+    if (player == nullptr)
     {
-        std::shared_ptr<CAction> cAction = std::static_pointer_cast<CAction>(
-                e->getComponentByType(Component::Type::USER_INPUT));
-        std::shared_ptr<CTransform> cTransform = std::static_pointer_cast<CTransform>(
-                e->getComponentByType(Component::Type::TRANSFORM));
-        std::shared_ptr<CCollision> cCollision = std::static_pointer_cast<CCollision>(
-                e->getComponentByType(Component::Type::COLLISION));
-        std::shared_ptr<CGravity> cGravity = std::static_pointer_cast<CGravity>(
-                e->getComponentByType(Component::Type::GRAVITY));
-
-        checkForWindowCollision(cTransform, cCollision);
-        updateVelocity(cAction, cTransform, cGravity);
-        applyGravity(cTransform, cGravity);
-        updatePosition(cTransform);
-        reduceVelocity(cTransform);
+        return;
     }
+
+    std::shared_ptr<CAction> cAction = std::static_pointer_cast<CAction>(player->getComponentByType(Component::Type::USER_INPUT));
+    std::shared_ptr<CTransform> cTransform = std::static_pointer_cast<CTransform>(player->getComponentByType(Component::Type::TRANSFORM));
+    std::shared_ptr<CCollision> cCollision = std::static_pointer_cast<CCollision>(player->getComponentByType(Component::Type::COLLISION));
+    std::shared_ptr<CGravity> cGravity = std::static_pointer_cast<CGravity>(player->getComponentByType(Component::Type::GRAVITY));
+
+    checkForWindowCollision(cTransform, cCollision);
+    updateVelocity(cAction, cTransform);
+    applyGravity(cTransform, cAction, cGravity);
+    updatePosition(cTransform);
+    reduceVelocity(cTransform);
 }
+
 void TransformSystem::checkForWindowCollision(std::shared_ptr<CTransform>& cTransform,
         const std::shared_ptr<CCollision>& cCollision)
 {
@@ -50,53 +48,69 @@ void TransformSystem::updatePosition(std::shared_ptr<CTransform>& cTransform)
     cTransform->m_position.y += cTransform->m_velocity.y;
 }
 
-void TransformSystem::applyGravity(std::shared_ptr<CTransform>& cTransform, const std::shared_ptr<CGravity>& cGravity)
+void TransformSystem::applyGravity(std::shared_ptr<CTransform>& cTransform, const std::shared_ptr<CAction>& cAction,
+        const std::shared_ptr<CGravity>& cGravity)
 {
-    cTransform->m_velocity.y = cGravity->gravity;
+    if (cAction->isRising && cTransform->m_velocity.y > MAX_JUMP_HEIGHT)
+    {
+        cTransform->m_velocity.y -= JUMP_ACCELERATION;
+        cAction->isAirborne = true;
+    }
+    else
+    {
+        cAction->isRising = false;
+    }
+
+    if (cTransform->m_velocity.y < MAX_GRAVITY_ACCELERATION)
+    {
+        cTransform->m_velocity.y += cGravity->gravity;
+    }
 }
 
-void TransformSystem::updateVelocity(const std::shared_ptr<CAction>& cAction, std::shared_ptr<CTransform>& cTransform,
-        std::shared_ptr<CGravity>& cGravity)
+void TransformSystem::updateVelocity(const std::shared_ptr<CAction>& cAction, std::shared_ptr<CTransform>& cTransform)
 {
     if (cAction->isMovingLeft)
     {
-        cTransform->m_velocity.x -= 0.05;
+        cTransform->m_velocity.x -= MOVEMENT_ACCELERATION;
     }
     if (cAction->isMovingRight)
     {
-        cTransform->m_velocity.x += 0.05;
+        cTransform->m_velocity.x += MOVEMENT_ACCELERATION;
     }
     if (cAction->isMovingUp)
     {
-        cTransform->m_velocity.y -= 0.05;
+        cTransform->m_velocity.y -= MOVEMENT_ACCELERATION;
     }
     if (cAction->isMovingDown)
     {
-        cTransform->m_velocity.y += 0.05;
+        cTransform->m_velocity.y += MOVEMENT_ACCELERATION;
     }
     if (cAction->isJumping)
     {
-        cTransform->m_position.y -= 100;
-        cAction->isJumping = false;
+        cAction->isRising = !cAction->isAirborne;
     }
 }
 void TransformSystem::reduceVelocity(std::shared_ptr<CTransform>& cTransform)
 {
     if (cTransform->m_velocity.x > 0)
     {
-        cTransform->m_velocity.x -= cTransform->m_velocity.x < 0.025f ? cTransform->m_velocity.x : 0.025f;
+        cTransform->m_velocity.x -= cTransform->m_velocity.x < MAX_MOVEMENT_ACCELERATION
+                ? cTransform->m_velocity.x : MAX_MOVEMENT_ACCELERATION;
     }
     if (cTransform->m_velocity.x < 0)
     {
-        cTransform->m_velocity.x += cTransform->m_velocity.x > -0.025f ? cTransform->m_velocity.x : 0.025f;
+        cTransform->m_velocity.x += cTransform->m_velocity.x > -MAX_MOVEMENT_ACCELERATION
+                ? cTransform->m_velocity.x : MAX_MOVEMENT_ACCELERATION;
     }
 
     if (cTransform->m_velocity.y > 0)
     {
-        cTransform->m_velocity.y -= cTransform->m_velocity.y < 0.025f ? cTransform->m_velocity.y : 0.025f;
+        cTransform->m_velocity.y -= cTransform->m_velocity.y < MAX_MOVEMENT_ACCELERATION
+                ? cTransform->m_velocity.y : MAX_MOVEMENT_ACCELERATION;
     }
     if (cTransform->m_velocity.y < 0)
     {
-        cTransform->m_velocity.y += cTransform->m_velocity.y > -0.025f ? cTransform->m_velocity.y : 0.025f;
+        cTransform->m_velocity.y += cTransform->m_velocity.y > -MAX_MOVEMENT_ACCELERATION
+                ? cTransform->m_velocity.y : MAX_MOVEMENT_ACCELERATION;
     }
 }

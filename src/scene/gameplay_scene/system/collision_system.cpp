@@ -7,33 +7,40 @@ CollisionSystem::CollisionSystem(EntityManager& entityManager) : m_entityManager
 
 void CollisionSystem::execute()
 {
-    std::ranges::filter_view playersFiltered = m_entityManager.getEntitiesByType(Entity::Type::PLAYER) | std::ranges::views::filter([](std::shared_ptr<Entity>& e) {
-        return e->hasComponent(Component::Type::TRANSFORM) && e->hasComponent(Component::Type::COLLISION) && e->hasComponent(Component::Type::SPRITE);
-    });
+    std::shared_ptr<Entity>& player = m_entityManager.getEntityByType(Entity::Type::PLAYER);
+    if (player == nullptr)
+    {
+        return;
+    }
+
+    checkForWindowCollision(player);
+
     std::ranges::filter_view platformsFiltered = m_entityManager.getEntitiesByType(Entity::Type::PLATFORM) | std::ranges::views::filter([](std::shared_ptr<Entity>& e) {
         return e->hasComponent(Component::Type::TRANSFORM) && e->hasComponent(Component::Type::COLLISION) && e->hasComponent(Component::Type::SPRITE);
     });
-
-    std::vector<std::shared_ptr<Entity>> playersToUpdate = std::vector(playersFiltered.begin(), playersFiltered.end());
     std::vector<std::shared_ptr<Entity>> platformsToUpdate = std::vector(platformsFiltered.begin(), platformsFiltered.end());
 
-    for (const std::shared_ptr<Entity>& player: playersToUpdate)
-    {
-        checkForWindowCollision(player);
-        for (const std::shared_ptr<Entity>& platform: platformsToUpdate)
-        {
-            std::shared_ptr<CSprite> playerSprite = std::static_pointer_cast<CSprite>(player->getComponentByType(Component::Type::SPRITE));
-            std::shared_ptr<CTransform> playerTransform = std::static_pointer_cast<CTransform>(player->getComponentByType(Component::Type::TRANSFORM));
-            std::shared_ptr<CSprite> platformSprite = std::static_pointer_cast<CSprite>(platform->getComponentByType(Component::Type::SPRITE));
+    std::shared_ptr<CSprite> playerSprite = std::static_pointer_cast<CSprite>(player->getComponentByType(Component::Type::SPRITE));
+    std::shared_ptr<CAction> playerAction = std::static_pointer_cast<CAction>(player->getComponentByType(Component::Type::USER_INPUT));
+    std::shared_ptr<CTransform> playerTransform = std::static_pointer_cast<CTransform>(player->getComponentByType(Component::Type::TRANSFORM));
 
-            sf::FloatRect overlap;
-            if (isCollidingAABB(playerSprite, platformSprite, overlap))
-            {
-                auto collisionNormal = platformSprite->m_shape.getPosition() - playerSprite->m_shape.getPosition();
-                auto manifold = getManifold(overlap, collisionNormal);
-                resolve(playerTransform, manifold);
-            }
-        }
+    for (const std::shared_ptr<Entity>& platform: platformsToUpdate)
+    {
+        std::shared_ptr<CSprite> platformSprite = std::static_pointer_cast<CSprite>(platform->getComponentByType(Component::Type::SPRITE));
+        checkForPlatformCollision(playerSprite, playerTransform, playerAction, platformSprite);
+    }
+}
+
+void CollisionSystem::checkForPlatformCollision(const std::shared_ptr<CSprite>& playerSprite,
+        std::shared_ptr<CTransform>& playerTransform, const std::shared_ptr<CAction>& playerAction,
+        const std::shared_ptr<CSprite>& platformSprite)
+{
+    sf::FloatRect overlap;
+    if (isCollidingAABB(playerSprite, platformSprite, overlap))
+    {
+        auto collisionNormal = platformSprite->m_shape.getPosition() - playerSprite->m_shape.getPosition();
+        auto manifold = getManifold(overlap, collisionNormal);
+        resolve(playerTransform, playerAction, manifold);
     }
 }
 
@@ -51,13 +58,10 @@ void CollisionSystem::checkForWindowCollision(const std::shared_ptr<Entity>& e)
     }
 }
 
-bool CollisionSystem::isCollidingAABB(
-        const std::shared_ptr<CSprite>& renderComponentForEntity,
-        const std::shared_ptr<CSprite>& renderComponentForEnemy,
-        sf::FloatRect& overlap)
+bool CollisionSystem::isCollidingAABB(const std::shared_ptr<CSprite>& playerSprite,
+        const std::shared_ptr<CSprite>& platformSprite, sf::FloatRect& overlap)
 {
-    return renderComponentForEntity->m_shape.getGlobalBounds()
-        .intersects(renderComponentForEnemy->m_shape.getGlobalBounds(), overlap);
+    return playerSprite->m_shape.getGlobalBounds().intersects(platformSprite->m_shape.getGlobalBounds(), overlap);
 }
 
 sf::Vector3f CollisionSystem::getManifold(const sf::FloatRect& overlap, const sf::Vector2f& collisionNormal)
@@ -79,8 +83,15 @@ sf::Vector3f CollisionSystem::getManifold(const sf::FloatRect& overlap, const sf
     return manifold;
 }
 
-void CollisionSystem::resolve(std::shared_ptr<CTransform>& cTransform, const sf::Vector3f& manifold)
+void CollisionSystem::resolve(std::shared_ptr<CTransform>& cTransform, const std::shared_ptr<CAction>& cAction, const sf::Vector3f& manifold)
 {
+    if (manifold.y < 0)
+    {
+        cTransform->m_velocity.y = 0.0f;
+        cAction->isJumping = false;
+        cAction->isAirborne = false;
+    }
+
     // move the shape out of the solid object by the penetration amount
     sf::Vector2f normal(manifold.x, manifold.y);
     const sf::Vector2<float>& offset = normal * manifold.z;
