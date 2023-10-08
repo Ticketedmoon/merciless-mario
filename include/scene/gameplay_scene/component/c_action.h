@@ -12,6 +12,7 @@ class CAction : public Component
         bool isMovingRight;
         bool isMovingUp;
         bool isMovingDown;
+        bool isJumping;
 };
 
 

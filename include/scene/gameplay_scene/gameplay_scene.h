@@ -14,6 +14,7 @@
 #include "transform_system.h"
 #include "collision_system.h"
 
+#include "c_gravity.h"
 #include "c_sprite.h"
 #include "c_collision.h"
 #include "c_action.h"
@@ -30,7 +31,7 @@ class GameplayScene : public Scene
 
     private:
         void createPlayer();
-        void createPlatform();
+        void createPlatform(sf::Vector2f size, sf::Vector2f position);
         void registerSystems(GameEngine& engine);
 
     private:

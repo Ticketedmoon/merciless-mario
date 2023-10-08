@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef MERCILESS_MARIO_C_SPRITE_H
 #define MERCILESS_MARIO_C_SPRITE_H
 

@@ -8,15 +8,16 @@ class Action
     public:
         enum class Type
         {
-                MOVE_LEFT = 0,
-                MOVE_RIGHT = 1,
-                MOVE_UP = 2,
-                MOVE_DOWN = 3,
+            MOVE_LEFT = 0,
+            MOVE_RIGHT = 1,
+            MOVE_UP = 2,
+            MOVE_DOWN = 3,
+            JUMP = 4,
         };
         enum class Mode
         {
-                PRESS,
-                RELEASE
+            PRESS,
+            RELEASE
         };
 
         Action(Type type, Mode mode);
