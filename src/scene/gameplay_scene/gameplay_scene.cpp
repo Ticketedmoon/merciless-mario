@@ -97,6 +97,7 @@ void GameplayScene::createPlayer()
     player->addComponent(Component::Type::TRANSFORM, std::make_shared<CTransform>(position, velocity));
     player->addComponent(Component::Type::COLLISION, std::make_shared<CCollision>());
     player->addComponent(Component::Type::USER_INPUT, std::make_shared<CAction>());
+    player->addComponent(Component::Type::DYNAMIC_MOVEMENT, std::make_shared<CMovement>(0.1f, 0.025f, 1.25f, -10.0f, 0.3f, 5.0f));
 }
 
 void GameplayScene::createPlatform(sf::Vector2f size, sf::Vector2f position)
@@ -110,9 +111,10 @@ void GameplayScene::createPlatform(sf::Vector2f size, sf::Vector2f position)
     platformShape.setOutlineColor(sf::Color::White);
     platformShape.setOutlineThickness(3.0f);
 
-    sf::Vector2f velocity = sf::Vector2f(3, 3);
+    sf::Vector2f velocity = sf::Vector2f(0, 0);
 
     platformA->addComponent(Component::Type::SPRITE, std::make_shared<CSprite>(platformShape));
     platformA->addComponent(Component::Type::COLLISION, std::make_shared<CCollision>());
     platformA->addComponent(Component::Type::TRANSFORM, std::make_shared<CTransform>(position, velocity));
+    platformA->addComponent(Component::Type::STATIC_MOVEMENT, std::make_shared<CMovement>());
 }

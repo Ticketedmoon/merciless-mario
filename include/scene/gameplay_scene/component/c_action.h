@@ -13,8 +13,6 @@ class CAction : public Component
         bool isMovingUp;
         bool isMovingDown;
         bool isJumping;
-        bool isRising;
-        bool isAirborne;
 };
 
 

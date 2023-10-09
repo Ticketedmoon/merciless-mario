@@ -7,44 +7,42 @@ CollisionSystem::CollisionSystem(EntityManager& entityManager) : m_entityManager
 
 void CollisionSystem::execute()
 {
-    std::shared_ptr<Entity>& player = m_entityManager.getEntityByType(Entity::Type::PLAYER);
-    if (player == nullptr)
+    std::vector<std::shared_ptr<Entity>> dynamicEntities = m_entityManager
+            .getEntitiesByComponentTypes({Component::Type::SPRITE, Component::Type::COLLISION, Component::Type::DYNAMIC_MOVEMENT});
+    std::vector<std::shared_ptr<Entity>> staticEntities = m_entityManager
+            .getEntitiesByComponentTypes({Component::Type::SPRITE, Component::Type::COLLISION, Component::Type::STATIC_MOVEMENT});
+    if (dynamicEntities.empty() || staticEntities.empty())
     {
         return;
     }
 
-    std::ranges::filter_view platformsFiltered = m_entityManager.getEntitiesByType(Entity::Type::PLATFORM) | std::ranges::views::filter([](std::shared_ptr<Entity>& e) {
-        return e->hasComponent(Component::Type::TRANSFORM) && e->hasComponent(Component::Type::COLLISION) && e->hasComponent(Component::Type::SPRITE);
-    });
-    std::vector<std::shared_ptr<Entity>> platformsToUpdate = std::vector(platformsFiltered.begin(), platformsFiltered.end());
-
-    std::shared_ptr<CSprite> playerSprite = std::static_pointer_cast<CSprite>(player->getComponentByType(Component::Type::SPRITE));
-    std::shared_ptr<CAction> playerAction = std::static_pointer_cast<CAction>(player->getComponentByType(Component::Type::USER_INPUT));
-    std::shared_ptr<CTransform> playerTransform = std::static_pointer_cast<CTransform>(player->getComponentByType(Component::Type::TRANSFORM));
-
-    checkForWindowCollision(player, playerAction);
-
-    for (const std::shared_ptr<Entity>& platform: platformsToUpdate)
+    for (std::shared_ptr<Entity>& dynamicEntity : dynamicEntities)
     {
-        std::shared_ptr<CSprite> platformSprite = std::static_pointer_cast<CSprite>(platform->getComponentByType(Component::Type::SPRITE));
-        checkForPlatformCollision(playerSprite, playerTransform, playerAction, platformSprite);
+        std::shared_ptr<CMovement> cMovement = std::static_pointer_cast<CMovement>(dynamicEntity->getComponentByType(Component::Type::DYNAMIC_MOVEMENT));
+        checkForWindowCollision(dynamicEntity, cMovement);
+
+        for (const std::shared_ptr<Entity>& staticEntity: staticEntities)
+        {
+            checkForPlatformCollision(dynamicEntity, staticEntity);
+        }
     }
 }
 
-void CollisionSystem::checkForPlatformCollision(const std::shared_ptr<CSprite>& playerSprite,
-        std::shared_ptr<CTransform>& playerTransform, const std::shared_ptr<CAction>& playerAction,
-        const std::shared_ptr<CSprite>& platformSprite)
+void CollisionSystem::checkForPlatformCollision(std::shared_ptr<Entity>& dynamicEntity, const std::shared_ptr<Entity>& staticEntity)
 {
+    std::shared_ptr<CSprite> staticEntitySprite = std::static_pointer_cast<CSprite>(staticEntity->getComponentByType(Component::Type::SPRITE));
+    std::shared_ptr<CSprite> dynamicEntitySprite = std::static_pointer_cast<CSprite>(dynamicEntity->getComponentByType(Component::Type::SPRITE));
+
     sf::FloatRect overlap;
-    if (isCollidingAABB(playerSprite, platformSprite, overlap))
+    if (isCollidingAABB(dynamicEntitySprite, staticEntitySprite, overlap))
     {
-        auto collisionNormal = platformSprite->m_shape.getPosition() - playerSprite->m_shape.getPosition();
+        auto collisionNormal = staticEntitySprite->m_shape.getPosition() - dynamicEntitySprite->m_shape.getPosition();
         auto manifold = getManifold(overlap, collisionNormal);
-        resolve(playerTransform, playerAction, manifold);
+        resolve(dynamicEntity, manifold);
     }
 }
 
-void CollisionSystem::checkForWindowCollision(const std::shared_ptr<Entity>& e, std::shared_ptr<CAction>& cAction)
+void CollisionSystem::checkForWindowCollision(const std::shared_ptr<Entity>& e, std::shared_ptr<CMovement>& cMovement)
 {
     std::shared_ptr<CTransform> transformComponentForEntity = std::static_pointer_cast<CTransform>(e->getComponentByType(Component::Type::TRANSFORM));
     std::shared_ptr<CCollision> collisionComponentForEntity = std::static_pointer_cast<CCollision>(e->getComponentByType(Component::Type::COLLISION));
@@ -58,7 +56,7 @@ void CollisionSystem::checkForWindowCollision(const std::shared_ptr<Entity>& e, 
 
         if (collisionComponentForEntity->isCollidingUp)
         {
-            cAction->isRising = false;
+            cMovement->isRising = false;
         }
     }
 }
@@ -88,13 +86,24 @@ sf::Vector3f CollisionSystem::getManifold(const sf::FloatRect& overlap, const sf
     return manifold;
 }
 
-void CollisionSystem::resolve(std::shared_ptr<CTransform>& cTransform, const std::shared_ptr<CAction>& cAction, const sf::Vector3f& manifold)
+void CollisionSystem::resolve(std::shared_ptr<Entity>& dynamicEntity, const sf::Vector3f& manifold)
 {
+    if (!dynamicEntity->hasComponent(Component::TRANSFORM))
+    {
+        return;
+    }
+
+    std::shared_ptr<CTransform> cTransform = std::static_pointer_cast<CTransform>(dynamicEntity->getComponentByType(Component::Type::TRANSFORM));
     if (manifold.y < 0)
     {
-        cTransform->m_velocity.y = 0.0f;
-        cAction->isJumping = false;
-        cAction->isAirborne = false;
+        if (dynamicEntity->hasComponents({Component::Type::USER_INPUT, Component::Type::DYNAMIC_MOVEMENT}))
+        {
+            std::shared_ptr<CAction> cAction = std::static_pointer_cast<CAction>(dynamicEntity->getComponentByType(Component::Type::USER_INPUT));
+            std::shared_ptr<CMovement> cMovement = std::static_pointer_cast<CMovement>(dynamicEntity->getComponentByType(Component::Type::DYNAMIC_MOVEMENT));
+            cTransform->m_velocity.y = 0.0f;
+            cAction->isJumping = false;
+            cMovement->isAirborne = false;
+        }
     }
 
     // move the shape out of the solid object by the penetration amount

@@ -16,7 +16,9 @@ class Component
             TRANSFORM = 1,
             COLLISION = 2,
             USER_INPUT = 3,
-            COUNT = 4
+            DYNAMIC_MOVEMENT = 4,
+            STATIC_MOVEMENT = 5,
+            COUNT = 6
         };
 };
 
