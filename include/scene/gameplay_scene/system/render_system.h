@@ -20,12 +20,12 @@
 class RenderSystem : public System
 {
     public:
-        explicit RenderSystem(sf::RenderWindow& window, EntityManager& entityManager);
+        explicit RenderSystem(sf::RenderTarget& renderTarget, EntityManager& entityManager);
 
         void execute() override;
 
     private:
-        sf::RenderWindow& m_renderWindow;
+        sf::RenderTarget& m_renderTarget;
         EntityManager& m_entityManager;
 };
 

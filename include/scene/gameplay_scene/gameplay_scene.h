@@ -32,12 +32,15 @@ class GameplayScene : public Scene
     private:
         void createPlayer();
         void createPlatform(sf::Vector2f size, sf::Vector2f position);
-        void registerSystems(GameEngine& engine);
+        void registerSystems();
+        void registerActions();
 
     private:
         EntityManager m_entityManager;
         SystemManager m_systemManager;
-        void registerActions();
+
+        sf::RenderTexture m_renderTexture;
+        sf::Sprite m_renderSprite;
 };
 
 

@@ -2,8 +2,12 @@
 
 GameplayScene::GameplayScene(GameEngine& engine) : Scene(engine)
 {
+    m_renderTexture.create(WINDOW_WIDTH, WINDOW_HEIGHT);
+    m_renderSprite.setTexture(m_renderTexture.getTexture());
+    m_renderSprite.setTextureRect(sf::IntRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT));
+
     registerActions();
-    registerSystems(engine);
+    registerSystems();
 
     createPlayer();
     createPlatform(sf::Vector2f(500, 100), sf::Vector2f(300, 500));
@@ -19,9 +23,16 @@ void GameplayScene::update()
 
 void GameplayScene::render()
 {
-    gameEngine.window.clear(sf::Color::Black);
+    gameEngine.window.clear();
+
+    m_renderTexture.clear(sf::Color::Black);
+    m_renderTexture.setView(m_renderTexture.getDefaultView());
 
     m_systemManager.render();
+
+    m_renderTexture.display();
+    m_renderSprite.setTexture(m_renderTexture.getTexture());
+    gameEngine.window.draw(m_renderSprite, sf::RenderStates(sf::BlendAdd));
 
     gameEngine.window.display();
 }
@@ -68,14 +79,14 @@ void GameplayScene::registerActions()
     registerActionType(sf::Keyboard::S, Action::Type::MOVE_DOWN);
 }
 
-void GameplayScene::registerSystems(GameEngine& engine)
+void GameplayScene::registerSystems()
 {
     m_systemManager.registerSystem(
             std::make_shared<TransformSystem>(m_entityManager), SystemManager::SystemType::UPDATE);
     m_systemManager.registerSystem(
             std::make_shared<CollisionSystem>(m_entityManager), SystemManager::SystemType::UPDATE);
     m_systemManager.registerSystem(
-            std::make_shared<RenderSystem>(engine.window, m_entityManager), SystemManager::SystemType::RENDER);
+            std::make_shared<RenderSystem>(m_renderTexture, m_entityManager), SystemManager::SystemType::RENDER);
 }
 
 void GameplayScene::createPlayer()
