@@ -31,13 +31,15 @@ class GameplayScene : public Scene
 
     private:
         void createPlayer();
-        void createPlatform(sf::Vector2f size, sf::Vector2f position);
+        void createPlatform(sf::Vector2f size, sf::Vector2f position, sf::Color fillColor);
         void registerSystems();
         void registerActions();
 
     private:
         EntityManager m_entityManager;
         SystemManager m_systemManager;
+
+        std::shared_ptr<Entity> player;
 
         sf::RenderTexture m_renderTexture;
         sf::Sprite m_renderSprite;

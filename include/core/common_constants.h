@@ -10,5 +10,7 @@ static const bool USE_VERTICAL_SYNC = true;
 static const uint32_t APP_FRAME_RATE = 60;
 static const uint32_t WINDOW_WIDTH = 1280;
 static const uint32_t WINDOW_HEIGHT = 720;
+static constexpr uint32_t MAX_LEVEL_WIDTH = 16384;
+static constexpr uint32_t MAX_LEVEL_HEIGHT = 1024;
 
 #endif //PRIMITIVE_WARS_COMMON_CONSTANTS_H

@@ -1,4 +1,5 @@
 #include "scene/gameplay_scene/gameplay_scene.h"
+#include "view_system.h"
 
 GameplayScene::GameplayScene(GameEngine& engine) : Scene(engine)
 {
@@ -7,18 +8,34 @@ GameplayScene::GameplayScene(GameEngine& engine) : Scene(engine)
     m_renderSprite.setTextureRect(sf::IntRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT));
 
     registerActions();
+    createPlayer();
     registerSystems();
 
-    createPlayer();
-    createPlatform(sf::Vector2f(500, 100), sf::Vector2f(300, 500));
-    createPlatform(sf::Vector2f(200, 20), sf::Vector2f(500, 300));
-    createPlatform(sf::Vector2f(100, 50), sf::Vector2f(900, 620));
+    createPlatform(sf::Vector2f(500, 100), sf::Vector2f(300, 500), sf::Color::Green);
+    createPlatform(sf::Vector2f(200, 20), sf::Vector2f(500, 300), sf::Color::Green);
+    createPlatform(sf::Vector2f(100, 50), sf::Vector2f(900, 620), sf::Color::Green);
+
+    createPlatform(sf::Vector2f(100, 50), sf::Vector2f(1200, 720), sf::Color::Green);
+    createPlatform(sf::Vector2f(100, 50), sf::Vector2f(1500, 520), sf::Color::Green);
+    createPlatform(sf::Vector2f(100, 50), sf::Vector2f(2000, 420), sf::Color::Green);
+    createPlatform(sf::Vector2f(100, 50), sf::Vector2f(2500, 320), sf::Color::Blue);
 }
 
 void GameplayScene::update()
 {
     m_entityManager.update();
     m_systemManager.update();
+
+    // FIXME Should this be here? seems related to the transform system but we need to recreate the player.
+    //       Would a fn ptr / callback be a good approach?
+    if (player->hasComponent(Component::Type::TRANSFORM))
+    {
+        std::shared_ptr<CTransform> cTransform = std::static_pointer_cast<CTransform>(player->getComponentByType(Component::Type::TRANSFORM));
+        if (cTransform->m_position.y > MAX_LEVEL_HEIGHT)
+        {
+            createPlayer();
+        }
+    }
 }
 
 void GameplayScene::render()
@@ -85,13 +102,19 @@ void GameplayScene::registerSystems()
             std::make_shared<TransformSystem>(m_entityManager), SystemManager::SystemType::UPDATE);
     m_systemManager.registerSystem(
             std::make_shared<CollisionSystem>(m_entityManager), SystemManager::SystemType::UPDATE);
+
+    m_systemManager.registerSystem(
+            std::make_shared<ViewSystem>(player, m_renderTexture), SystemManager::SystemType::RENDER);
     m_systemManager.registerSystem(
             std::make_shared<RenderSystem>(m_renderTexture, m_entityManager), SystemManager::SystemType::RENDER);
 }
 
 void GameplayScene::createPlayer()
 {
-    std::shared_ptr<Entity>& player = m_entityManager.addEntity(Entity::Type::PLAYER);
+    if (player == nullptr)
+    {
+        player = m_entityManager.addEntity(Entity::Type::PLAYER);
+    }
 
     sf::Vector2f position = sf::Vector2f(100, 200);
     sf::Vector2f velocity = sf::Vector2f(0, 0);
@@ -111,14 +134,14 @@ void GameplayScene::createPlayer()
     player->addComponent(Component::Type::DYNAMIC_MOVEMENT, std::make_shared<CMovement>(0.1f, 0.025f, 1.25f, -10.0f, 0.3f, 5.0f));
 }
 
-void GameplayScene::createPlatform(sf::Vector2f size, sf::Vector2f position)
+void GameplayScene::createPlatform(sf::Vector2f size, sf::Vector2f position, sf::Color fillColor)
 {
     std::shared_ptr<Entity> platformA = m_entityManager.addEntity(Entity::Type::PLATFORM);
 
     sf::RectangleShape platformShape(size);
     platformShape.setOrigin(size.x/2, size.y/2);
     platformShape.setPosition(position);
-    platformShape.setFillColor(sf::Color::Green);
+    platformShape.setFillColor(fillColor);
     platformShape.setOutlineColor(sf::Color::White);
     platformShape.setOutlineThickness(3.0f);
 

@@ -50,9 +50,9 @@ void CollisionSystem::checkForWindowCollision(const std::shared_ptr<Entity>& e, 
     {
         std::shared_ptr<CSprite> renderComponentForEntity = std::static_pointer_cast<CSprite>(e->getComponentByType(Component::Type::SPRITE));
         collisionComponentForEntity->isCollidingLeft = transformComponentForEntity->m_position.x <= renderComponentForEntity->m_shape.getSize().x/2;
-        collisionComponentForEntity->isCollidingRight = transformComponentForEntity->m_position.x >= WINDOW_WIDTH - renderComponentForEntity->m_shape.getSize().x/2;
+        collisionComponentForEntity->isCollidingRight = transformComponentForEntity->m_position.x >= MAX_LEVEL_WIDTH - renderComponentForEntity->m_shape.getSize().x/2;
         collisionComponentForEntity->isCollidingUp = transformComponentForEntity->m_position.y <= renderComponentForEntity->m_shape.getSize().y/2;
-        collisionComponentForEntity->isCollidingDown = transformComponentForEntity->m_position.y >= WINDOW_HEIGHT - renderComponentForEntity->m_shape.getSize().y/2;
+        collisionComponentForEntity->isCollidingDown = transformComponentForEntity->m_position.y >= MAX_LEVEL_WIDTH - renderComponentForEntity->m_shape.getSize().y/2;
 
         if (collisionComponentForEntity->isCollidingUp)
         {
