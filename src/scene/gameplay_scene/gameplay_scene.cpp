@@ -43,7 +43,7 @@ void GameplayScene::update()
     if (player->hasComponent(Component::Type::TRANSFORM))
     {
         std::shared_ptr<CTransform> cTransform = std::static_pointer_cast<CTransform>(player->getComponentByType(Component::Type::TRANSFORM));
-        if (cTransform->m_position.y > MAX_LEVEL_BOTTOM)
+        if (cTransform->m_position.y > LEVEL_DEPTH_KILL_ZONE)
         {
             createPlayer();
         }
