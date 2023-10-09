@@ -21,7 +21,7 @@ void ViewSystem::execute()
     sf::Vector2f entityPos = cTransform->m_position;
 
     float centreX = getViewCentreForCoordinate(entityPos.x, MAX_LEVEL_WIDTH, WINDOW_WIDTH, cSprite->m_shape.getSize().x);
-    float centreY = getViewCentreForCoordinate(entityPos.y, WINDOW_HEIGHT, WINDOW_HEIGHT, cSprite->m_shape.getSize().y);
+    float centreY = getViewCentreForCoordinate(entityPos.y, MAX_LEVEL_HEIGHT, WINDOW_HEIGHT, cSprite->m_shape.getSize().y);
 
     sf::View newView = m_renderTexture.getView();
     newView.zoom(VIEW_ZOOM_FACTOR);

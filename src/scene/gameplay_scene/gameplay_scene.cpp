@@ -11,14 +11,26 @@ GameplayScene::GameplayScene(GameEngine& engine) : Scene(engine)
     createPlayer();
     registerSystems();
 
-    createPlatform(sf::Vector2f(500, 100), sf::Vector2f(300, 500), sf::Color::Green);
-    createPlatform(sf::Vector2f(200, 20), sf::Vector2f(500, 300), sf::Color::Green);
-    createPlatform(sf::Vector2f(100, 50), sf::Vector2f(900, 620), sf::Color::Green);
+    createPlatform(sf::Vector2f(500, 100), sf::Vector2f(300, 1300), sf::Color::Green);
+    createPlatform(sf::Vector2f(200, 20), sf::Vector2f(500, 1100), sf::Color::Green);
+    createPlatform(sf::Vector2f(100, 50), sf::Vector2f(900, 1420), sf::Color::Green);
 
-    createPlatform(sf::Vector2f(100, 50), sf::Vector2f(1200, 720), sf::Color::Green);
-    createPlatform(sf::Vector2f(100, 50), sf::Vector2f(1500, 520), sf::Color::Green);
-    createPlatform(sf::Vector2f(100, 50), sf::Vector2f(2000, 420), sf::Color::Green);
-    createPlatform(sf::Vector2f(100, 50), sf::Vector2f(2500, 320), sf::Color::Blue);
+    createPlatform(sf::Vector2f(100, 50), sf::Vector2f(1200, 1520), sf::Color::Green);
+    createPlatform(sf::Vector2f(100, 50), sf::Vector2f(1500, 1320), sf::Color::Green);
+    createPlatform(sf::Vector2f(100, 50), sf::Vector2f(2000, 1220), sf::Color::Green);
+    createPlatform(sf::Vector2f(100, 50), sf::Vector2f(2400, 1020), sf::Color::Green);
+
+    createPlatform(sf::Vector2f(100, 50), sf::Vector2f(2700, 950), sf::Color::Green);
+    createPlatform(sf::Vector2f(100, 50), sf::Vector2f(2500, 750), sf::Color::Green);
+    createPlatform(sf::Vector2f(100, 50), sf::Vector2f(2800, 650), sf::Color::Green);
+    createPlatform(sf::Vector2f(100, 50), sf::Vector2f(3100, 630), sf::Color::Green);
+    createPlatform(sf::Vector2f(100, 50), sf::Vector2f(2600, 620), sf::Color::Green);
+    createPlatform(sf::Vector2f(100, 50), sf::Vector2f(2200, 610), sf::Color::Green);
+    createPlatform(sf::Vector2f(100, 50), sf::Vector2f(1800, 580), sf::Color::Green);
+    createPlatform(sf::Vector2f(100, 50), sf::Vector2f(1200, 560), sf::Color::Green);
+    createPlatform(sf::Vector2f(100, 50), sf::Vector2f(700, 560), sf::Color::Green);
+    createPlatform(sf::Vector2f(100, 50), sf::Vector2f(300, 500), sf::Color::Blue);
+    createPlatform(sf::Vector2f(50, MAX_LEVEL_HEIGHT), sf::Vector2f(0, 1300), sf::Color::Green);
 }
 
 void GameplayScene::update()
@@ -31,7 +43,7 @@ void GameplayScene::update()
     if (player->hasComponent(Component::Type::TRANSFORM))
     {
         std::shared_ptr<CTransform> cTransform = std::static_pointer_cast<CTransform>(player->getComponentByType(Component::Type::TRANSFORM));
-        if (cTransform->m_position.y > MAX_LEVEL_HEIGHT)
+        if (cTransform->m_position.y > MAX_LEVEL_BOTTOM)
         {
             createPlayer();
         }
@@ -116,7 +128,7 @@ void GameplayScene::createPlayer()
         player = m_entityManager.addEntity(Entity::Type::PLAYER);
     }
 
-    sf::Vector2f position = sf::Vector2f(100, 200);
+    sf::Vector2f position = sf::Vector2f(100, 1000);
     sf::Vector2f velocity = sf::Vector2f(0, 0);
 
     sf::RectangleShape playerShape{sf::Vector2f(50, 50)};
