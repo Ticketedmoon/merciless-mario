@@ -143,7 +143,7 @@ void GameplayScene::createPlayer()
     player->addComponent(Component::Type::TRANSFORM, std::make_shared<CTransform>(position, velocity));
     player->addComponent(Component::Type::COLLISION, std::make_shared<CCollision>());
     player->addComponent(Component::Type::USER_INPUT, std::make_shared<CAction>());
-    player->addComponent(Component::Type::DYNAMIC_MOVEMENT, std::make_shared<CMovement>(0.1f, 0.025f, 1.25f, -10.0f, 0.3f, 5.0f));
+    player->addComponent(Component::Type::DYNAMIC_MOVEMENT, std::make_shared<CMovement>(0.1f, 0.025f, 1.25f, -10.0f, 0.3f, 10.0f));
 }
 
 void GameplayScene::createPlatform(sf::Vector2f size, sf::Vector2f position, sf::Color fillColor)
