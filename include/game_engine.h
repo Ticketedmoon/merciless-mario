@@ -8,7 +8,6 @@
 
 #include <string_view>
 #include <memory>
-#include <iostream>
 
 #include "common_constants.h"
 #include "scene.h"

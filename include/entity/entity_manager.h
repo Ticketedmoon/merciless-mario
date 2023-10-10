@@ -8,6 +8,7 @@
 #include <vector>
 #include <unordered_map>
 #include <memory>
+#include <cassert>
 #include "entity.h"
 
 class EntityManager

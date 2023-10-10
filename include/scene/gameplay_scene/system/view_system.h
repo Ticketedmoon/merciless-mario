@@ -9,11 +9,12 @@
 #include "system.h"
 #include "entity.h"
 #include "common_constants.h"
+#include "entity_manager.h"
 
 class ViewSystem : public System
 {
     public:
-        explicit ViewSystem(std::shared_ptr<Entity>& entityToView, sf::RenderTexture& renderTexture);
+        explicit ViewSystem(EntityManager& entityManager, sf::RenderTexture& renderTexture);
 
         void execute() override;
 
@@ -23,7 +24,7 @@ class ViewSystem : public System
     private:
         static constexpr float VIEW_ZOOM_FACTOR = 1.25f;
 
-        std::shared_ptr<Entity> m_entityToView;
+        EntityManager& m_entityManager;
         sf::RenderTexture& m_renderTexture;
 };
 

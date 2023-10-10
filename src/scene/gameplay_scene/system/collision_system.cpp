@@ -8,7 +8,7 @@ CollisionSystem::CollisionSystem(EntityManager& entityManager) : m_entityManager
 void CollisionSystem::execute()
 {
     std::vector<std::shared_ptr<Entity>> dynamicEntities = m_entityManager
-            .getEntitiesByComponentTypes({Component::Type::SPRITE, Component::Type::COLLISION, Component::Type::DYNAMIC_MOVEMENT});
+            .getEntitiesByComponentTypes({Component::Type::SPRITE, Component::Type::TRANSFORM, Component::Type::COLLISION, Component::Type::DYNAMIC_MOVEMENT});
     std::vector<std::shared_ptr<Entity>> staticEntities = m_entityManager
             .getEntitiesByComponentTypes({Component::Type::SPRITE, Component::Type::COLLISION, Component::Type::STATIC_MOVEMENT});
     if (dynamicEntities.empty() || staticEntities.empty())
@@ -20,6 +20,12 @@ void CollisionSystem::execute()
     {
         std::shared_ptr<CMovement> cMovement = std::static_pointer_cast<CMovement>(dynamicEntity->getComponentByType(Component::Type::DYNAMIC_MOVEMENT));
         checkForWindowCollision(dynamicEntity, cMovement);
+
+        std::shared_ptr<CTransform> cTransform = std::static_pointer_cast<CTransform>(dynamicEntity->getComponentByType(Component::Type::TRANSFORM));
+        if (cTransform->m_position.y > LEVEL_DEPTH_KILL_ZONE)
+        {
+            dynamicEntity->destroy();
+        }
 
         for (const std::shared_ptr<Entity>& staticEntity: staticEntities)
         {

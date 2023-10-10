@@ -53,7 +53,9 @@ std::vector<std::shared_ptr<Entity>>& EntityManager::getEntitiesByType(Entity::T
 
 std::shared_ptr<Entity>& EntityManager::getEntityByType(Entity::Type type)
 {
-    return m_entitiesByType[type].front();
+  std::vector<std::shared_ptr<Entity>>& entities = m_entitiesByType[type];
+  assert(!entities.empty());;
+  return entities.front();
 }
 
 std::vector<std::shared_ptr<Entity>> EntityManager::getDestroyedEntitiesByComponentTypes(const std::vector<Component::Type>& componentTypes)

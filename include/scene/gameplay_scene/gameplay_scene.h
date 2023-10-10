@@ -13,6 +13,8 @@
 #include "render_system.h"
 #include "transform_system.h"
 #include "collision_system.h"
+#include "view_system.h"
+#include "entity_spawn_system.h"
 
 #include "c_sprite.h"
 #include "c_movement.h"
@@ -30,16 +32,12 @@ class GameplayScene : public Scene
         void performAction(Action& action) override;
 
     private:
-        void createPlayer();
-        void createPlatform(sf::Vector2f size, sf::Vector2f position, sf::Color fillColor);
         void registerSystems();
         void registerActions();
 
     private:
         EntityManager m_entityManager;
         SystemManager m_systemManager;
-
-        std::shared_ptr<Entity> player;
 
         sf::RenderTexture m_renderTexture;
         sf::Sprite m_renderSprite;
