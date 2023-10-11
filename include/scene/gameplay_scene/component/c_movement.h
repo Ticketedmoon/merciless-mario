@@ -24,6 +24,7 @@ class CMovement : public Component
 
         bool isRising{false};
         bool isAirborne{false};
+        bool hasTouchedCeiling{false};
 };
 
 

@@ -51,13 +51,6 @@ std::vector<std::shared_ptr<Entity>>& EntityManager::getEntitiesByType(Entity::T
     return m_entitiesByType[type];
 }
 
-std::shared_ptr<Entity>& EntityManager::getEntityByType(Entity::Type type)
-{
-  std::vector<std::shared_ptr<Entity>>& entities = m_entitiesByType[type];
-  assert(!entities.empty());;
-  return entities.front();
-}
-
 std::vector<std::shared_ptr<Entity>> EntityManager::getDestroyedEntitiesByComponentTypes(const std::vector<Component::Type>& componentTypes)
 {
     std::ranges::filter_view filteredEntities = m_entities | std::ranges::views::filter([componentTypes](std::shared_ptr<Entity>& e) {

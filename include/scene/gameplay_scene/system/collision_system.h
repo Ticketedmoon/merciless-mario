@@ -33,9 +33,11 @@ class CollisionSystem : public System
         static bool isCollidingAABB(const std::shared_ptr<CSpriteGroup>& playerSpriteGroup,
                 const std::shared_ptr<CSpriteGroup>& platformSpriteGroup,
                 sf::FloatRect& overlap);
+        static void updateVelocityOnCollision(const sf::Vector3f& manifold, std::shared_ptr<CTransform>& cTransform,
+                std::shared_ptr<CMovement>& cMovement);
+
         static sf::Vector3f getManifold(const sf::FloatRect& overlap, const sf::Vector2f& collisionNormal);
         static void resolve(std::shared_ptr<Entity>& dynamicEntity, const sf::Vector3f& manifold);
-
 
     private:
         EntityManager& m_entityManager;

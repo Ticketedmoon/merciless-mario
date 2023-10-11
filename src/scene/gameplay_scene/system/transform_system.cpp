@@ -68,7 +68,7 @@ void TransformSystem::updatePosition(std::shared_ptr<CTransform>& cTransform)
 
 void TransformSystem::applyGravity(std::shared_ptr<CTransform>& cTransform, const std::shared_ptr<CMovement>& cMovement)
 {
-    if (cMovement->isRising && cTransform->m_velocity.y > cMovement->maxJumpHeight)
+    if (cMovement->isRising && !cMovement->hasTouchedCeiling && cTransform->m_velocity.y > cMovement->maxJumpHeight)
     {
         cTransform->m_velocity.y -= cMovement->jumpAcceleration;
         cMovement->isAirborne = true;

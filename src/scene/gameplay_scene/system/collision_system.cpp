@@ -94,26 +94,41 @@ sf::Vector3f CollisionSystem::getManifold(const sf::FloatRect& overlap, const sf
 
 void CollisionSystem::resolve(std::shared_ptr<Entity>& dynamicEntity, const sf::Vector3f& manifold)
 {
-    if (!dynamicEntity->hasComponent(Component::TRANSFORM))
+    if (!dynamicEntity->hasComponents({Component::Type::TRANSFORM, Component::Type::DYNAMIC_MOVEMENT}))
     {
         return;
     }
 
     std::shared_ptr<CTransform> cTransform = std::static_pointer_cast<CTransform>(dynamicEntity->getComponentByType(Component::Type::TRANSFORM));
-    if (manifold.y < 0)
+    std::shared_ptr<CMovement> cMovement = std::static_pointer_cast<CMovement>(dynamicEntity->getComponentByType(Component::Type::DYNAMIC_MOVEMENT));
+    if (manifold.y < 0 && dynamicEntity->hasComponent(Component::Type::USER_INPUT))
     {
-        if (dynamicEntity->hasComponents({Component::Type::USER_INPUT, Component::Type::DYNAMIC_MOVEMENT}))
-        {
-            std::shared_ptr<CAction> cAction = std::static_pointer_cast<CAction>(dynamicEntity->getComponentByType(Component::Type::USER_INPUT));
-            std::shared_ptr<CMovement> cMovement = std::static_pointer_cast<CMovement>(dynamicEntity->getComponentByType(Component::Type::DYNAMIC_MOVEMENT));
-            cTransform->m_velocity.y = 0.0f;
-            cAction->isJumping = false;
-            cMovement->isAirborne = false;
-        }
+        std::shared_ptr<CAction> cAction = std::static_pointer_cast<CAction>(
+                dynamicEntity->getComponentByType(Component::Type::USER_INPUT));
+        cTransform->m_velocity.y = 0.0f;
+        cAction->isJumping = false;
+
+        cMovement->isAirborne = false;
+        cMovement->hasTouchedCeiling = false;
     }
+
+    updateVelocityOnCollision(manifold, cTransform, cMovement);
 
     // move the shape out of the solid object by the penetration amount
     sf::Vector2f normal(manifold.x, manifold.y);
     const sf::Vector2<float>& offset = normal * manifold.z;
     cTransform->m_position += offset;
+}
+
+void CollisionSystem::updateVelocityOnCollision(const sf::Vector3f& manifold, std::shared_ptr<CTransform>& cTransform,
+        std::shared_ptr<CMovement>& cMovement)
+{
+    // Reset velocity if hit collidable entity.
+    cTransform->m_velocity.x = manifold.x == 1 || manifold.x == -1 ? 0 : cTransform->m_velocity.x;
+    bool isCollisionOverlapFromTop = manifold.y == 1;
+    if (isCollisionOverlapFromTop && !cMovement->hasTouchedCeiling)
+    {
+        cTransform->m_velocity.y = 0;
+        cMovement->hasTouchedCeiling = true;
+    }
 }

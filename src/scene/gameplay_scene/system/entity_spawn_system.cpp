@@ -4,8 +4,8 @@
 EntitySpawnSystem::EntitySpawnSystem(EntityManager& entityManager) : m_entityManager(entityManager)
 {
     createPlayer();
-    createPlatform(sf::Vector2f(10, 100), sf::Vector2f(400, 1200), sf::Color::Green);
-    createPlatform(sf::Vector2f(500, 100), sf::Vector2f(300, 1300), sf::Color::Green);
+    createPlatform(sf::Vector2f(10, 100), sf::Vector2f(500, 1200), sf::Color::Green);
+    createPlatform(sf::Vector2f(500, 100), sf::Vector2f(300, 1250), sf::Color::Green);
     createPlatform(sf::Vector2f(200, 20), sf::Vector2f(500, 1100), sf::Color::Green);
     createPlatform(sf::Vector2f(100, 50), sf::Vector2f(900, 1420), sf::Color::Green);
 
@@ -62,7 +62,7 @@ void EntitySpawnSystem::createPlayer()
     player->addComponent(Component::Type::TRANSFORM, std::make_shared<CTransform>(position, velocity));
     player->addComponent(Component::Type::COLLISION, std::make_shared<CCollision>());
     player->addComponent(Component::Type::USER_INPUT, std::make_shared<CAction>());
-    player->addComponent(Component::Type::DYNAMIC_MOVEMENT, std::make_shared<CMovement>(0.125f, 0.01f, 7.25f, 1.25f, -10.0f, 0.3f, 25.0f));
+    player->addComponent(Component::Type::DYNAMIC_MOVEMENT, std::make_shared<CMovement>(0.125f, 0.01f, 5.95f, 1.25f, -10.0f, 0.3f, 25.0f));
 }
 
 void EntitySpawnSystem::createPlatform(sf::Vector2f size, sf::Vector2f position, sf::Color fillColor)

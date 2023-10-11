@@ -34,7 +34,12 @@ void GameplayScene::render()
 
 void GameplayScene::performAction(Action& action)
 {
-    std::shared_ptr<Entity>& player = m_entityManager.getEntityByType(Entity::Type::PLAYER);
+    std::vector<std::shared_ptr<Entity>>& players = m_entityManager.getEntitiesByType(Entity::Type::PLAYER);
+    if (players.empty())
+    {
+        return;
+    }
+    std::shared_ptr<Entity>& player = players.front();
     std::shared_ptr<CAction> actionComponent = std::static_pointer_cast<CAction>(
             player->getComponentByType(Component::Type::USER_INPUT));
 
