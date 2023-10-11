@@ -45,15 +45,13 @@ void EntitySpawnSystem::createPlayer()
 
     sf::RectangleShape playerBody{sf::Vector2f(50, 50)};
     playerBody.setOrigin(25, 25);
-    playerBody.setPosition(position);
     playerBody.setFillColor(sf::Color::Yellow);
     playerBody.setOutlineColor(sf::Color::White);
     playerBody.setOutlineThickness(2.0f);
 
-    sf::RectangleShape playerArm{sf::Vector2f(50, 10)};
-    playerArm.setOrigin(0, 5);
-    playerArm.setPosition(position);
-    playerArm.setFillColor(sf::Color::Cyan);
+    sf::RectangleShape playerArm{sf::Vector2f(150, 10)};
+    playerArm.setOrigin(75, 5);
+    playerArm.setFillColor(sf::Color::Yellow);
     playerArm.setOutlineColor(sf::Color::White);
     playerArm.setOutlineThickness(2.0f);
 

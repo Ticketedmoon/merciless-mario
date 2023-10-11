@@ -51,11 +51,11 @@ void GameplayScene::performAction(Action& action)
     {
         actionComponent->isMovingRight = action.getMode() == Action::Mode::PRESS;
     }
-    if (action.getType() == Action::Type::MOVE_UP)
+    if (action.getType() == Action::Type::LOOK_UP)
     {
         actionComponent->isLookingUp = action.getMode() == Action::Mode::PRESS;
     }
-    if (action.getType() == Action::Type::MOVE_DOWN)
+    if (action.getType() == Action::Type::CROUCH)
     {
         actionComponent->isCrouching = action.getMode() == Action::Mode::PRESS;
     }
@@ -63,20 +63,28 @@ void GameplayScene::performAction(Action& action)
     {
         actionComponent->isJumping = action.getMode() == Action::Mode::PRESS;
     }
+    if (action.getType() == Action::Type::POINT)
+    {
+        actionComponent->armPointLocation = gameEngine.window.mapPixelToCoords(sf::Mouse::getPosition(gameEngine.window));
+    }
 }
 
 void GameplayScene::registerActions()
 {
+    // Keys
     registerActionType(sf::Keyboard::Left, Action::Type::MOVE_LEFT);
     registerActionType(sf::Keyboard::Right, Action::Type::MOVE_RIGHT);
-    registerActionType(sf::Keyboard::Up, Action::Type::MOVE_UP);
-    registerActionType(sf::Keyboard::Down, Action::Type::MOVE_DOWN);
+    registerActionType(sf::Keyboard::Up, Action::Type::LOOK_UP);
+    registerActionType(sf::Keyboard::Down, Action::Type::CROUCH);
     registerActionType(sf::Keyboard::Space, Action::Type::JUMP);
 
     registerActionType(sf::Keyboard::A, Action::Type::MOVE_LEFT);
     registerActionType(sf::Keyboard::D, Action::Type::MOVE_RIGHT);
-    registerActionType(sf::Keyboard::W, Action::Type::MOVE_UP);
-    registerActionType(sf::Keyboard::S, Action::Type::MOVE_DOWN);
+    registerActionType(sf::Keyboard::W, Action::Type::LOOK_UP);
+    registerActionType(sf::Keyboard::S, Action::Type::CROUCH);
+
+    // Mouse
+    registerCursorActionType(sf::Event::MouseMoved, Action::Type::POINT);
 }
 
 void GameplayScene::registerSystems()

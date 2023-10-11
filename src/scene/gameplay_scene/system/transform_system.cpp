@@ -1,4 +1,3 @@
-#include <iostream>
 #include "scene/gameplay_scene/system/transform_system.h"
 
 TransformSystem::TransformSystem(EntityManager& entityManager) : m_entityManager(entityManager)
@@ -17,10 +16,19 @@ void TransformSystem::execute()
     for (std::shared_ptr<Entity>& player : players)
     {
         std::shared_ptr<CAction> cAction = std::static_pointer_cast<CAction>(player->getComponentByType(Component::Type::USER_INPUT));
+        std::shared_ptr<CSpriteGroup> cSpriteGroup = std::static_pointer_cast<CSpriteGroup>(player->getComponentByType(Component::Type::SPRITE_GROUP));
         std::shared_ptr<CMovement> cMovement = std::static_pointer_cast<CMovement>(player->getComponentByType(Component::Type::DYNAMIC_MOVEMENT));
         std::shared_ptr<CTransform> cTransform = std::static_pointer_cast<CTransform>(player->getComponentByType(Component::Type::TRANSFORM));
         updateVelocity(cTransform, cAction, cMovement);
         applyGravity(cTransform, cMovement);
+
+        // TODO this code is not finalised
+        static constexpr float PI_FULL_CIRCLE = std::numbers::pi_v<float> * 2;
+        sf::RectangleShape& arm = cSpriteGroup->getSprites().at(1);
+        double dY = cAction->armPointLocation.y - arm.getPosition().y;
+        double dX = cAction->armPointLocation.x - arm.getPosition().x;
+        float angle = std::atan2(dX, dY) * 90 * PI_FULL_CIRCLE;
+        arm.setRotation(90-angle);
     }
 
     std::vector<std::shared_ptr<Entity>> collisionEntities = m_entityManager.getEntitiesByComponentTypes({Component::Type::TRANSFORM, Component::Type::COLLISION});

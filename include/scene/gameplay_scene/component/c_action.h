@@ -13,6 +13,9 @@ class CAction : public Component
         bool isLookingUp;
         bool isCrouching;
         bool isJumping;
+
+        // Should this be here?
+        sf::Vector2f armPointLocation;
 };
 
 

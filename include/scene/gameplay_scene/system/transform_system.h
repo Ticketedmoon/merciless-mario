@@ -5,7 +5,10 @@
 
 #include <vector>
 #include <memory>
+#include <iostream>
+#include <valarray>
 
+#include "c_sprite_group.h"
 #include "entity/entity.h"
 #include "entity/entity_manager.h"
 #include "c_transform.h"

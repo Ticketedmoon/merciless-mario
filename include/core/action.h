@@ -10,9 +10,10 @@ class Action
         {
             MOVE_LEFT = 0,
             MOVE_RIGHT = 1,
-            MOVE_UP = 2,
-            MOVE_DOWN = 3,
+            LOOK_UP = 2,
+            CROUCH = 3,
             JUMP = 4,
+            POINT = 5
         };
         enum class Mode
         {
