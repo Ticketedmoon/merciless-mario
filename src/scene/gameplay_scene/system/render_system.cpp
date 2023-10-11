@@ -9,12 +9,15 @@ RenderSystem::RenderSystem(sf::RenderTarget& renderTarget, EntityManager& entity
 void RenderSystem::execute()
 {
     std::vector<std::shared_ptr<Entity>> entitiesToUpdate = m_entityManager
-            .getEntitiesByComponentTypes({Component::Type::SPRITE, Component::Type::TRANSFORM});
+            .getEntitiesByComponentTypes({Component::Type::SPRITE_GROUP, Component::Type::TRANSFORM});
     for (const std::shared_ptr<Entity>& e : entitiesToUpdate)
     {
-        std::shared_ptr<CSprite> cSprite = std::static_pointer_cast<CSprite>(e->getComponentByType(Component::Type::SPRITE));
+        std::shared_ptr<CSpriteGroup> cSpriteGroup = std::static_pointer_cast<CSpriteGroup>(e->getComponentByType(Component::Type::SPRITE_GROUP));
         std::shared_ptr<CTransform> cTransform = std::static_pointer_cast<CTransform>(e->getComponentByType(Component::Type::TRANSFORM));
-        cSprite->m_shape.setPosition(cTransform->m_position);
-        m_renderTarget.draw(cSprite->m_shape);
+        for (sf::RectangleShape& sprite : cSpriteGroup->getSprites())
+        {
+            sprite.setPosition(cTransform->m_position);
+            m_renderTarget.draw(sprite);
+        }
     }
 }

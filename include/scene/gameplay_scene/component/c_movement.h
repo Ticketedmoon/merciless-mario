@@ -9,11 +9,13 @@ class CMovement : public Component
 {
     public:
         CMovement() = default;
-        CMovement(float movementAcceleration, float maxMovementAcceleration, float jumpAcceleration, float maxJumpHeight,
+        CMovement(float movementAcceleration, float movementDecelerationPerFrame, float maxMovementAcceleration,
+                float jumpAcceleration, float maxJumpHeight,
                 float gravityRate, float maxGravityAcceleration);
 
     public:
         float movementAcceleration{0.0f};
+        float movementDecelerationPerFrame{0.0f};
         float maxMovementAcceleration{0.0f};
         float jumpAcceleration{0.0f};
         float maxJumpHeight{0.0f};

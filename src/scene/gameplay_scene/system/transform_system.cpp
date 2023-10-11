@@ -1,3 +1,4 @@
+#include <iostream>
 #include "scene/gameplay_scene/system/transform_system.h"
 
 TransformSystem::TransformSystem(EntityManager& entityManager) : m_entityManager(entityManager)
@@ -86,21 +87,13 @@ void TransformSystem::applyGravity(std::shared_ptr<CTransform>& cTransform, cons
 void TransformSystem::updateVelocity(std::shared_ptr<CTransform>& cTransform, const std::shared_ptr<CAction>& cAction,
         std::shared_ptr<CMovement>& cMovement)
 {
-    if (cAction->isMovingLeft)
+    if (cAction->isMovingLeft && cTransform->m_velocity.x > -cMovement->maxMovementAcceleration)
     {
         cTransform->m_velocity.x -= cMovement->movementAcceleration;
     }
-    if (cAction->isMovingRight)
+    if (cAction->isMovingRight && (cTransform->m_velocity.x < cMovement->maxMovementAcceleration))
     {
         cTransform->m_velocity.x += cMovement->movementAcceleration;
-    }
-    if (cAction->isMovingUp)
-    {
-        cTransform->m_velocity.y -= cMovement->movementAcceleration;
-    }
-    if (cAction->isMovingDown)
-    {
-        cTransform->m_velocity.y += cMovement->movementAcceleration;
     }
     if (cAction->isJumping)
     {
@@ -110,25 +103,10 @@ void TransformSystem::updateVelocity(std::shared_ptr<CTransform>& cTransform, co
 
 void TransformSystem::reduceVelocity(std::shared_ptr<CTransform>& cTransform, std::shared_ptr<CMovement>& cMovement)
 {
-    if (cTransform->m_velocity.x > 0)
-    {
-        cTransform->m_velocity.x -= cTransform->m_velocity.x < cMovement->maxMovementAcceleration
-                ? cTransform->m_velocity.x : cMovement->maxMovementAcceleration;
-    }
-    if (cTransform->m_velocity.x < 0)
-    {
-        cTransform->m_velocity.x += cTransform->m_velocity.x > -cMovement->maxMovementAcceleration
-                ? cTransform->m_velocity.x : cMovement->maxMovementAcceleration;
-    }
-
-    if (cTransform->m_velocity.y > 0)
-    {
-        cTransform->m_velocity.y -= cTransform->m_velocity.y < cMovement->maxMovementAcceleration
-                ? cTransform->m_velocity.y : cMovement->maxMovementAcceleration;
-    }
-    if (cTransform->m_velocity.y < 0)
-    {
-        cTransform->m_velocity.y += cTransform->m_velocity.y > -cMovement->maxMovementAcceleration
-                ? cTransform->m_velocity.y : cMovement->maxMovementAcceleration;
-    }
+    cTransform->m_velocity.x -= cTransform->m_velocity.x > 0.0f
+            ? std::abs(cMovement->movementDecelerationPerFrame)
+            : 0;
+    cTransform->m_velocity.x += cTransform->m_velocity.x < 0.0f
+            ? std::abs(cMovement->movementDecelerationPerFrame)
+            : 0;
 }

@@ -14,7 +14,7 @@
 #include "system.h"
 #include "entity/entity_manager.h"
 #include "scene/gameplay_scene/system/render_system.h"
-#include "c_sprite.h"
+#include "c_sprite_group.h"
 
 class RenderSystem : public System
 {

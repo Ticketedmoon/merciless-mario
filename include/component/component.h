@@ -12,7 +12,7 @@ class Component
     public:
         enum Type
         {
-            SPRITE = 0,
+            SPRITE_GROUP = 0,
             TRANSFORM = 1,
             COLLISION = 2,
             USER_INPUT = 3,

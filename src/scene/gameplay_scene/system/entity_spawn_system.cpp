@@ -4,6 +4,7 @@
 EntitySpawnSystem::EntitySpawnSystem(EntityManager& entityManager) : m_entityManager(entityManager)
 {
     createPlayer();
+    createPlatform(sf::Vector2f(10, 100), sf::Vector2f(400, 1200), sf::Color::Green);
     createPlatform(sf::Vector2f(500, 100), sf::Vector2f(300, 1300), sf::Color::Green);
     createPlatform(sf::Vector2f(200, 20), sf::Vector2f(500, 1100), sf::Color::Green);
     createPlatform(sf::Vector2f(100, 50), sf::Vector2f(900, 1420), sf::Color::Green);
@@ -42,18 +43,26 @@ void EntitySpawnSystem::createPlayer()
     sf::Vector2f position = sf::Vector2f(100, 1000);
     sf::Vector2f velocity = sf::Vector2f(0, 0);
 
-    sf::RectangleShape playerShape{sf::Vector2f(50, 50)};
-    playerShape.setOrigin(25, 25);
-    playerShape.setPosition(position);
-    playerShape.setFillColor(sf::Color::Yellow);
-    playerShape.setOutlineColor(sf::Color::White);
-    playerShape.setOutlineThickness(2.0f);
+    sf::RectangleShape playerBody{sf::Vector2f(50, 50)};
+    playerBody.setOrigin(25, 25);
+    playerBody.setPosition(position);
+    playerBody.setFillColor(sf::Color::Yellow);
+    playerBody.setOutlineColor(sf::Color::White);
+    playerBody.setOutlineThickness(2.0f);
 
-    player->addComponent(Component::Type::SPRITE, std::make_shared<CSprite>(playerShape));
+    sf::RectangleShape playerArm{sf::Vector2f(50, 10)};
+    playerArm.setOrigin(0, 5);
+    playerArm.setPosition(position);
+    playerArm.setFillColor(sf::Color::Cyan);
+    playerArm.setOutlineColor(sf::Color::White);
+    playerArm.setOutlineThickness(2.0f);
+
+    std::vector<sf::RectangleShape> playerComponents = {playerBody, playerArm};
+    player->addComponent(Component::Type::SPRITE_GROUP, std::make_shared<CSpriteGroup>(playerComponents));
     player->addComponent(Component::Type::TRANSFORM, std::make_shared<CTransform>(position, velocity));
     player->addComponent(Component::Type::COLLISION, std::make_shared<CCollision>());
     player->addComponent(Component::Type::USER_INPUT, std::make_shared<CAction>());
-    player->addComponent(Component::Type::DYNAMIC_MOVEMENT, std::make_shared<CMovement>(0.1f, 0.025f, 1.25f, -10.0f, 0.3f, 10.0f));
+    player->addComponent(Component::Type::DYNAMIC_MOVEMENT, std::make_shared<CMovement>(0.125f, 0.01f, 7.25f, 1.25f, -10.0f, 0.3f, 25.0f));
 }
 
 void EntitySpawnSystem::createPlatform(sf::Vector2f size, sf::Vector2f position, sf::Color fillColor)
@@ -69,7 +78,7 @@ void EntitySpawnSystem::createPlatform(sf::Vector2f size, sf::Vector2f position,
 
     sf::Vector2f velocity = sf::Vector2f(0, 0);
 
-    platformA->addComponent(Component::Type::SPRITE, std::make_shared<CSprite>(platformShape));
+    platformA->addComponent(Component::Type::SPRITE_GROUP, std::make_shared<CSpriteGroup>(platformShape));
     platformA->addComponent(Component::Type::COLLISION, std::make_shared<CCollision>());
     platformA->addComponent(Component::Type::TRANSFORM, std::make_shared<CTransform>(position, velocity));
     platformA->addComponent(Component::Type::STATIC_MOVEMENT, std::make_shared<CMovement>());

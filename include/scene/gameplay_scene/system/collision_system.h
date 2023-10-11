@@ -15,7 +15,7 @@
 #include "entity/entity.h"
 #include "c_transform.h"
 #include "c_collision.h"
-#include "c_sprite.h"
+#include "c_sprite_group.h"
 #include "c_action.h"
 #include "c_movement.h"
 
@@ -30,8 +30,8 @@ class CollisionSystem : public System
 
         static void checkForWindowCollision(const std::shared_ptr<Entity>& e, std::shared_ptr<CMovement>& cMovement);
         static void checkForPlatformCollision(std::shared_ptr<Entity>& dynamicEntity, const std::shared_ptr<Entity>& staticEntity);
-        static bool isCollidingAABB(const std::shared_ptr<CSprite>& playerSprite,
-                const std::shared_ptr<CSprite>& platformSprite,
+        static bool isCollidingAABB(const std::shared_ptr<CSpriteGroup>& playerSpriteGroup,
+                const std::shared_ptr<CSpriteGroup>& platformSpriteGroup,
                 sf::FloatRect& overlap);
         static sf::Vector3f getManifold(const sf::FloatRect& overlap, const sf::Vector2f& collisionNormal);
         static void resolve(std::shared_ptr<Entity>& dynamicEntity, const sf::Vector3f& manifold);

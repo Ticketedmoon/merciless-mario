@@ -10,8 +10,8 @@ class CAction : public Component
     public:
         bool isMovingLeft;
         bool isMovingRight;
-        bool isMovingUp;
-        bool isMovingDown;
+        bool isLookingUp;
+        bool isCrouching;
         bool isJumping;
 };
 

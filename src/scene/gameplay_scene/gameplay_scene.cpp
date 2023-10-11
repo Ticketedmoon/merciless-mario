@@ -48,11 +48,11 @@ void GameplayScene::performAction(Action& action)
     }
     if (action.getType() == Action::Type::MOVE_UP)
     {
-        actionComponent->isMovingUp = action.getMode() == Action::Mode::PRESS;
+        actionComponent->isLookingUp = action.getMode() == Action::Mode::PRESS;
     }
     if (action.getType() == Action::Type::MOVE_DOWN)
     {
-        actionComponent->isMovingDown = action.getMode() == Action::Mode::PRESS;
+        actionComponent->isCrouching = action.getMode() == Action::Mode::PRESS;
     }
     if (action.getType() == Action::Type::JUMP)
     {

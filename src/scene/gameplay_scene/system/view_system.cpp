@@ -1,6 +1,6 @@
 #include "view_system.h"
 #include "c_transform.h"
-#include "c_sprite.h"
+#include "c_sprite_group.h"
 
 ViewSystem::ViewSystem(EntityManager& entityManager, sf::RenderTexture& renderTexture) : m_entityManager(entityManager),
     m_renderTexture(renderTexture)
@@ -22,12 +22,12 @@ void ViewSystem::execute()
 
     // keep view centred/centered on entity
     std::shared_ptr<CTransform> cTransform = std::static_pointer_cast<CTransform>(player->getComponentByType(Component::Type::TRANSFORM));
-    std::shared_ptr<CSprite> cSprite = std::static_pointer_cast<CSprite>(player->getComponentByType(Component::Type::SPRITE));
+    std::shared_ptr<CSpriteGroup> cSpriteGroup = std::static_pointer_cast<CSpriteGroup>(player->getComponentByType(Component::Type::SPRITE_GROUP));
 
     sf::Vector2f entityPos = cTransform->m_position;
 
-    float centreX = getViewCentreForCoordinate(entityPos.x, MAX_LEVEL_WIDTH, WINDOW_WIDTH, cSprite->m_shape.getSize().x);
-    float centreY = getViewCentreForCoordinate(entityPos.y, MAX_LEVEL_HEIGHT, WINDOW_HEIGHT, cSprite->m_shape.getSize().y);
+    float centreX = getViewCentreForCoordinate(entityPos.x, MAX_LEVEL_WIDTH, WINDOW_WIDTH, cSpriteGroup->getSprite().getSize().x);
+    float centreY = getViewCentreForCoordinate(entityPos.y, MAX_LEVEL_HEIGHT, WINDOW_HEIGHT, cSpriteGroup->getSprite().getSize().y);
 
     // Reset View
     m_renderTexture.setView(m_renderTexture.getDefaultView());

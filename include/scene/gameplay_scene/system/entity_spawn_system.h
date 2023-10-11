@@ -9,7 +9,7 @@
 #include <memory>
 
 #include "entity.h"
-#include "c_sprite.h"
+#include "c_sprite_group.h"
 #include "c_transform.h"
 #include "c_collision.h"
 #include "c_action.h"
