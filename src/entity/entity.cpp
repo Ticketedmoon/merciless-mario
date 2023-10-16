@@ -29,6 +29,11 @@ std::shared_ptr<Component> Entity::getComponentByType(const Component::Type comp
     return m_components[index];
 }
 
+size_t Entity::getId()
+{
+    return m_id;
+}
+
 Entity::Type Entity::getType()
 {
     return m_type;

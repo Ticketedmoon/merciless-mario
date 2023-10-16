@@ -34,6 +34,7 @@ class Entity
             NONE
         };
 
+        size_t getId();
         Type getType();
         [[nodiscard]] bool isAlive() const;
         void destroy();

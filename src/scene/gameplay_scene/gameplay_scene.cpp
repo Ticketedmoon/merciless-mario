@@ -8,7 +8,6 @@ GameplayScene::GameplayScene(GameEngine& engine) : Scene(engine)
 
     registerActions();
     registerSystems();
-
 }
 
 void GameplayScene::update()
@@ -65,7 +64,12 @@ void GameplayScene::performAction(Action& action)
     }
     if (action.getType() == Action::Type::POINT)
     {
-        actionComponent->armPointLocation = gameEngine.window.mapPixelToCoords(sf::Mouse::getPosition(gameEngine.window));
+        actionComponent->armPointLocation = gameEngine.window
+                .mapPixelToCoords(sf::Mouse::getPosition(gameEngine.window), m_renderTexture.getView());
+    }
+    if (action.getType() == Action::Type::SHOOT)
+    {
+        actionComponent->isShooting = action.getMode() == Action::Mode::PRESS;
     }
 }
 
@@ -85,6 +89,7 @@ void GameplayScene::registerActions()
 
     // Mouse
     registerCursorActionType(sf::Event::MouseMoved, Action::Type::POINT);
+    registerActionType(CursorButton::CURSOR_LEFT, Action::Type::SHOOT);
 }
 
 void GameplayScene::registerSystems()
@@ -95,6 +100,8 @@ void GameplayScene::registerSystems()
             std::make_shared<TransformSystem>(m_entityManager), SystemManager::SystemType::UPDATE);
     m_systemManager.registerSystem(
             std::make_shared<CollisionSystem>(m_entityManager), SystemManager::SystemType::UPDATE);
+    m_systemManager.registerSystem(
+            std::make_shared<LifespanSystem>(m_entityManager), SystemManager::SystemType::UPDATE);
 
     m_systemManager.registerSystem(
             std::make_shared<ViewSystem>(m_entityManager, m_renderTexture), SystemManager::SystemType::RENDER);

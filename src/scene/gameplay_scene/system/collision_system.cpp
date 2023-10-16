@@ -29,12 +29,20 @@ void CollisionSystem::execute()
 
         for (const std::shared_ptr<Entity>& staticEntity: staticEntities)
         {
-            checkForPlatformCollision(dynamicEntity, staticEntity);
+            checkForEntityCollision(dynamicEntity, staticEntity);
+        }
+
+        for (const std::shared_ptr<Entity>& otherDynamicEntity: dynamicEntities)
+        {
+            if (dynamicEntity->getId() != otherDynamicEntity->getId())
+            {
+                checkForEntityCollision(dynamicEntity, otherDynamicEntity);
+            }
         }
     }
 }
 
-void CollisionSystem::checkForPlatformCollision(std::shared_ptr<Entity>& dynamicEntity, const std::shared_ptr<Entity>& staticEntity)
+void CollisionSystem::checkForEntityCollision(std::shared_ptr<Entity>& dynamicEntity, const std::shared_ptr<Entity>& staticEntity)
 {
     std::shared_ptr<CSpriteGroup> staticEntitySpriteGroup = std::static_pointer_cast<CSpriteGroup>(staticEntity->getComponentByType(Component::Type::SPRITE_GROUP));
     std::shared_ptr<CSpriteGroup> dynamicEntitySpriteGroup = std::static_pointer_cast<CSpriteGroup>(dynamicEntity->getComponentByType(Component::Type::SPRITE_GROUP));
@@ -67,10 +75,10 @@ void CollisionSystem::checkForWindowCollision(const std::shared_ptr<Entity>& e, 
     }
 }
 
-bool CollisionSystem::isCollidingAABB(const std::shared_ptr<CSpriteGroup>& playerSpriteGroup,
-        const std::shared_ptr<CSpriteGroup>& platformSpriteGroup, sf::FloatRect& overlap)
+bool CollisionSystem::isCollidingAABB(const std::shared_ptr<CSpriteGroup>& entitySpriteGroup,
+        const std::shared_ptr<CSpriteGroup>& otherEntitySpriteGroup, sf::FloatRect& overlap)
 {
-    return playerSpriteGroup->getSprite().getGlobalBounds().intersects(platformSpriteGroup->getSprite().getGlobalBounds(), overlap);
+    return entitySpriteGroup->getSprite().getGlobalBounds().intersects(otherEntitySpriteGroup->getSprite().getGlobalBounds(), overlap);
 }
 
 sf::Vector3f CollisionSystem::getManifold(const sf::FloatRect& overlap, const sf::Vector2f& collisionNormal)

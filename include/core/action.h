@@ -13,7 +13,8 @@ class Action
             LOOK_UP = 2,
             CROUCH = 3,
             JUMP = 4,
-            POINT = 5
+            POINT = 5,
+            SHOOT = 6,
         };
         enum class Mode
         {

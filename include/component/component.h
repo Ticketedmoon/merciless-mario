@@ -18,7 +18,8 @@ class Component
             USER_INPUT = 3,
             DYNAMIC_MOVEMENT = 4,
             STATIC_MOVEMENT = 5,
-            COUNT = 6
+            LIFESPAN = 6,
+            COUNT = 7
         };
 };
 

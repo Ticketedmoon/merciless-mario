@@ -1,5 +1,4 @@
 #include "entity_spawn_system.h"
-#include "common_constants.h"
 
 EntitySpawnSystem::EntitySpawnSystem(EntityManager& entityManager) : m_entityManager(entityManager)
 {
@@ -34,6 +33,43 @@ void EntitySpawnSystem::execute()
     {
         createPlayer();
     }
+
+    for (std::shared_ptr<Entity>& player : players)
+    {
+        std::shared_ptr<CAction> cAction = std::static_pointer_cast<CAction>(player->getComponentByType(Component::Type::USER_INPUT));
+        if (cAction->isShooting)
+        {
+            std::shared_ptr<CTransform> cTransform = std::static_pointer_cast<CTransform>(player->getComponentByType(Component::Type::TRANSFORM));
+            std::shared_ptr<CSpriteGroup> cSpriteGroup = std::static_pointer_cast<CSpriteGroup>(player->getComponentByType(Component::Type::SPRITE_GROUP));
+
+            // Spawn bullet at player location or slightly in-front of sprite
+            // moving to mouse destination (use cos X, sin Y)
+            sf::Vector2f armPosition = cSpriteGroup->getSprites().at(1).getPosition();
+            float shotAngle = cAction->getArmPointAngleRadians(armPosition);
+            sf::Vector2f velocity = sf::Vector2f(cos(shotAngle) * 10.0f, sin(shotAngle) * 10.0f);
+            createBullet(cTransform->m_position, velocity);
+
+            // Reset shooting flag
+            cAction->isShooting = false;
+        }
+    }
+}
+
+void EntitySpawnSystem::createBullet(sf::Vector2f playerPos, sf::Vector2f velocity) const
+{
+    std::shared_ptr<Entity>& bullet = m_entityManager.addEntity(Entity::Type::BULLET);
+
+    sf::RectangleShape bulletShape{sf::Vector2f(10, 10)};
+    bulletShape.setOrigin(bulletShape.getLocalBounds().width/2, bulletShape.getLocalBounds().height/2);
+    bulletShape.setFillColor(sf::Color::White);
+    bulletShape.setOutlineColor(sf::Color::Blue);
+    bulletShape.setOutlineThickness(2.0f);
+
+    bullet->addComponent(Component::Type::SPRITE_GROUP, std::make_shared<CSpriteGroup>(bulletShape));
+    bullet->addComponent(Component::Type::TRANSFORM, std::make_shared<CTransform>(playerPos, velocity));
+    //bullet->addComponent(Component::Type::COLLISION, std::make_shared<CCollision>());
+    bullet->addComponent(Component::Type::DYNAMIC_MOVEMENT, std::make_shared<CMovement>());
+    bullet->addComponent(Component::Type::LIFESPAN, std::make_shared<CLifespan>(255));
 }
 
 void EntitySpawnSystem::createPlayer()
@@ -44,14 +80,14 @@ void EntitySpawnSystem::createPlayer()
     sf::Vector2f velocity = sf::Vector2f(0, 0);
 
     sf::RectangleShape playerBody{sf::Vector2f(50, 50)};
-    playerBody.setOrigin(25, 25);
+    playerBody.setOrigin(playerBody.getLocalBounds().width/2, playerBody.getLocalBounds().height/2);
     playerBody.setFillColor(sf::Color::Yellow);
     playerBody.setOutlineColor(sf::Color::White);
     playerBody.setOutlineThickness(2.0f);
 
-    sf::RectangleShape playerArm{sf::Vector2f(150, 10)};
-    playerArm.setOrigin(75, 5);
-    playerArm.setFillColor(sf::Color::Yellow);
+    sf::RectangleShape playerArm{sf::Vector2f(60, 10)};
+    playerArm.setOrigin(playerArm.getLocalBounds().width, playerArm.getLocalBounds().height/2);
+    playerArm.setFillColor(sf::Color::Black);
     playerArm.setOutlineColor(sf::Color::White);
     playerArm.setOutlineThickness(2.0f);
 

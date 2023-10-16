@@ -23,12 +23,8 @@ void TransformSystem::execute()
         applyGravity(cTransform, cMovement);
 
         // TODO this code is not finalised
-        static constexpr float PI_FULL_CIRCLE = std::numbers::pi_v<float> * 2;
         sf::RectangleShape& arm = cSpriteGroup->getSprites().at(1);
-        double dY = cAction->armPointLocation.y - arm.getPosition().y;
-        double dX = cAction->armPointLocation.x - arm.getPosition().x;
-        float angle = std::atan2(dX, dY) * 90 * PI_FULL_CIRCLE;
-        arm.setRotation(90-angle);
+        arm.setRotation(cAction->getArmPointAngleDegrees(arm.getPosition()));
     }
 
     std::vector<std::shared_ptr<Entity>> collisionEntities = m_entityManager.getEntitiesByComponentTypes({Component::Type::TRANSFORM, Component::Type::COLLISION});

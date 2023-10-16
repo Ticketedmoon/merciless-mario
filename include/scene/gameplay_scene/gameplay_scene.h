@@ -14,6 +14,7 @@
 #include "transform_system.h"
 #include "collision_system.h"
 #include "view_system.h"
+#include "lifespan_system.h"
 #include "entity_spawn_system.h"
 
 #include "c_sprite_group.h"
