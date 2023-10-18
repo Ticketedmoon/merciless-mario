@@ -28,7 +28,7 @@ class EntitySpawnSystem : public System
     private:
         void createPlayer();
         void createPlatform(sf::Vector2f size, sf::Vector2f position, sf::Color fillColor);
-        void createBullet(sf::Vector2f playerPos, sf::Vector2f velocity) const;
+        void createBullet(sf::Vector2f bulletPosition, sf::Vector2f velocity) const;
 
     private:
         EntityManager& m_entityManager;

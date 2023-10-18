@@ -1,3 +1,4 @@
+#include <iostream>
 #include "entity_spawn_system.h"
 
 EntitySpawnSystem::EntitySpawnSystem(EntityManager& entityManager) : m_entityManager(entityManager)
@@ -44,10 +45,20 @@ void EntitySpawnSystem::execute()
 
             // Spawn bullet at player location or slightly in-front of sprite
             // moving to mouse destination (use cos X, sin Y)
-            sf::Vector2f armPosition = cSpriteGroup->getSprites().at(1).getPosition();
-            float shotAngle = cAction->getArmPointAngleRadians(armPosition);
-            sf::Vector2f velocity = sf::Vector2f(cos(shotAngle) * 10.0f, sin(shotAngle) * 10.0f);
-            createBullet(cTransform->m_position, velocity);
+            sf::RectangleShape arm = cSpriteGroup->getSprites().at(1);
+            float shotAngle = cAction->getArmPointAngleRadians(arm.getPosition());
+            float shotAngleX = cos(shotAngle);
+            float shotAngleY = sin(shotAngle);
+            float shotSpeed = 10.0f;
+
+            // Spawn bullet at end of player's arm
+            float armLength = arm.getGlobalBounds().width > arm.getGlobalBounds().height
+                    ? arm.getGlobalBounds().width
+                    : arm.getGlobalBounds().height;
+            sf::Vector2f bulletPosition{cTransform->m_position.x + (shotAngleX * armLength),
+                                        cTransform->m_position.y + (shotAngleY * armLength)};
+            sf::Vector2f velocity = sf::Vector2f(shotAngleX * shotSpeed, shotAngleY * shotSpeed);
+            createBullet(bulletPosition, velocity);
 
             // Reset shooting flag
             cAction->isShooting = false;
@@ -55,7 +66,7 @@ void EntitySpawnSystem::execute()
     }
 }
 
-void EntitySpawnSystem::createBullet(sf::Vector2f playerPos, sf::Vector2f velocity) const
+void EntitySpawnSystem::createBullet(sf::Vector2f bulletPosition, sf::Vector2f velocity) const
 {
     std::shared_ptr<Entity>& bullet = m_entityManager.addEntity(Entity::Type::BULLET);
 
@@ -66,7 +77,7 @@ void EntitySpawnSystem::createBullet(sf::Vector2f playerPos, sf::Vector2f veloci
     bulletShape.setOutlineThickness(2.0f);
 
     bullet->addComponent(Component::Type::SPRITE_GROUP, std::make_shared<CSpriteGroup>(bulletShape));
-    bullet->addComponent(Component::Type::TRANSFORM, std::make_shared<CTransform>(playerPos, velocity));
+    bullet->addComponent(Component::Type::TRANSFORM, std::make_shared<CTransform>(bulletPosition, velocity));
     //bullet->addComponent(Component::Type::COLLISION, std::make_shared<CCollision>());
     bullet->addComponent(Component::Type::DYNAMIC_MOVEMENT, std::make_shared<CMovement>());
     bullet->addComponent(Component::Type::LIFESPAN, std::make_shared<CLifespan>(255));
