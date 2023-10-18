@@ -112,7 +112,7 @@ void EntitySpawnSystem::createPlayer()
 
 void EntitySpawnSystem::createPlatform(sf::Vector2f size, sf::Vector2f position, sf::Color fillColor)
 {
-    std::shared_ptr<Entity> platformA = m_entityManager.addEntity(Entity::Type::PLATFORM);
+    std::shared_ptr<Entity> platform = m_entityManager.addEntity(Entity::Type::PLATFORM);
 
     sf::RectangleShape platformShape(size);
     platformShape.setOrigin(size.x/2, size.y/2);
@@ -123,8 +123,8 @@ void EntitySpawnSystem::createPlatform(sf::Vector2f size, sf::Vector2f position,
 
     sf::Vector2f velocity = sf::Vector2f(0, 0);
 
-    platformA->addComponent(Component::Type::SPRITE_GROUP, std::make_shared<CSpriteGroup>(platformShape));
-    platformA->addComponent(Component::Type::COLLISION, std::make_shared<CCollision>());
-    platformA->addComponent(Component::Type::TRANSFORM, std::make_shared<CTransform>(position, velocity));
-    platformA->addComponent(Component::Type::STATIC_MOVEMENT, std::make_shared<CMovement>());
+    platform->addComponent(Component::Type::SPRITE_GROUP, std::make_shared<CSpriteGroup>(platformShape));
+    platform->addComponent(Component::Type::COLLISION, std::make_shared<CCollision>());
+    platform->addComponent(Component::Type::TRANSFORM, std::make_shared<CTransform>(position, velocity));
+    platform->addComponent(Component::Type::STATIC_MOVEMENT, std::make_shared<CMovement>());
 }
