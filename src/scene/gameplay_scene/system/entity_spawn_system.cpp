@@ -47,8 +47,8 @@ void EntitySpawnSystem::execute()
             // moving to mouse destination (use cos X, sin Y)
             sf::RectangleShape arm = cSpriteGroup->getSprites().at(1);
             float shotAngle = cAction->getArmPointAngleRadians(arm.getPosition());
-            float shotAngleX = cos(shotAngle);
-            float shotAngleY = sin(shotAngle);
+            float shotAngleX = std::cos(shotAngle);
+            float shotAngleY = std::sin(shotAngle);
             float shotSpeed = 10.0f;
 
             // Spawn bullet at end of player's arm
@@ -107,7 +107,7 @@ void EntitySpawnSystem::createPlayer()
     player->addComponent(Component::Type::TRANSFORM, std::make_shared<CTransform>(position, velocity));
     player->addComponent(Component::Type::COLLISION, std::make_shared<CCollision>());
     player->addComponent(Component::Type::USER_INPUT, std::make_shared<CAction>());
-    player->addComponent(Component::Type::DYNAMIC_MOVEMENT, std::make_shared<CMovement>(0.125f, 0.01f, 5.95f, 1.25f, -10.0f, 0.3f, 25.0f));
+    player->addComponent(Component::Type::DYNAMIC_MOVEMENT, std::make_shared<CMovement>(0.125f, 0.01f, 10.95f, 1.25f, -10.0f, 0.3f, 25.0f));
 }
 
 void EntitySpawnSystem::createPlatform(sf::Vector2f size, sf::Vector2f position, sf::Color fillColor)
