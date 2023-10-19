@@ -28,11 +28,24 @@ class EntitySpawnSystem : public System
         void execute() override;
 
     private:
-        void createPlayer();
-        void createPlatform(sf::Vector2f size, sf::Vector2f position, sf::Color fillColor);
-        void createBullet(sf::Vector2f bulletPosition, sf::Vector2f velocity) const;
+        struct Row
+        {
+            std::string entityType;
+            uint16_t locationX;
+            uint16_t locationY;
+            bool isCollidable;
+        };
+
+        void createPlayer(sf::Vector2f size, sf::Vector2f position, bool isCollidable);
+        void createPlatform(sf::Vector2f size, sf::Vector2f position, sf::Color fillColor, bool isCollidable);
+        void createBullet(sf::Vector2f bulletPosition, sf::Vector2f velocity);
+
+        void createLevel();
+        [[nodiscard]] static std::vector<Row> LoadLevelData(uint8_t levelNumber);
 
     private:
+        const sf::Vector2f ENTITY_SIZE{32, 32};
+
         EntityManager& m_entityManager;
 };
 

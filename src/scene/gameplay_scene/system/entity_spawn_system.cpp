@@ -1,60 +1,8 @@
-#include <iostream>
 #include "entity_spawn_system.h"
-
-struct Row
-{
-    Entity::Type entityType;
-    std::string locationX;
-    std::string locationY;
-    std::string isCollidable;
-};
 
 EntitySpawnSystem::EntitySpawnSystem(EntityManager& entityManager) : m_entityManager(entityManager)
 {
-    // Load Csv
-    // Iterate over all rows
-    // Extract out properties of each row
-    // Based on ENTITY_TYPE
-    // Spawn appropriate entity at appropriate location
-    // Future properties will determine if the entity can collide, or how at what velocity the entity moves.
-    std::ifstream file("resources/level/level_1.txt", std::ifstream::in);
-    assert(file.is_open());
-
-    int rowNo = 0;
-    std::vector<Row> rows;
-    while (!file.eof())
-    {
-        Row row{};
-        file >> row.entityType >> row.locationX >> row.locationY >> row.isCollidable;
-
-        if (rowNo > 0)
-        {
-            std::cout << row.entityType << ", " << row.locationX << ", " << row.locationY << ", " << row.isCollidable << '\n';
-            rows.push_back(row);
-        }
-        rowNo++;
-    }
-
-    createPlayer();
-    createPlatform(sf::Vector2f(32, 32), sf::Vector2f(96, 1200), sf::Color::Green);
-    createPlatform(sf::Vector2f(32, 32), sf::Vector2f(500, 1200), sf::Color::Green);
-    createPlatform(sf::Vector2f(32, 32), sf::Vector2f(300, 1250), sf::Color::Green);
-    createPlatform(sf::Vector2f(32, 32), sf::Vector2f(500, 1100), sf::Color::Green);
-    createPlatform(sf::Vector2f(32, 32), sf::Vector2f(900, 1420), sf::Color::Green);
-    createPlatform(sf::Vector2f(32, 32), sf::Vector2f(1200, 1520), sf::Color::Green);
-    createPlatform(sf::Vector2f(32, 32), sf::Vector2f(1500, 1320), sf::Color::Green);
-    createPlatform(sf::Vector2f(32, 32), sf::Vector2f(2000, 1220), sf::Color::Green);
-    createPlatform(sf::Vector2f(32, 32), sf::Vector2f(2400, 1020), sf::Color::Green);
-    createPlatform(sf::Vector2f(32, 32), sf::Vector2f(2700, 950), sf::Color::Green);
-    createPlatform(sf::Vector2f(32, 32), sf::Vector2f(2500, 750), sf::Color::Green);
-    createPlatform(sf::Vector2f(32, 32), sf::Vector2f(2800, 650), sf::Color::Green);
-    createPlatform(sf::Vector2f(32, 32), sf::Vector2f(3100, 630), sf::Color::Green);
-    createPlatform(sf::Vector2f(32, 32), sf::Vector2f(2600, 620), sf::Color::Green);
-    createPlatform(sf::Vector2f(32, 32), sf::Vector2f(2200, 610), sf::Color::Green);
-    createPlatform(sf::Vector2f(32, 32), sf::Vector2f(1800, 580), sf::Color::Green);
-    createPlatform(sf::Vector2f(32, 32), sf::Vector2f(1200, 560), sf::Color::Green);
-    createPlatform(sf::Vector2f(32, 32), sf::Vector2f(700, 560), sf::Color::Green);
-    createPlatform(sf::Vector2f(32, 32), sf::Vector2f(300, 500), sf::Color::Blue);
+    createLevel();
 }
 
 void EntitySpawnSystem::execute()
@@ -62,7 +10,9 @@ void EntitySpawnSystem::execute()
     std::vector<std::shared_ptr<Entity>>& players = m_entityManager.getEntitiesByType(Entity::Type::PLAYER);
     if (players.empty())
     {
-        createPlayer();
+        m_entityManager.destroyAllEntities();
+        createLevel();
+        return;
     }
 
     for (std::shared_ptr<Entity>& player : players)
@@ -80,14 +30,14 @@ void EntitySpawnSystem::execute()
             float shotAngleX = std::cos(shotAngle);
             float shotAngleY = std::sin(shotAngle);
             float shotSpeed = 10.0f;
-
             // Spawn bullet at end of player's arm
+            sf::Vector2f velocity = sf::Vector2f(shotAngleX * shotSpeed, shotAngleY * shotSpeed);
+
             float armLength = arm.getGlobalBounds().width > arm.getGlobalBounds().height
                     ? arm.getGlobalBounds().width
                     : arm.getGlobalBounds().height;
             sf::Vector2f bulletPosition{cTransform->m_position.x + (shotAngleX * armLength),
                                         cTransform->m_position.y + (shotAngleY * armLength)};
-            sf::Vector2f velocity = sf::Vector2f(shotAngleX * shotSpeed, shotAngleY * shotSpeed);
             createBullet(bulletPosition, velocity);
 
             // Reset shooting flag
@@ -96,7 +46,7 @@ void EntitySpawnSystem::execute()
     }
 }
 
-void EntitySpawnSystem::createBullet(sf::Vector2f bulletPosition, sf::Vector2f velocity) const
+void EntitySpawnSystem::createBullet(sf::Vector2f bulletPosition, sf::Vector2f velocity)
 {
     std::shared_ptr<Entity>& bullet = m_entityManager.addEntity(Entity::Type::BULLET);
 
@@ -113,14 +63,13 @@ void EntitySpawnSystem::createBullet(sf::Vector2f bulletPosition, sf::Vector2f v
     bullet->addComponent(Component::Type::LIFESPAN, std::make_shared<CLifespan>(255));
 }
 
-void EntitySpawnSystem::createPlayer()
+void EntitySpawnSystem::createPlayer(sf::Vector2f size, sf::Vector2f position, bool isCollidable)
 {
     std::shared_ptr<Entity>& player = m_entityManager.addEntity(Entity::Type::PLAYER);
 
-    sf::Vector2f position = sf::Vector2f(100, 1000);
     sf::Vector2f velocity = sf::Vector2f(0, 0);
 
-    sf::RectangleShape playerBody{sf::Vector2f(32, 32)};
+    sf::RectangleShape playerBody(size);
     playerBody.setOrigin(playerBody.getLocalBounds().width/2, playerBody.getLocalBounds().height/2);
     playerBody.setFillColor(sf::Color::Yellow);
     playerBody.setOutlineColor(sf::Color::White);
@@ -135,12 +84,16 @@ void EntitySpawnSystem::createPlayer()
     std::vector<sf::RectangleShape> playerComponents = {playerBody, playerArm};
     player->addComponent(Component::Type::SPRITE_GROUP, std::make_shared<CSpriteGroup>(playerComponents));
     player->addComponent(Component::Type::TRANSFORM, std::make_shared<CTransform>(position, velocity));
-    player->addComponent(Component::Type::COLLISION, std::make_shared<CCollision>());
     player->addComponent(Component::Type::USER_INPUT, std::make_shared<CAction>());
     player->addComponent(Component::Type::DYNAMIC_MOVEMENT, std::make_shared<CMovement>(0.125f, 0.01f, 10.95f, 1.25f, -10.0f, 0.3f, 25.0f));
+
+    if (isCollidable)
+    {
+        player->addComponent(Component::Type::COLLISION, std::make_shared<CCollision>());
+    }
 }
 
-void EntitySpawnSystem::createPlatform(sf::Vector2f size, sf::Vector2f position, sf::Color fillColor)
+void EntitySpawnSystem::createPlatform(sf::Vector2f size, sf::Vector2f position, sf::Color fillColor, bool isCollidable)
 {
     std::shared_ptr<Entity> platform = m_entityManager.addEntity(Entity::Type::PLATFORM);
 
@@ -155,7 +108,46 @@ void EntitySpawnSystem::createPlatform(sf::Vector2f size, sf::Vector2f position,
     sf::Vector2f velocity = sf::Vector2f(0, 0);
 
     platform->addComponent(Component::Type::SPRITE_GROUP, std::make_shared<CSpriteGroup>(platformShape));
-    platform->addComponent(Component::Type::COLLISION, std::make_shared<CCollision>());
     platform->addComponent(Component::Type::TRANSFORM, std::make_shared<CTransform>(position, velocity));
     platform->addComponent(Component::Type::STATIC_MOVEMENT, std::make_shared<CMovement>());
+
+    if (isCollidable)
+    {
+        platform->addComponent(Component::Type::COLLISION, std::make_shared<CCollision>());
+    }
+}
+
+void EntitySpawnSystem::createLevel()
+{
+    std::vector<Row> levelRows = LoadLevelData(1);
+    for (const auto& row : levelRows)
+    {
+        sf::Vector2f position = sf::Vector2f(row.locationX, row.locationY);
+        if (row.entityType == "PLAYER")
+        {
+            createPlayer(ENTITY_SIZE, position, row.isCollidable);
+        }
+        else if (row.entityType == "PLATFORM")
+        {
+            createPlatform(ENTITY_SIZE, position, sf::Color::Green, row.isCollidable);
+        }
+    }
+}
+
+std::vector<EntitySpawnSystem::Row> EntitySpawnSystem::LoadLevelData(uint8_t levelNumber)
+{
+    const std::string path = "resources/level/level_" + std::to_string(levelNumber) + ".txt";
+    std::ifstream file(path, std::ifstream::in);
+    assert(file.is_open());
+
+    std::vector<Row> rows;
+    std::string line;
+
+    while (getline(file, line))
+    {
+        Row row{};
+        file >> row.entityType >> row.locationX >> row.locationY >> row.isCollidable;
+        rows.push_back(row);
+    }
+    return rows;
 }

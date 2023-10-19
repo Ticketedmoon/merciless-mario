@@ -18,7 +18,7 @@ class EntityManager
         std::shared_ptr<Entity>& addEntity(Entity::Type type);
         std::vector<std::shared_ptr<Entity>> getEntitiesByComponentTypes(const std::vector<Component::Type>& componentTypes);
         std::vector<std::shared_ptr<Entity>>& getEntitiesByType(Entity::Type type);
-        std::vector<std::shared_ptr<Entity>> getDestroyedEntitiesByComponentTypes(const std::vector<Component::Type>& componentTypes);
+        void destroyAllEntities();
 
     private:
         static void removeDeadEntities(std::vector<std::shared_ptr<Entity>>& entities);
