@@ -7,6 +7,8 @@
 #include <SFML/Graphics/Color.hpp>
 
 #include <memory>
+#include <fstream>
+#include <sstream>
 
 #include "entity.h"
 #include "c_sprite_group.h"

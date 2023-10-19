@@ -64,8 +64,8 @@ void GameplayScene::performAction(Action& action)
     }
     if (action.getType() == Action::Type::POINT)
     {
-        actionComponent->armPointLocation = gameEngine.window
-                .mapPixelToCoords(sf::Mouse::getPosition(gameEngine.window), m_renderTexture.getView());
+        const sf::Vector2i& mousePos = sf::Mouse::getPosition(gameEngine.window);
+        actionComponent->armPointLocation = gameEngine.window.mapPixelToCoords(mousePos, m_renderTexture.getView());
     }
     if (action.getType() == Action::Type::SHOOT)
     {

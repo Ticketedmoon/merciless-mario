@@ -7,7 +7,8 @@ TransformSystem::TransformSystem(EntityManager& entityManager) : m_entityManager
 
 void TransformSystem::execute()
 {
-    std::vector<std::shared_ptr<Entity>> players = m_entityManager.getEntitiesByComponentTypes({Component::Type::TRANSFORM, Component::Type::USER_INPUT});
+    std::vector<std::shared_ptr<Entity>> players = m_entityManager
+            .getEntitiesByComponentTypes({Component::Type::TRANSFORM, Component::Type::USER_INPUT});
     if (players.empty())
     {
         return;
@@ -22,12 +23,13 @@ void TransformSystem::execute()
         updateVelocity(cTransform, cAction, cMovement);
         applyGravity(cTransform, cMovement);
 
-        // TODO this code is not finalised
         sf::RectangleShape& arm = cSpriteGroup->getSprites().at(1);
-        arm.setRotation(cAction->getArmPointAngleDegrees(arm.getPosition()));
+        float armRotationDegrees = cAction->getArmPointAngleDegrees(arm.getPosition());
+        arm.setRotation(armRotationDegrees);
     }
 
-    std::vector<std::shared_ptr<Entity>> collisionEntities = m_entityManager.getEntitiesByComponentTypes({Component::Type::TRANSFORM, Component::Type::COLLISION});
+    std::vector<std::shared_ptr<Entity>> collisionEntities = m_entityManager
+            .getEntitiesByComponentTypes({Component::Type::TRANSFORM, Component::Type::COLLISION});
     for (std::shared_ptr<Entity>& entity : collisionEntities)
     {
         std::shared_ptr<CCollision> cCollision = std::static_pointer_cast<CCollision>(entity->getComponentByType(Component::Type::COLLISION));

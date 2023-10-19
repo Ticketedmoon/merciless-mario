@@ -1,30 +1,60 @@
 #include <iostream>
 #include "entity_spawn_system.h"
 
+struct Row
+{
+    Entity::Type entityType;
+    std::string locationX;
+    std::string locationY;
+    std::string isCollidable;
+};
+
 EntitySpawnSystem::EntitySpawnSystem(EntityManager& entityManager) : m_entityManager(entityManager)
 {
+    // Load Csv
+    // Iterate over all rows
+    // Extract out properties of each row
+    // Based on ENTITY_TYPE
+    // Spawn appropriate entity at appropriate location
+    // Future properties will determine if the entity can collide, or how at what velocity the entity moves.
+    std::ifstream file("resources/level/level_1.txt", std::ifstream::in);
+    assert(file.is_open());
+
+    int rowNo = 0;
+    std::vector<Row> rows;
+    while (!file.eof())
+    {
+        Row row{};
+        file >> row.entityType >> row.locationX >> row.locationY >> row.isCollidable;
+
+        if (rowNo > 0)
+        {
+            std::cout << row.entityType << ", " << row.locationX << ", " << row.locationY << ", " << row.isCollidable << '\n';
+            rows.push_back(row);
+        }
+        rowNo++;
+    }
+
     createPlayer();
-    createPlatform(sf::Vector2f(10, 100), sf::Vector2f(500, 1200), sf::Color::Green);
-    createPlatform(sf::Vector2f(500, 100), sf::Vector2f(300, 1250), sf::Color::Green);
-    createPlatform(sf::Vector2f(200, 20), sf::Vector2f(500, 1100), sf::Color::Green);
-    createPlatform(sf::Vector2f(100, 50), sf::Vector2f(900, 1420), sf::Color::Green);
-
-    createPlatform(sf::Vector2f(100, 50), sf::Vector2f(1200, 1520), sf::Color::Green);
-    createPlatform(sf::Vector2f(100, 50), sf::Vector2f(1500, 1320), sf::Color::Green);
-    createPlatform(sf::Vector2f(100, 50), sf::Vector2f(2000, 1220), sf::Color::Green);
-    createPlatform(sf::Vector2f(100, 50), sf::Vector2f(2400, 1020), sf::Color::Green);
-
-    createPlatform(sf::Vector2f(100, 50), sf::Vector2f(2700, 950), sf::Color::Green);
-    createPlatform(sf::Vector2f(100, 50), sf::Vector2f(2500, 750), sf::Color::Green);
-    createPlatform(sf::Vector2f(100, 50), sf::Vector2f(2800, 650), sf::Color::Green);
-    createPlatform(sf::Vector2f(100, 50), sf::Vector2f(3100, 630), sf::Color::Green);
-    createPlatform(sf::Vector2f(100, 50), sf::Vector2f(2600, 620), sf::Color::Green);
-    createPlatform(sf::Vector2f(100, 50), sf::Vector2f(2200, 610), sf::Color::Green);
-    createPlatform(sf::Vector2f(100, 50), sf::Vector2f(1800, 580), sf::Color::Green);
-    createPlatform(sf::Vector2f(100, 50), sf::Vector2f(1200, 560), sf::Color::Green);
-    createPlatform(sf::Vector2f(100, 50), sf::Vector2f(700, 560), sf::Color::Green);
-    createPlatform(sf::Vector2f(100, 50), sf::Vector2f(300, 500), sf::Color::Blue);
-    createPlatform(sf::Vector2f(50, MAX_LEVEL_HEIGHT), sf::Vector2f(0, 1300), sf::Color::Green);
+    createPlatform(sf::Vector2f(32, 32), sf::Vector2f(96, 1200), sf::Color::Green);
+    createPlatform(sf::Vector2f(32, 32), sf::Vector2f(500, 1200), sf::Color::Green);
+    createPlatform(sf::Vector2f(32, 32), sf::Vector2f(300, 1250), sf::Color::Green);
+    createPlatform(sf::Vector2f(32, 32), sf::Vector2f(500, 1100), sf::Color::Green);
+    createPlatform(sf::Vector2f(32, 32), sf::Vector2f(900, 1420), sf::Color::Green);
+    createPlatform(sf::Vector2f(32, 32), sf::Vector2f(1200, 1520), sf::Color::Green);
+    createPlatform(sf::Vector2f(32, 32), sf::Vector2f(1500, 1320), sf::Color::Green);
+    createPlatform(sf::Vector2f(32, 32), sf::Vector2f(2000, 1220), sf::Color::Green);
+    createPlatform(sf::Vector2f(32, 32), sf::Vector2f(2400, 1020), sf::Color::Green);
+    createPlatform(sf::Vector2f(32, 32), sf::Vector2f(2700, 950), sf::Color::Green);
+    createPlatform(sf::Vector2f(32, 32), sf::Vector2f(2500, 750), sf::Color::Green);
+    createPlatform(sf::Vector2f(32, 32), sf::Vector2f(2800, 650), sf::Color::Green);
+    createPlatform(sf::Vector2f(32, 32), sf::Vector2f(3100, 630), sf::Color::Green);
+    createPlatform(sf::Vector2f(32, 32), sf::Vector2f(2600, 620), sf::Color::Green);
+    createPlatform(sf::Vector2f(32, 32), sf::Vector2f(2200, 610), sf::Color::Green);
+    createPlatform(sf::Vector2f(32, 32), sf::Vector2f(1800, 580), sf::Color::Green);
+    createPlatform(sf::Vector2f(32, 32), sf::Vector2f(1200, 560), sf::Color::Green);
+    createPlatform(sf::Vector2f(32, 32), sf::Vector2f(700, 560), sf::Color::Green);
+    createPlatform(sf::Vector2f(32, 32), sf::Vector2f(300, 500), sf::Color::Blue);
 }
 
 void EntitySpawnSystem::execute()
@@ -90,7 +120,7 @@ void EntitySpawnSystem::createPlayer()
     sf::Vector2f position = sf::Vector2f(100, 1000);
     sf::Vector2f velocity = sf::Vector2f(0, 0);
 
-    sf::RectangleShape playerBody{sf::Vector2f(50, 50)};
+    sf::RectangleShape playerBody{sf::Vector2f(32, 32)};
     playerBody.setOrigin(playerBody.getLocalBounds().width/2, playerBody.getLocalBounds().height/2);
     playerBody.setFillColor(sf::Color::Yellow);
     playerBody.setOutlineColor(sf::Color::White);
@@ -120,6 +150,7 @@ void EntitySpawnSystem::createPlatform(sf::Vector2f size, sf::Vector2f position,
     platformShape.setFillColor(fillColor);
     platformShape.setOutlineColor(sf::Color::White);
     platformShape.setOutlineThickness(3.0f);
+    platformShape.scale(2.0f, 2.0f);
 
     sf::Vector2f velocity = sf::Vector2f(0, 0);
 
