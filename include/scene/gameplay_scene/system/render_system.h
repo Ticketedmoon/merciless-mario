@@ -11,6 +11,7 @@
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Shape.hpp>
 
+#include "c_transform.h"
 #include "system.h"
 #include "entity/entity_manager.h"
 #include "scene/gameplay_scene/system/render_system.h"

@@ -1,5 +1,4 @@
 #include "render_system.h"
-#include "c_transform.h"
 
 RenderSystem::RenderSystem(sf::RenderTarget& renderTarget, EntityManager& entityManager)
     : m_renderTarget(renderTarget), m_entityManager(entityManager)
