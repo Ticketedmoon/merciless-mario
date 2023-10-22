@@ -123,7 +123,7 @@ void TransformSystem::updatePlayerArmPositionByMousePosition(std::shared_ptr<Ent
     cursorFollower->armPointLocation = m_window.mapPixelToCoords(mousePos, m_renderTexture.getView());
 
     std::shared_ptr<CSpriteGroup> cSpriteGroup = std::static_pointer_cast<CSpriteGroup>(player->getComponentByType(Component::Type::SPRITE_GROUP));
-    sf::RectangleShape& arm = cSpriteGroup->getSprites().at(1);
+    sf::Sprite& arm = cSpriteGroup->animationSprites.at(1);
     float armRotationDegrees = cursorFollower->getArmPointAngleDegrees(arm.getPosition());
     arm.setRotation(armRotationDegrees);
 }

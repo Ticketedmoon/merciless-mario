@@ -50,7 +50,7 @@ void CollisionSystem::checkForEntityCollision(std::shared_ptr<Entity>& dynamicEn
     sf::FloatRect overlap;
     if (isCollidingAABB(dynamicEntitySpriteGroup, staticEntitySpriteGroup, overlap))
     {
-        auto collisionNormal = dynamicEntitySpriteGroup->getSprite().getPosition() - staticEntitySpriteGroup->animationSprite.getPosition();
+        auto collisionNormal = dynamicEntitySpriteGroup->animationSprites.at(0).getPosition() - staticEntitySpriteGroup->animationSprites.at(0).getPosition();
         auto manifold = getManifold(overlap, collisionNormal);
         resolve(dynamicEntity, manifold);
     }
@@ -63,10 +63,17 @@ void CollisionSystem::checkForWindowCollision(const std::shared_ptr<Entity>& e, 
     if (collisionComponentForEntity != nullptr)
     {
         std::shared_ptr<CSpriteGroup> spriteGroup = std::static_pointer_cast<CSpriteGroup>(e->getComponentByType(Component::Type::SPRITE_GROUP));
-        collisionComponentForEntity->isCollidingLeft = transformComponentForEntity->m_position.x <= spriteGroup->getSprite().getSize().x/2;
-        collisionComponentForEntity->isCollidingRight = transformComponentForEntity->m_position.x >= MAX_LEVEL_WIDTH - spriteGroup->getSprite().getSize().x/2;
-        collisionComponentForEntity->isCollidingUp = transformComponentForEntity->m_position.y <= -(MAX_LEVEL_HEIGHT - spriteGroup->getSprite().getSize().y/2);
-        collisionComponentForEntity->isCollidingDown = transformComponentForEntity->m_position.y >= MAX_LEVEL_HEIGHT - spriteGroup->getSprite().getSize().y/2;
+
+        int spriteHalfWidth = spriteGroup->animationSprites.at(0).getTextureRect().width / 2;
+        int spriteHalfHeight = spriteGroup->animationSprites.at(0).getTextureRect().height / 2;
+
+        collisionComponentForEntity->isCollidingLeft = transformComponentForEntity->m_position.x <= spriteHalfWidth;
+        collisionComponentForEntity->isCollidingRight = transformComponentForEntity->m_position.x >= MAX_LEVEL_WIDTH -spriteHalfWidth;
+
+        int maxLevelHeightCollisionPoint = MAX_LEVEL_HEIGHT - spriteHalfHeight;
+        collisionComponentForEntity->isCollidingUp = transformComponentForEntity->m_position.y <= -maxLevelHeightCollisionPoint;
+        collisionComponentForEntity->isCollidingDown = transformComponentForEntity->m_position.y >=
+                maxLevelHeightCollisionPoint;
 
         if (collisionComponentForEntity->isCollidingUp)
         {
@@ -78,7 +85,7 @@ void CollisionSystem::checkForWindowCollision(const std::shared_ptr<Entity>& e, 
 bool CollisionSystem::isCollidingAABB(const std::shared_ptr<CSpriteGroup>& entitySpriteGroup,
         const std::shared_ptr<CSpriteGroup>& otherEntitySpriteGroup, sf::FloatRect& overlap)
 {
-    return entitySpriteGroup->getSprite().getGlobalBounds().intersects(otherEntitySpriteGroup->animationSprite.getGlobalBounds(), overlap);
+    return entitySpriteGroup->animationSprites.at(0).getGlobalBounds().intersects(otherEntitySpriteGroup->animationSprites.at(0).getGlobalBounds(), overlap);
 }
 
 sf::Vector3f CollisionSystem::getManifold(const sf::FloatRect& overlap, const sf::Vector2f& collisionNormal)

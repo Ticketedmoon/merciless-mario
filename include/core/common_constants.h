@@ -13,5 +13,6 @@ static const uint32_t WINDOW_HEIGHT = 720;
 static constexpr uint32_t MAX_LEVEL_WIDTH = 16384;
 static constexpr uint32_t LEVEL_DEPTH_KILL_ZONE = 1648;
 static constexpr uint32_t MAX_LEVEL_HEIGHT = 2048;
+static inline constexpr uint8_t TILE_SIZE = 32;
 
 #endif //MERCILESS_MARIO_COMMON_CONSTANTS_H

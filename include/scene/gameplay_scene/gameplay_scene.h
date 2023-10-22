@@ -12,6 +12,7 @@
 
 #include "render_system.h"
 #include "transform_system.h"
+#include "animation_system.h"
 #include "collision_system.h"
 #include "view_system.h"
 #include "lifespan_system.h"
@@ -22,6 +23,7 @@
 #include "c_collision.h"
 #include "c_action.h"
 #include "c_transform.h"
+#include "texture_manager.h"
 
 class GameplayScene : public Scene
 {

@@ -1,3 +1,4 @@
+#include <iostream>
 #include "render_system.h"
 
 RenderSystem::RenderSystem(sf::RenderTarget& renderTarget, EntityManager& entityManager)
@@ -7,18 +8,17 @@ RenderSystem::RenderSystem(sf::RenderTarget& renderTarget, EntityManager& entity
 
 void RenderSystem::execute()
 {
-    std::vector<std::shared_ptr<Entity>> shapeEntitiesToUpdate = m_entityManager
+    std::vector<std::shared_ptr<Entity>> entitiesToRender = m_entityManager
             .getEntitiesByComponentTypes({Component::Type::SPRITE_GROUP, Component::Type::TRANSFORM});
-    for (const std::shared_ptr<Entity>& e : shapeEntitiesToUpdate)
+    for (const std::shared_ptr<Entity>& e : entitiesToRender)
     {
         std::shared_ptr<CTransform> cTransform = std::static_pointer_cast<CTransform>(e->getComponentByType(Component::Type::TRANSFORM));
-
         std::shared_ptr<CSpriteGroup> cSpriteGroup = std::static_pointer_cast<CSpriteGroup>(e->getComponentByType(Component::Type::SPRITE_GROUP));
-        m_renderTarget.draw(cSpriteGroup->animationSprite);
 
-        for (sf::RectangleShape& sprite : cSpriteGroup->getSprites())
+        for (sf::Sprite& sprite : cSpriteGroup->animationSprites)
         {
             sprite.setPosition(cTransform->m_position);
+            std::cout << sprite.getTextureRect().left << '\n';
             m_renderTarget.draw(sprite);
         }
     }

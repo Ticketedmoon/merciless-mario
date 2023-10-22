@@ -26,7 +26,7 @@ void EntitySpawnSystem::execute()
 
             // Spawn bullet at player location or slightly in-front of sprite
             // moving to mouse destination (use cos X, sin Y)
-            sf::RectangleShape arm = cSpriteGroup->getSprites().at(1);
+            sf::Sprite& arm = cSpriteGroup->animationSprites.at(1);
             float shotAngle = cCursorFollower->getArmPointAngleRadians(arm.getPosition());
             float shotAngleX = std::cos(shotAngle);
             float shotAngleY = std::sin(shotAngle);
@@ -53,13 +53,13 @@ void EntitySpawnSystem::createBullet(sf::Vector2f bulletPosition, sf::Vector2f v
 {
     std::shared_ptr<Entity>& bullet = m_entityManager.addEntity(Entity::Type::BULLET);
 
-    sf::RectangleShape bulletShape{sf::Vector2f(10, 10)};
-    bulletShape.setOrigin(bulletShape.getLocalBounds().width/2, bulletShape.getLocalBounds().height/2);
-    bulletShape.setFillColor(sf::Color::White);
-    bulletShape.setOutlineColor(sf::Color::Blue);
-    bulletShape.setOutlineThickness(2.0f);
+    std::shared_ptr<CSpriteGroup> animationComponent = std::make_shared<CSpriteGroup>();
+    const std::string animationTextureFilePath = "resources/assets/texture/brick.png";
+    const sf::Rect<int>& rectBounds = sf::IntRect(0, 0, TILE_SIZE, TILE_SIZE);
+    addAnimationTextureComponent(animationComponent, bulletPosition, animationTextureFilePath, rectBounds,
+            sf::Vector2f(rectBounds.width/2, rectBounds.height/2), 1);
+    bullet->addComponent(Component::Type::SPRITE_GROUP, animationComponent);
 
-    bullet->addComponent(Component::Type::SPRITE_GROUP, std::make_shared<CSpriteGroup>(bulletShape));
     bullet->addComponent(Component::Type::TRANSFORM, std::make_shared<CTransform>(bulletPosition, velocity));
     //bullet->addComponent(Component::Type::COLLISION, std::make_shared<CCollision>());
     bullet->addComponent(Component::Type::DYNAMIC_MOVEMENT, std::make_shared<CMovement>());
@@ -72,20 +72,19 @@ void EntitySpawnSystem::createPlayer(sf::Vector2f size, sf::Vector2f position, b
 
     sf::Vector2f velocity = sf::Vector2f(0, 0);
 
-    sf::RectangleShape playerBody(size);
-    playerBody.setOrigin(playerBody.getLocalBounds().width/2, playerBody.getLocalBounds().height/2);
-    playerBody.setFillColor(sf::Color::Yellow);
-    playerBody.setOutlineColor(sf::Color::White);
-    playerBody.setOutlineThickness(2.0f);
+    std::shared_ptr<CSpriteGroup> spriteGroup = std::make_shared<CSpriteGroup>();
+    const std::string animationTextureFilePath = "resources/assets/texture/brick.png";
 
-    sf::RectangleShape playerArm{sf::Vector2f(60, 10)};
-    playerArm.setOrigin(playerArm.getLocalBounds().width, playerArm.getLocalBounds().height/2);
-    playerArm.setFillColor(sf::Color::Black);
-    playerArm.setOutlineColor(sf::Color::White);
-    playerArm.setOutlineThickness(2.0f);
+    // Body
+    const sf::Rect<int>& bodyRectBounds = sf::IntRect(0, 0, TILE_SIZE, TILE_SIZE);
+    addAnimationTextureComponent(spriteGroup, position, animationTextureFilePath, bodyRectBounds,
+            sf::Vector2f(bodyRectBounds.width/2, bodyRectBounds.height/2), 1);
 
-    std::vector<sf::RectangleShape> playerComponents = {playerBody, playerArm};
-    player->addComponent(Component::Type::SPRITE_GROUP, std::make_shared<CSpriteGroup>(playerComponents));
+    // Arm
+    const sf::Rect<int>& armRectBounds = sf::IntRect(0, 0, TILE_SIZE, TILE_SIZE);
+    addAnimationTextureComponent(spriteGroup, position, animationTextureFilePath, armRectBounds, sf::Vector2f(60, 10), 1);
+
+    player->addComponent(Component::Type::SPRITE_GROUP, spriteGroup);
     player->addComponent(Component::Type::TRANSFORM, std::make_shared<CTransform>(position, velocity));
     player->addComponent(Component::Type::USER_INPUT, std::make_shared<CAction>());
     player->addComponent(Component::Type::DYNAMIC_MOVEMENT, std::make_shared<CMovement>(0.125f, 0.01f, 10.95f, 1.25f, -7.5f, 0.3f, 10.0f));
@@ -101,25 +100,82 @@ void EntitySpawnSystem::createPlatform(sf::Vector2f position, bool isCollidable)
 {
     std::shared_ptr<Entity> platform = m_entityManager.addEntity(Entity::Type::PLATFORM);
 
-    const std::shared_ptr<CSpriteGroup>& animationComponent = std::make_shared<CSpriteGroup>();
-
-    animationComponent->animationRectBounds = sf::IntRect(0, 0, TILE_SIZE, TILE_SIZE);
-    animationComponent->animationTexture.loadFromFile("resources/assets/texture/brick.png", animationComponent->animationRectBounds);
-    animationComponent->animationTexture.setSmooth(true); // TODO Experiment with this
-    animationComponent->animationSprite.setTexture(animationComponent->animationTexture);
-    animationComponent->animationSprite.setTextureRect(animationComponent->animationRectBounds);
-    animationComponent->animationSprite.setPosition(position);
-
     sf::Vector2f velocity = sf::Vector2f(0, 0);
-
-    platform->addComponent(Component::Type::SPRITE_GROUP, animationComponent);
     platform->addComponent(Component::Type::TRANSFORM, std::make_shared<CTransform>(position, velocity));
     platform->addComponent(Component::Type::STATIC_MOVEMENT, std::make_shared<CMovement>());
+
+    std::shared_ptr<CSpriteGroup> animationComponent = std::make_shared<CSpriteGroup>();
+    const std::string animationTextureFilePath = "resources/assets/texture/brick.png";
+    const sf::Rect<int>& rectBounds = sf::IntRect(0, 0, TILE_SIZE, TILE_SIZE);
+    addAnimationTextureComponent(animationComponent, position, animationTextureFilePath, rectBounds,
+            sf::Vector2f(rectBounds.width/2, rectBounds.height/2), 1);
+    platform->addComponent(Component::Type::SPRITE_GROUP, animationComponent);
 
     if (isCollidable)
     {
         platform->addComponent(Component::Type::COLLISION, std::make_shared<CCollision>());
     }
+}
+
+void EntitySpawnSystem::createQuestionBlock(sf::Vector2f position, bool isCollidable)
+{
+    std::shared_ptr<Entity> platform = m_entityManager.addEntity(Entity::Type::PLATFORM);
+
+    sf::Vector2f velocity = sf::Vector2f(0, 0);
+    platform->addComponent(Component::Type::TRANSFORM, std::make_shared<CTransform>(position, velocity));
+    platform->addComponent(Component::Type::STATIC_MOVEMENT, std::make_shared<CMovement>());
+
+    std::shared_ptr<CSpriteGroup> animationComponent = std::make_shared<CSpriteGroup>();
+    const std::string animationTextureFilePath = "resources/assets/texture/question_block.png";
+    const sf::Rect<int>& rectBounds = sf::IntRect(0, 0, TILE_SIZE, TILE_SIZE);
+    addAnimationTextureComponent(animationComponent, position, animationTextureFilePath, rectBounds,
+            sf::Vector2f(rectBounds.width/2, rectBounds.height/2), 3);
+    platform->addComponent(Component::Type::SPRITE_GROUP, animationComponent);
+
+    if (isCollidable)
+    {
+        platform->addComponent(Component::Type::COLLISION, std::make_shared<CCollision>());
+    }
+}
+
+void EntitySpawnSystem::addAnimationTextureComponent(std::shared_ptr<CSpriteGroup>& spriteGroup,
+        const sf::Vector2f& position, const std::string& animationTextureFilePath, const sf::IntRect rectBounds,
+        sf::Vector2f origin, uint32_t totalAnimationFrames)
+{
+    spriteGroup->animationRectBoundsGroup.emplace_back(rectBounds);
+    spriteGroup->totalAnimationFramesGroup.emplace_back(totalAnimationFrames);
+    spriteGroup->currentFrameGroup.emplace_back(0);
+
+    std::shared_ptr<sf::Texture> animationTexture = buildSpriteTexture(spriteGroup, animationTextureFilePath);
+    spriteGroup->animationTextures.emplace_back(animationTexture);
+
+    sf::Sprite animationSprite;
+    sf::Texture& texture = *m_textureManager.getTexture(animationTextureFilePath);
+    animationSprite.setTexture(texture);
+    animationSprite.setTextureRect(spriteGroup->animationRectBoundsGroup.back());
+    animationSprite.setPosition(position);
+    animationSprite.setOrigin(origin);
+
+    spriteGroup->animationSprites.emplace_back(animationSprite);
+}
+
+std::shared_ptr<sf::Texture> EntitySpawnSystem::buildSpriteTexture(std::shared_ptr<CSpriteGroup>& spriteGroup,
+        const std::string& animationTextureFilePath)
+{
+    std::shared_ptr<sf::Texture> animationTexture = std::make_shared<sf::Texture>();
+    if (m_textureManager.hasTexture(animationTextureFilePath))
+    {
+        animationTexture = m_textureManager.getTexture(animationTextureFilePath);
+    }
+    else
+    {
+        bool isTextureLoaded = animationTexture->loadFromFile(animationTextureFilePath, spriteGroup->animationRectBoundsGroup.back());
+        assert(isTextureLoaded);
+        m_textureManager.addTexture(animationTextureFilePath, animationTextureFilePath);
+    }
+
+    animationTexture->setSmooth(true); // TODO Experiment with this
+    return animationTexture;
 }
 
 void EntitySpawnSystem::createLevel()
@@ -147,6 +203,10 @@ void EntitySpawnSystem::createLevel()
                 // If reach end, reset the animation.
                 // Allow looping and non-looping animations.
                 createPlatform(position, row.isCollidable);
+            }
+            if (row.animation == "QUESTION_BLOCK")
+            {
+                createQuestionBlock(position, row.isCollidable);
             }
         }
     }

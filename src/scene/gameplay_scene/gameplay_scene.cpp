@@ -96,6 +96,8 @@ void GameplayScene::registerSystems()
             std::make_shared<CollisionSystem>(m_entityManager), SystemManager::SystemType::UPDATE);
     m_systemManager.registerSystem(
             std::make_shared<LifespanSystem>(m_entityManager), SystemManager::SystemType::UPDATE);
+    m_systemManager.registerSystem(
+            std::make_shared<AnimationSystem>(m_entityManager), SystemManager::SystemType::UPDATE);
 
     m_systemManager.registerSystem(
             std::make_shared<ViewSystem>(m_entityManager, m_renderTexture), SystemManager::SystemType::RENDER);

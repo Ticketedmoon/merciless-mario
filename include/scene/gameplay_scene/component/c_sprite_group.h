@@ -5,25 +5,20 @@
 
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Texture.hpp>
+#include <memory>
 #include "component.h"
 
 class CSpriteGroup : public Component
 {
     public:
         CSpriteGroup() = default;
-        explicit CSpriteGroup(sf::RectangleShape& shape);
-        explicit CSpriteGroup(std::vector<sf::RectangleShape>& shapes);
 
-        sf::RectangleShape& getSprite();
-        std::vector<sf::RectangleShape>& getSprites();
+        std::vector<sf::IntRect> animationRectBoundsGroup;
+        std::vector<uint32_t> totalAnimationFramesGroup;
+        std::vector<uint32_t> currentFrameGroup;
 
-    public:
-        sf::IntRect animationRectBounds;
-        sf::Texture animationTexture;
-        sf::Sprite animationSprite;
-
-    private:
-        std::vector<sf::RectangleShape> m_shapes;
+        std::vector<std::shared_ptr<sf::Texture>> animationTextures;
+        std::vector<sf::Sprite> animationSprites;
 };
 
 
