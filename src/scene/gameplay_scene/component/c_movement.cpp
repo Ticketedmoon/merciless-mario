@@ -4,7 +4,7 @@ CMovement::CMovement(float movementAcceleration, float movementDecelerationPerFr
         float jumpAcceleration, float maxJumpHeight, float gravityRate, float maxGravityAcceleration)
         : movementAcceleration(movementAcceleration), movementDecelerationPerFrame(movementDecelerationPerFrame),
           maxMovementAcceleration(maxMovementAcceleration),
-          jumpAcceleration(jumpAcceleration), maxJumpHeight(maxJumpHeight), gravityRate(gravityRate),
+          jumpAcceleration(jumpAcceleration), maxJumpVelocity(maxJumpHeight), gravityRate(gravityRate),
           maxGravityAcceleration(maxGravityAcceleration)
 {
 

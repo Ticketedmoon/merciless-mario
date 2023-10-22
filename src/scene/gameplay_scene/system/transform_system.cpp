@@ -1,6 +1,7 @@
 #include "scene/gameplay_scene/system/transform_system.h"
 
-TransformSystem::TransformSystem(EntityManager& entityManager) : m_entityManager(entityManager)
+TransformSystem::TransformSystem(EntityManager& entityManager, sf::RenderWindow& window, sf::RenderTexture& renderTexture)
+    : m_entityManager(entityManager), m_window(window), m_renderTexture(renderTexture)
 {
 
 }
@@ -17,15 +18,12 @@ void TransformSystem::execute()
     for (std::shared_ptr<Entity>& player : players)
     {
         std::shared_ptr<CAction> cAction = std::static_pointer_cast<CAction>(player->getComponentByType(Component::Type::USER_INPUT));
-        std::shared_ptr<CSpriteGroup> cSpriteGroup = std::static_pointer_cast<CSpriteGroup>(player->getComponentByType(Component::Type::SPRITE_GROUP));
         std::shared_ptr<CMovement> cMovement = std::static_pointer_cast<CMovement>(player->getComponentByType(Component::Type::DYNAMIC_MOVEMENT));
         std::shared_ptr<CTransform> cTransform = std::static_pointer_cast<CTransform>(player->getComponentByType(Component::Type::TRANSFORM));
         updateVelocity(cTransform, cAction, cMovement);
         applyGravity(cTransform, cMovement);
 
-        sf::RectangleShape& arm = cSpriteGroup->getSprites().at(1);
-        float armRotationDegrees = cAction->getArmPointAngleDegrees(arm.getPosition());
-        arm.setRotation(armRotationDegrees);
+        updatePlayerArmPositionByMousePosition(player);
     }
 
     std::vector<std::shared_ptr<Entity>> collisionEntities = m_entityManager
@@ -74,7 +72,7 @@ void TransformSystem::updatePosition(std::shared_ptr<CTransform>& cTransform)
 
 void TransformSystem::applyGravity(std::shared_ptr<CTransform>& cTransform, const std::shared_ptr<CMovement>& cMovement)
 {
-    if (cMovement->isRising && !cMovement->hasTouchedCeiling && cTransform->m_velocity.y > cMovement->maxJumpHeight)
+    if (cMovement->isRising && !cMovement->hasTouchedCeiling && cTransform->m_velocity.y > cMovement->maxJumpVelocity)
     {
         cTransform->m_velocity.y -= cMovement->jumpAcceleration;
         cMovement->isAirborne = true;
@@ -115,4 +113,17 @@ void TransformSystem::reduceVelocity(std::shared_ptr<CTransform>& cTransform, st
     cTransform->m_velocity.x += cTransform->m_velocity.x < 0.0f
             ? std::abs(cMovement->movementDecelerationPerFrame)
             : 0;
+}
+
+void TransformSystem::updatePlayerArmPositionByMousePosition(std::shared_ptr<Entity>& player)
+{
+    std::shared_ptr<CCursorFollower> cursorFollower = std::static_pointer_cast<CCursorFollower>(
+            player->getComponentByType(Component::CURSOR_FOLLOWER));
+    const sf::Vector2i& mousePos = sf::Mouse::getPosition(m_window);
+    cursorFollower->armPointLocation = m_window.mapPixelToCoords(mousePos, m_renderTexture.getView());
+
+    std::shared_ptr<CSpriteGroup> cSpriteGroup = std::static_pointer_cast<CSpriteGroup>(player->getComponentByType(Component::Type::SPRITE_GROUP));
+    sf::RectangleShape& arm = cSpriteGroup->getSprites().at(1);
+    float armRotationDegrees = cursorFollower->getArmPointAngleDegrees(arm.getPosition());
+    arm.setRotation(armRotationDegrees);
 }

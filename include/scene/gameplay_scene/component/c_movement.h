@@ -18,7 +18,7 @@ class CMovement : public Component
         float movementDecelerationPerFrame{0.0f};
         float maxMovementAcceleration{0.0f};
         float jumpAcceleration{0.0f};
-        float maxJumpHeight{0.0f};
+        float maxJumpVelocity{0.0f};
         float gravityRate{0.0f};
         float maxGravityAcceleration{0.0f};
 

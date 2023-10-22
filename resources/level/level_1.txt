@@ -1,5 +1,6 @@
 ENTITY_TYPE     LOCATION_X     LOCATION_Y     IS_COLLIDABLE
-PLAYER          100            1000           1
+PLAYER          300            1000           1
+
 PLATFORM        100            1200           1
 PLATFORM        200            1200           1
 PLATFORM        300            1200           1
@@ -57,3 +58,15 @@ PLATFORM        2600           1500           1
 PLATFORM        2700           1500           1
 
 PLATFORM        2800           1350           1
+
+PLATFORM        300            1064           1
+PLATFORM        100            1000           1
+PLATFORM        200            900            1
+PLATFORM        300            800            1
+PLATFORM        400            700            1
+PLATFORM        500            600            1
+PLATFORM        600            500            1
+PLATFORM        700            400            1
+PLATFORM        800            300            1
+PLATFORM        900            200            1
+PLATFORM        1000           100            1

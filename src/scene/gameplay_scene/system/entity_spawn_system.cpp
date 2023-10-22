@@ -22,22 +22,25 @@ void EntitySpawnSystem::execute()
         {
             std::shared_ptr<CTransform> cTransform = std::static_pointer_cast<CTransform>(player->getComponentByType(Component::Type::TRANSFORM));
             std::shared_ptr<CSpriteGroup> cSpriteGroup = std::static_pointer_cast<CSpriteGroup>(player->getComponentByType(Component::Type::SPRITE_GROUP));
+            std::shared_ptr<CCursorFollower> cCursorFollower = std::static_pointer_cast<CCursorFollower>(player->getComponentByType(Component::Type::CURSOR_FOLLOWER));
 
             // Spawn bullet at player location or slightly in-front of sprite
             // moving to mouse destination (use cos X, sin Y)
             sf::RectangleShape arm = cSpriteGroup->getSprites().at(1);
-            float shotAngle = cAction->getArmPointAngleRadians(arm.getPosition());
+            float shotAngle = cCursorFollower->getArmPointAngleRadians(arm.getPosition());
             float shotAngleX = std::cos(shotAngle);
             float shotAngleY = std::sin(shotAngle);
-            float shotSpeed = 10.0f;
-            // Spawn bullet at end of player's arm
-            sf::Vector2f velocity = sf::Vector2f(shotAngleX * shotSpeed, shotAngleY * shotSpeed);
+            float shotSpeed = 20.0f;
 
+            // Spawn bullet at end of player's arm
             float armLength = arm.getGlobalBounds().width > arm.getGlobalBounds().height
                     ? arm.getGlobalBounds().width
                     : arm.getGlobalBounds().height;
             sf::Vector2f bulletPosition{cTransform->m_position.x + (shotAngleX * armLength),
                                         cTransform->m_position.y + (shotAngleY * armLength)};
+
+            sf::Vector2f velocity = sf::Vector2f(shotAngleX * shotSpeed, shotAngleY * shotSpeed);
+
             createBullet(bulletPosition, velocity);
 
             // Reset shooting flag
@@ -85,7 +88,8 @@ void EntitySpawnSystem::createPlayer(sf::Vector2f size, sf::Vector2f position, b
     player->addComponent(Component::Type::SPRITE_GROUP, std::make_shared<CSpriteGroup>(playerComponents));
     player->addComponent(Component::Type::TRANSFORM, std::make_shared<CTransform>(position, velocity));
     player->addComponent(Component::Type::USER_INPUT, std::make_shared<CAction>());
-    player->addComponent(Component::Type::DYNAMIC_MOVEMENT, std::make_shared<CMovement>(0.125f, 0.01f, 10.95f, 1.25f, -10.0f, 0.3f, 25.0f));
+    player->addComponent(Component::Type::DYNAMIC_MOVEMENT, std::make_shared<CMovement>(0.125f, 0.01f, 10.95f, 1.25f, -12.5f, 0.5f, 7.5f));
+    player->addComponent(Component::Type::CURSOR_FOLLOWER, std::make_shared<CCursorFollower>());
 
     if (isCollidable)
     {

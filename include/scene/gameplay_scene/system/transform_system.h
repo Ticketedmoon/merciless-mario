@@ -8,6 +8,11 @@
 #include <iostream>
 #include <valarray>
 
+#include <SFML/Window/Mouse.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Graphics/RenderTexture.hpp>
+
+#include "c_cursor_follower.h"
 #include "c_sprite_group.h"
 #include "entity/entity.h"
 #include "entity/entity_manager.h"
@@ -20,7 +25,7 @@
 class TransformSystem : public System
 {
     public:
-        explicit TransformSystem(EntityManager& entityManager);
+        explicit TransformSystem(EntityManager& entityManager, sf::RenderWindow& window, sf::RenderTexture& renderTexture);
 
         void execute() override;
 
@@ -32,9 +37,12 @@ class TransformSystem : public System
         static void checkForWindowCollision(std::shared_ptr<CTransform>& cTransform,
                 const std::shared_ptr<CCollision>& cCollision);
         static void applyGravity(std::shared_ptr<CTransform>& cTransform, const std::shared_ptr<CMovement>& cMovement);
+        void updatePlayerArmPositionByMousePosition(std::shared_ptr<Entity>& player);
 
     private:
         EntityManager& m_entityManager;
+        sf::RenderWindow& m_window;
+        sf::RenderTexture& m_renderTexture;
 };
 
 

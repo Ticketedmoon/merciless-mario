@@ -11,6 +11,7 @@
 #include <sstream>
 
 #include "entity.h"
+#include "c_cursor_follower.h"
 #include "c_sprite_group.h"
 #include "c_transform.h"
 #include "c_collision.h"

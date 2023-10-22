@@ -19,7 +19,7 @@ class ViewSystem : public System
         void execute() override;
 
     private:
-        float getViewCentreForCoordinate(float playerCoordinatePosition, float worldDimension,
+        static float getViewCentreForCoordinate(float playerCoordinatePosition, float worldDimension,
                 float windowDimensionValue, float playerDimensionValue);
     private:
         static constexpr float VIEW_ZOOM_FACTOR = 1.0f;

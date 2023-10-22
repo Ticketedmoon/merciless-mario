@@ -19,7 +19,8 @@ class Component
             DYNAMIC_MOVEMENT = 4,
             STATIC_MOVEMENT = 5,
             LIFESPAN = 6,
-            COUNT = 7
+            CURSOR_FOLLOWER = 7,
+            COUNT = 8
         };
 };
 

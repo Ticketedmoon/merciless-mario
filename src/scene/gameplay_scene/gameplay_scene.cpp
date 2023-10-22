@@ -62,11 +62,6 @@ void GameplayScene::performAction(Action& action)
     {
         actionComponent->isJumping = action.getMode() == Action::Mode::PRESS;
     }
-    if (action.getType() == Action::Type::POINT)
-    {
-        const sf::Vector2i& mousePos = sf::Mouse::getPosition(gameEngine.window);
-        actionComponent->armPointLocation = gameEngine.window.mapPixelToCoords(mousePos, m_renderTexture.getView());
-    }
     if (action.getType() == Action::Type::SHOOT)
     {
         actionComponent->isShooting = action.getMode() == Action::Mode::PRESS;
@@ -88,7 +83,6 @@ void GameplayScene::registerActions()
     registerActionType(sf::Keyboard::S, Action::Type::CROUCH);
 
     // Mouse
-    registerCursorActionType(sf::Event::MouseMoved, Action::Type::POINT);
     registerActionType(CursorButton::CURSOR_LEFT, Action::Type::SHOOT);
 }
 
@@ -97,7 +91,7 @@ void GameplayScene::registerSystems()
     m_systemManager.registerSystem(
             std::make_shared<EntitySpawnSystem>(m_entityManager), SystemManager::SystemType::UPDATE);
     m_systemManager.registerSystem(
-            std::make_shared<TransformSystem>(m_entityManager), SystemManager::SystemType::UPDATE);
+            std::make_shared<TransformSystem>(m_entityManager, gameEngine.window, m_renderTexture), SystemManager::SystemType::UPDATE);
     m_systemManager.registerSystem(
             std::make_shared<CollisionSystem>(m_entityManager), SystemManager::SystemType::UPDATE);
     m_systemManager.registerSystem(
