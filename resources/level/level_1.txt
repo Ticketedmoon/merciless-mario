@@ -1,72 +1,25 @@
-ENTITY_TYPE     LOCATION_X     LOCATION_Y     IS_COLLIDABLE
-PLAYER          300            1000           1
-
-PLATFORM        100            1200           1
-PLATFORM        200            1200           1
-PLATFORM        300            1200           1
-PLATFORM        400            1200           1
-PLATFORM        500            1200           1
-PLATFORM        600            1200           1
-PLATFORM        700            1200           1
-PLATFORM        800            1200           1
-PLATFORM        900            1200           1
-PLATFORM        1000           1200           1
-PLATFORM        1100           1200           1
-PLATFORM        1200           1200           1
-PLATFORM        1300           1200           1
-PLATFORM        1400           1200           1
-PLATFORM        1500           1200           1
-PLATFORM        1600           1200           1
-PLATFORM        1700           1200           1
-PLATFORM        1800           1200           1
-PLATFORM        1900           1200           1
-PLATFORM        2000           1200           1
-PLATFORM        2100           1200           1
-PLATFORM        2200           1200           1
-PLATFORM        2300           1200           1
-PLATFORM        2400           1200           1
-PLATFORM        2500           1200           1
-PLATFORM        2600           1200           1
-PLATFORM        2700           1200           1
-
-PLATFORM        100            1500           1
-PLATFORM        200            1500           1
-PLATFORM        300            1500           1
-PLATFORM        400            1500           1
-PLATFORM        500            1500           1
-PLATFORM        600            1500           1
-PLATFORM        700            1500           1
-PLATFORM        800            1500           1
-PLATFORM        900            1500           1
-PLATFORM        1000           1500           1
-PLATFORM        1100           1500           1
-PLATFORM        1200           1500           1
-PLATFORM        1300           1500           1
-PLATFORM        1400           1500           1
-PLATFORM        1500           1500           1
-PLATFORM        1600           1500           1
-PLATFORM        1700           1500           1
-PLATFORM        1800           1500           1
-PLATFORM        1900           1500           1
-PLATFORM        2000           1500           1
-PLATFORM        2100           1500           1
-PLATFORM        2200           1500           1
-PLATFORM        2300           1500           1
-PLATFORM        2400           1500           1
-PLATFORM        2500           1500           1
-PLATFORM        2600           1500           1
-PLATFORM        2700           1500           1
-
-PLATFORM        2800           1350           1
-
-PLATFORM        300            1064           1
-PLATFORM        100            1000           1
-PLATFORM        200            900            1
-PLATFORM        300            800            1
-PLATFORM        400            700            1
-PLATFORM        500            600            1
-PLATFORM        600            500            1
-PLATFORM        700            400            1
-PLATFORM        800            300            1
-PLATFORM        900            200            1
-PLATFORM        1000           100            1
+ENTITY_TYPE     ANIMATION        LOCATION_X     LOCATION_Y      IS_COLLIDABLE
+PLAYER          _                0              10              1
+TILE            GROUND           0              0               1
+TILE            GROUND           1              0               1
+TILE            GROUND           2              0               1
+TILE            GROUND           3              0               1
+TILE            GROUND           4              0               1
+TILE            GROUND           5              0               1
+TILE            GROUND           6              0               1
+TILE            GROUND           7              0               1
+TILE            GROUND           8              0               1
+TILE            GROUND           9              0               1
+TILE            GROUND           10             0               1
+TILE            GROUND           11             0               1
+TILE            GROUND           12             0               1
+TILE            GROUND           13             0               1
+TILE            GROUND           14             0               1
+TILE            GROUND           15             0               1
+TILE            GROUND           16             0               1
+TILE            GROUND           17             0               1
+TILE            GROUND           18             0               1
+TILE            GROUND           19             0               1
+TILE            GROUND           20             0               1
+TILE            GROUND           21             0               1
+TILE            GROUND           22             0               1

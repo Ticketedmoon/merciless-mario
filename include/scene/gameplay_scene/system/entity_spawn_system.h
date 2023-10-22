@@ -19,6 +19,7 @@
 #include "c_lifespan.h"
 #include "c_movement.h"
 #include "entity_manager.h"
+#include "c_animation.h"
 #include "common_constants.h"
 #include "system.h"
 
@@ -32,20 +33,22 @@ class EntitySpawnSystem : public System
         struct Row
         {
             std::string entityType;
+            std::string animation;
             uint16_t locationX;
             uint16_t locationY;
             bool isCollidable;
         };
 
         void createPlayer(sf::Vector2f size, sf::Vector2f position, bool isCollidable);
-        void createPlatform(sf::Vector2f size, sf::Vector2f position, sf::Color fillColor, bool isCollidable);
+        void createPlatform(sf::Vector2f position, bool isCollidable);
         void createBullet(sf::Vector2f bulletPosition, sf::Vector2f velocity);
 
         void createLevel();
         [[nodiscard]] static std::vector<Row> LoadLevelData(uint8_t levelNumber);
 
     private:
-        const sf::Vector2f ENTITY_SIZE{32, 32};
+        static inline constexpr uint8_t TILE_SIZE = 32;
+        static inline sf::Vector2f ENTITY_SIZE{TILE_SIZE, TILE_SIZE};
 
         EntityManager& m_entityManager;
 };

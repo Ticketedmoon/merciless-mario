@@ -20,7 +20,7 @@ void GameplayScene::render()
 {
     gameEngine.window.clear();
 
-    m_renderTexture.clear(sf::Color::Black);
+    m_renderTexture.clear(sf::Color{0, 124, 224});
 
     m_systemManager.render();
 

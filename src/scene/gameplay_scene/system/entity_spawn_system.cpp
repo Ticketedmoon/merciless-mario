@@ -88,7 +88,7 @@ void EntitySpawnSystem::createPlayer(sf::Vector2f size, sf::Vector2f position, b
     player->addComponent(Component::Type::SPRITE_GROUP, std::make_shared<CSpriteGroup>(playerComponents));
     player->addComponent(Component::Type::TRANSFORM, std::make_shared<CTransform>(position, velocity));
     player->addComponent(Component::Type::USER_INPUT, std::make_shared<CAction>());
-    player->addComponent(Component::Type::DYNAMIC_MOVEMENT, std::make_shared<CMovement>(0.125f, 0.01f, 10.95f, 1.25f, -12.5f, 0.5f, 7.5f));
+    player->addComponent(Component::Type::DYNAMIC_MOVEMENT, std::make_shared<CMovement>(0.125f, 0.01f, 10.95f, 1.25f, -7.5f, 0.3f, 10.0f));
     player->addComponent(Component::Type::CURSOR_FOLLOWER, std::make_shared<CCursorFollower>());
 
     if (isCollidable)
@@ -97,21 +97,22 @@ void EntitySpawnSystem::createPlayer(sf::Vector2f size, sf::Vector2f position, b
     }
 }
 
-void EntitySpawnSystem::createPlatform(sf::Vector2f size, sf::Vector2f position, sf::Color fillColor, bool isCollidable)
+void EntitySpawnSystem::createPlatform(sf::Vector2f position, bool isCollidable)
 {
     std::shared_ptr<Entity> platform = m_entityManager.addEntity(Entity::Type::PLATFORM);
 
-    sf::RectangleShape platformShape(size);
-    platformShape.setOrigin(size.x/2, size.y/2);
-    platformShape.setPosition(position);
-    platformShape.setFillColor(fillColor);
-    platformShape.setOutlineColor(sf::Color::White);
-    platformShape.setOutlineThickness(3.0f);
-    platformShape.scale(2.0f, 2.0f);
+    const std::shared_ptr<CAnimation>& animationComponent = std::make_shared<CAnimation>();
+
+    animationComponent->animationRectBounds = sf::IntRect(0, 0, TILE_SIZE, TILE_SIZE);
+    animationComponent->animationTexture.loadFromFile("resources/assets/texture/brick.png", animationComponent->animationRectBounds);
+    animationComponent->animationTexture.setSmooth(true); // TODO Experiment with this
+    animationComponent->animationSprite.setTexture(animationComponent->animationTexture);
+    animationComponent->animationSprite.setTextureRect(animationComponent->animationRectBounds);
+    animationComponent->animationSprite.setPosition(position);
 
     sf::Vector2f velocity = sf::Vector2f(0, 0);
 
-    platform->addComponent(Component::Type::SPRITE_GROUP, std::make_shared<CSpriteGroup>(platformShape));
+    platform->addComponent(Component::Type::ANIMATION, animationComponent);
     platform->addComponent(Component::Type::TRANSFORM, std::make_shared<CTransform>(position, velocity));
     platform->addComponent(Component::Type::STATIC_MOVEMENT, std::make_shared<CMovement>());
 
@@ -126,14 +127,27 @@ void EntitySpawnSystem::createLevel()
     std::vector<Row> levelRows = LoadLevelData(1);
     for (const auto& row : levelRows)
     {
-        sf::Vector2f position = sf::Vector2f(row.locationX, row.locationY);
+        sf::Vector2f position = sf::Vector2f(WINDOW_WIDTH + (row.locationX * TILE_SIZE), WINDOW_HEIGHT - (row.locationY * TILE_SIZE));
         if (row.entityType == "PLAYER")
         {
             createPlayer(ENTITY_SIZE, position, row.isCollidable);
         }
-        else if (row.entityType == "PLATFORM")
+        else if (row.entityType == "TILE")
         {
-            createPlatform(ENTITY_SIZE, position, sf::Color::Green, row.isCollidable);
+            if (row.animation == "GROUND")
+            {
+                // Apply 'GROUND' Animation
+                // ---
+                // Add animation component, keep sf::Texture and sf::Sprite managed in here.
+                // Add texture to IntRect
+                //  > contains appropriate texture with animation.
+                //  > Remember we can have single-frame animations, e.g., so basically an unchanging texture.
+                // create animation system.
+                // For all entities with an animation component, update animation frame by 1.
+                // If reach end, reset the animation.
+                // Allow looping and non-looping animations.
+                createPlatform(position, row.isCollidable);
+            }
         }
     }
 }
@@ -150,7 +164,7 @@ std::vector<EntitySpawnSystem::Row> EntitySpawnSystem::LoadLevelData(uint8_t lev
     while (getline(file, line))
     {
         Row row{};
-        file >> row.entityType >> row.locationX >> row.locationY >> row.isCollidable;
+        file >> row.entityType >> row.animation >> row.locationX >> row.locationY >> row.isCollidable;
         rows.push_back(row);
     }
     return rows;

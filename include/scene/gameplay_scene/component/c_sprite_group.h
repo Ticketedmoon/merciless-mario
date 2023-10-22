@@ -15,6 +15,7 @@ class CSpriteGroup : public Component
         std::vector<sf::RectangleShape>& getSprites();
 
     private:
+
         std::vector<sf::RectangleShape> m_shapes;
 };
 

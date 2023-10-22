@@ -10,7 +10,7 @@ void CollisionSystem::execute()
     std::vector<std::shared_ptr<Entity>> dynamicEntities = m_entityManager
             .getEntitiesByComponentTypes({Component::Type::SPRITE_GROUP, Component::Type::TRANSFORM, Component::Type::COLLISION, Component::Type::DYNAMIC_MOVEMENT});
     std::vector<std::shared_ptr<Entity>> staticEntities = m_entityManager
-            .getEntitiesByComponentTypes({Component::Type::SPRITE_GROUP, Component::Type::COLLISION, Component::Type::STATIC_MOVEMENT});
+            .getEntitiesByComponentTypes({Component::Type::ANIMATION, Component::Type::COLLISION, Component::Type::STATIC_MOVEMENT});
     if (dynamicEntities.empty() || staticEntities.empty())
     {
         return;
@@ -44,13 +44,13 @@ void CollisionSystem::execute()
 
 void CollisionSystem::checkForEntityCollision(std::shared_ptr<Entity>& dynamicEntity, const std::shared_ptr<Entity>& staticEntity)
 {
-    std::shared_ptr<CSpriteGroup> staticEntitySpriteGroup = std::static_pointer_cast<CSpriteGroup>(staticEntity->getComponentByType(Component::Type::SPRITE_GROUP));
+    std::shared_ptr<CAnimation> staticEntitySpriteGroup = std::static_pointer_cast<CAnimation>(staticEntity->getComponentByType(Component::Type::ANIMATION));
     std::shared_ptr<CSpriteGroup> dynamicEntitySpriteGroup = std::static_pointer_cast<CSpriteGroup>(dynamicEntity->getComponentByType(Component::Type::SPRITE_GROUP));
 
     sf::FloatRect overlap;
     if (isCollidingAABB(dynamicEntitySpriteGroup, staticEntitySpriteGroup, overlap))
     {
-        auto collisionNormal = dynamicEntitySpriteGroup->getSprite().getPosition() - staticEntitySpriteGroup->getSprite().getPosition();
+        auto collisionNormal = dynamicEntitySpriteGroup->getSprite().getPosition() - staticEntitySpriteGroup->animationSprite.getPosition();
         auto manifold = getManifold(overlap, collisionNormal);
         resolve(dynamicEntity, manifold);
     }
@@ -76,9 +76,9 @@ void CollisionSystem::checkForWindowCollision(const std::shared_ptr<Entity>& e, 
 }
 
 bool CollisionSystem::isCollidingAABB(const std::shared_ptr<CSpriteGroup>& entitySpriteGroup,
-        const std::shared_ptr<CSpriteGroup>& otherEntitySpriteGroup, sf::FloatRect& overlap)
+        const std::shared_ptr<CAnimation>& otherEntitySpriteGroup, sf::FloatRect& overlap)
 {
-    return entitySpriteGroup->getSprite().getGlobalBounds().intersects(otherEntitySpriteGroup->getSprite().getGlobalBounds(), overlap);
+    return entitySpriteGroup->getSprite().getGlobalBounds().intersects(otherEntitySpriteGroup->animationSprite.getGlobalBounds(), overlap);
 }
 
 sf::Vector3f CollisionSystem::getManifold(const sf::FloatRect& overlap, const sf::Vector2f& collisionNormal)
