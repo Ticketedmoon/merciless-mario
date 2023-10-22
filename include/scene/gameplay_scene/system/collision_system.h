@@ -9,7 +9,6 @@
 #include <SFML/System/Vector3.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 
-#include "c_animation.h"
 #include "common_constants.h"
 #include "system.h"
 #include "entity/entity_manager.h"
@@ -32,7 +31,7 @@ class CollisionSystem : public System
         static void checkForWindowCollision(const std::shared_ptr<Entity>& e, std::shared_ptr<CMovement>& cMovement);
         static void checkForEntityCollision(std::shared_ptr<Entity>& dynamicEntity, const std::shared_ptr<Entity>& staticEntity);
         static bool isCollidingAABB(const std::shared_ptr<CSpriteGroup>& entitySpriteGroup,
-                const std::shared_ptr<CAnimation>& otherEntitySpriteGroup,
+                const std::shared_ptr<CSpriteGroup>& otherEntitySpriteGroup,
                 sf::FloatRect& overlap);
         static void updateVelocityOnCollision(const sf::Vector3f& manifold, std::shared_ptr<CTransform>& cTransform,
                 std::shared_ptr<CMovement>& cMovement);

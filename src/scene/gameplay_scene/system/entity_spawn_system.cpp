@@ -101,7 +101,7 @@ void EntitySpawnSystem::createPlatform(sf::Vector2f position, bool isCollidable)
 {
     std::shared_ptr<Entity> platform = m_entityManager.addEntity(Entity::Type::PLATFORM);
 
-    const std::shared_ptr<CAnimation>& animationComponent = std::make_shared<CAnimation>();
+    const std::shared_ptr<CSpriteGroup>& animationComponent = std::make_shared<CSpriteGroup>();
 
     animationComponent->animationRectBounds = sf::IntRect(0, 0, TILE_SIZE, TILE_SIZE);
     animationComponent->animationTexture.loadFromFile("resources/assets/texture/brick.png", animationComponent->animationRectBounds);
@@ -112,7 +112,7 @@ void EntitySpawnSystem::createPlatform(sf::Vector2f position, bool isCollidable)
 
     sf::Vector2f velocity = sf::Vector2f(0, 0);
 
-    platform->addComponent(Component::Type::ANIMATION, animationComponent);
+    platform->addComponent(Component::Type::SPRITE_GROUP, animationComponent);
     platform->addComponent(Component::Type::TRANSFORM, std::make_shared<CTransform>(position, velocity));
     platform->addComponent(Component::Type::STATIC_MOVEMENT, std::make_shared<CMovement>());
 

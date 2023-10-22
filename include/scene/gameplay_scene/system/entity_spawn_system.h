@@ -19,7 +19,6 @@
 #include "c_lifespan.h"
 #include "c_movement.h"
 #include "entity_manager.h"
-#include "c_animation.h"
 #include "common_constants.h"
 #include "system.h"
 
