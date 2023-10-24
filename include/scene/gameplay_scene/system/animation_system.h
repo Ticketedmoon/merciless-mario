@@ -4,6 +4,7 @@
 #define MERCILESS_MARIO_ANIMATION_SYSTEM_H
 
 #include "system.h"
+#include "c_action.h"
 #include "entity_manager.h"
 #include "c_sprite_group.h"
 #include "common_constants.h"
@@ -16,7 +17,7 @@ class AnimationSystem : public System
         void execute() override;
 
     private:
-        void tryUpdateSpriteAnimation(std::shared_ptr<CSpriteGroup>& spriteGroup, size_t spriteIndex) const;
+        void tryUpdateSpriteAnimation(std::shared_ptr<CSpriteGroup>& spriteGroup) const;
         void resolveAnimation(sf::Sprite& currentSprite, unsigned int& spriteAnimationFrameNo,
                 const unsigned int& spriteAnimationFramesTotal) const;
 

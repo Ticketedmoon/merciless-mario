@@ -13,28 +13,40 @@ void AnimationSystem::execute()
     {
         std::shared_ptr<CSpriteGroup> spriteGroup = std::static_pointer_cast<CSpriteGroup>(
                 entity->getComponentByType(Component::Type::SPRITE_GROUP));
-        for (size_t spriteIndex = 0; spriteIndex < spriteGroup->animationSprites.size(); spriteIndex++)
+        if (entity->hasComponent(Component::USER_INPUT))
         {
-            tryUpdateSpriteAnimation(spriteGroup, spriteIndex);
+            std::shared_ptr<CAction> cAction = std::static_pointer_cast<CAction>(
+                    entity->getComponentByType(Component::Type::USER_INPUT));
+            if (cAction->isMovingRight)
+            {
+                tryUpdateSpriteAnimation(spriteGroup);
+            }
+        }
+        else
+        {
+            tryUpdateSpriteAnimation(spriteGroup);
         }
     }
 }
 
-void AnimationSystem::tryUpdateSpriteAnimation(std::shared_ptr<CSpriteGroup>& spriteGroup, size_t spriteIndex) const
+void AnimationSystem::tryUpdateSpriteAnimation(std::shared_ptr<CSpriteGroup>& spriteGroup) const
 {
-    float& spriteAnimationTime = spriteGroup->spriteAnimationTickerGroup.at(spriteIndex).currentTime;
-    float spriteAnimationCompletionTime = spriteGroup->spriteAnimationTickerGroup.at(spriteIndex).completionTime;
-
-    spriteAnimationTime += DT;
-
-    if (spriteAnimationTime >= spriteAnimationCompletionTime)
+    for (size_t spriteIndex = 0; spriteIndex < spriteGroup->animationSprites.size(); spriteIndex++)
     {
-        sf::Sprite& currentSprite = spriteGroup->animationSprites.at(spriteIndex);
-        unsigned int& spriteAnimationFrameNo = spriteGroup->currentFrameGroup.at(spriteIndex);
-        unsigned int& spriteAnimationFramesTotal = spriteGroup->totalAnimationFramesGroup.at(spriteIndex);
+        float& spriteAnimationTime = spriteGroup->spriteAnimationTickerGroup.at(spriteIndex).currentTime;
+        float spriteAnimationCompletionTime = spriteGroup->spriteAnimationTickerGroup.at(spriteIndex).completionTime;
 
-        resolveAnimation(currentSprite, spriteAnimationFrameNo, spriteAnimationFramesTotal);
-        spriteAnimationTime = 0;
+        spriteAnimationTime += DT;
+
+        if (spriteAnimationTime >= spriteAnimationCompletionTime)
+        {
+            sf::Sprite& currentSprite = spriteGroup->animationSprites.at(spriteIndex);
+            unsigned int& spriteAnimationFrameNo = spriteGroup->currentFrameGroup.at(spriteIndex);
+            unsigned int& spriteAnimationFramesTotal = spriteGroup->totalAnimationFramesGroup.at(spriteIndex);
+
+            resolveAnimation(currentSprite, spriteAnimationFrameNo, spriteAnimationFramesTotal);
+            spriteAnimationTime = 0;
+        }
     }
 }
 

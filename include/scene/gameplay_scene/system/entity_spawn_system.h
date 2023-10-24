@@ -46,9 +46,13 @@ class EntitySpawnSystem : public System
         void createLevel();
 
         [[nodiscard]] static std::vector<Row> LoadLevelData(uint8_t levelNumber);
+
+        // TODO Refactor this method
         void addAnimationTextureComponent(std::shared_ptr<CSpriteGroup>& spriteGroup,
-                const sf::Vector2f& position, const std::string& animationTextureFilePath, sf::IntRect rectBounds,
-                sf::Vector2f origin, uint32_t totalAnimationFrames);
+                const sf::Vector2f& position, const std::string& animationTextureFilePath, const sf::IntRect& rectBounds,
+                const sf::Vector2f origin, const uint32_t totalAnimationFrames, const sf::Vector2f scale,
+                float spriteAnimationCompletionTime);
+
         std::shared_ptr<sf::Texture> buildSpriteTexture(std::shared_ptr<CSpriteGroup>& spriteGroup,
                 const std::string& animationTextureFilePath);
 
