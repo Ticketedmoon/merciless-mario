@@ -39,7 +39,7 @@ class EntitySpawnSystem : public System
             bool isCollidable;
         };
 
-        void createPlayer(sf::Vector2f size, sf::Vector2f position, bool isCollidable);
+        void createPlayer(sf::Vector2f position, bool isCollidable);
         void createPlatform(sf::Vector2f position, bool isCollidable);
         void createQuestionBlock(sf::Vector2f position, bool isCollidable);
         void createBullet(sf::Vector2f bulletPosition, sf::Vector2f velocity);
@@ -53,6 +53,7 @@ class EntitySpawnSystem : public System
                 const std::string& animationTextureFilePath);
 
     private:
+        static constexpr float PLAYER_BULLET_SPEED = 40000.0f;
         static inline sf::Vector2f ENTITY_SIZE{TILE_SIZE, TILE_SIZE};
 
         EntityManager& m_entityManager;

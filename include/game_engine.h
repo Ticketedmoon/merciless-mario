@@ -23,14 +23,15 @@ class GameEngine
 
     private:
         void handleInput();
-        void update();
+        void update(double& currentTime, double& accumulator, size_t& totalFrames);
         void render();
 
         void createGameWindow();
+        void logDebugInfo(const size_t& totalFrames, double frameTime) const;
 
     public:
         sf::RenderWindow window;
-        sf::Clock deltaClock;
+        sf::Clock gameClock;
         AudioManager* m_audioManager = AudioManager::getInstance();
 
     private:

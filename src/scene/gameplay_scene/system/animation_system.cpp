@@ -14,7 +14,7 @@ void AnimationSystem::execute()
     {
         std::shared_ptr<CSpriteGroup> spriteGroup = std::static_pointer_cast<CSpriteGroup>(entity->getComponentByType(Component::Type::SPRITE_GROUP));
         
-        for (int i = 0; i < spriteGroup->animationSprites.size(); i++)
+        for (size_t i = 0; i < spriteGroup->animationSprites.size(); i++)
         {
             sf::IntRect rectBounds = spriteGroup->animationSprites.at(i).getTextureRect();
             if (spriteGroup->currentFrameGroup.at(i) >= spriteGroup->totalAnimationFramesGroup.at(i)-1)

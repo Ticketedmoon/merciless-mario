@@ -18,7 +18,6 @@ void RenderSystem::execute()
         for (sf::Sprite& sprite : cSpriteGroup->animationSprites)
         {
             sprite.setPosition(cTransform->m_position);
-            std::cout << sprite.getTextureRect().left << '\n';
             m_renderTarget.draw(sprite);
         }
     }

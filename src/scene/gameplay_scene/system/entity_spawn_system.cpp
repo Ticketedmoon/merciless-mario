@@ -30,7 +30,7 @@ void EntitySpawnSystem::execute()
             float shotAngle = cCursorFollower->getArmPointAngleRadians(arm.getPosition());
             float shotAngleX = std::cos(shotAngle);
             float shotAngleY = std::sin(shotAngle);
-            float shotSpeed = 20.0f;
+            float shotSpeed = PLAYER_BULLET_SPEED * DT;
 
             // Spawn bullet at end of player's arm
             float armLength = arm.getGlobalBounds().width > arm.getGlobalBounds().height
@@ -66,7 +66,7 @@ void EntitySpawnSystem::createBullet(sf::Vector2f bulletPosition, sf::Vector2f v
     bullet->addComponent(Component::Type::LIFESPAN, std::make_shared<CLifespan>(255));
 }
 
-void EntitySpawnSystem::createPlayer(sf::Vector2f size, sf::Vector2f position, bool isCollidable)
+void EntitySpawnSystem::createPlayer(sf::Vector2f position, bool isCollidable)
 {
     std::shared_ptr<Entity>& player = m_entityManager.addEntity(Entity::Type::PLAYER);
 
@@ -87,7 +87,10 @@ void EntitySpawnSystem::createPlayer(sf::Vector2f size, sf::Vector2f position, b
     player->addComponent(Component::Type::SPRITE_GROUP, spriteGroup);
     player->addComponent(Component::Type::TRANSFORM, std::make_shared<CTransform>(position, velocity));
     player->addComponent(Component::Type::USER_INPUT, std::make_shared<CAction>());
-    player->addComponent(Component::Type::DYNAMIC_MOVEMENT, std::make_shared<CMovement>(0.125f, 0.01f, 10.95f, 1.25f, -7.5f, 0.3f, 10.0f));
+    player->addComponent(Component::Type::DYNAMIC_MOVEMENT, std::make_shared<CMovement>(
+            500.0f, 150.0f, 1000.0f, // movement
+            1500.0f, -300.0f, // jump velocity
+            300.0f, 600.0f)); // gravity
     player->addComponent(Component::Type::CURSOR_FOLLOWER, std::make_shared<CCursorFollower>());
 
     if (isCollidable)
@@ -186,7 +189,7 @@ void EntitySpawnSystem::createLevel()
         sf::Vector2f position = sf::Vector2f(WINDOW_WIDTH + (row.locationX * TILE_SIZE), WINDOW_HEIGHT - (row.locationY * TILE_SIZE));
         if (row.entityType == "PLAYER")
         {
-            createPlayer(ENTITY_SIZE, position, row.isCollidable);
+            createPlayer(position, row.isCollidable);
         }
         else if (row.entityType == "TILE")
         {

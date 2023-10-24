@@ -13,19 +13,36 @@ GameEngine::~GameEngine()
 
 void GameEngine::startGameLoop()
 {
+    double currentTime = gameClock.getElapsedTime().asSeconds();
+    double accumulator = 0.0;
+    size_t totalFrames = 0;
+
     while (window.isOpen())
     {
-        deltaClock.restart();
-
-        handleInput();
-        update();
+        update(currentTime, accumulator, totalFrames);
         render();
+
+        totalFrames++;
     }
 }
 
-void GameEngine::update()
+// Fixed time-step updates
+void GameEngine::update(double& currentTime, double& accumulator, size_t& totalFrames)
 {
-    gameScenes[currentScene]->update();
+    double newTime = gameClock.getElapsedTime().asSeconds();
+    double frameTime = newTime - currentTime;
+    currentTime = newTime;
+    accumulator += frameTime;
+
+    while (accumulator >= DT)
+    {
+        handleInput();
+        gameScenes[currentScene]->update();
+        accumulator -= DT;
+    }
+
+    logDebugInfo(totalFrames, frameTime);
+
 }
 
 void GameEngine::render()
@@ -33,10 +50,23 @@ void GameEngine::render()
     gameScenes[currentScene]->render();
 }
 
-void GameEngine::changeScene(Scene::Type sceneType, const std::shared_ptr<Scene>& scene)
+void GameEngine::changeScene(Scene::Type sceneType, const std::sharedd_ptr<Scene>& scene)
 {
     currentScene = sceneType;
     gameScenes[currentScene] = scene;
+}
+
+// FPS - Shows in Console Window
+void GameEngine::logDebugInfo(const size_t& totalFrames, double frameTime) const
+{
+    if (totalFrames != 0 && totalFrames % 600 == 0)
+    {
+        std::cout
+                << "---------\n"
+                << "FPS: " << 1.0f / frameTime << '\n'
+                << "Uptime: " << gameClock.getElapsedTime().asSeconds() << " (Seconds)\n"
+                << "Total Frames: " << totalFrames << "\n";
+    }
 }
 
 /* Get the keyboard input

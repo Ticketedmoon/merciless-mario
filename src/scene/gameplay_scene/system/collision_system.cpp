@@ -1,3 +1,4 @@
+#include <iostream>
 #include "scene/gameplay_scene/system/collision_system.h"
 
 CollisionSystem::CollisionSystem(EntityManager& entityManager) : m_entityManager(entityManager)
@@ -123,7 +124,6 @@ void CollisionSystem::resolve(std::shared_ptr<Entity>& dynamicEntity, const sf::
         {
             std::shared_ptr<CAction> cAction = std::static_pointer_cast<CAction>(
                     dynamicEntity->getComponentByType(Component::Type::USER_INPUT));
-            cAction->isJumping = false;
             cMovement->isAirborne = false;
             cMovement->hasTouchedCeiling = false;
             cTransform->m_velocity.y = 0;
@@ -132,7 +132,7 @@ void CollisionSystem::resolve(std::shared_ptr<Entity>& dynamicEntity, const sf::
         {
             cTransform->m_velocity.x += (cTransform->m_velocity.x > 0.0f
                     ? cTransform->m_velocity.x * -0.1f
-                    : cTransform->m_velocity.x * 0.1f);
+                    : cTransform->m_velocity.x * 0.1f) * DT;
         }
     }
 
