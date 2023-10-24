@@ -73,16 +73,18 @@ void EntitySpawnSystem::createPlayer(sf::Vector2f position, bool isCollidable)
     sf::Vector2f velocity = sf::Vector2f(0, 0);
 
     std::shared_ptr<CSpriteGroup> spriteGroup = std::make_shared<CSpriteGroup>();
-    const std::string animationTextureFilePath = "resources/assets/texture/brick.png";
 
     // Body
+    const std::string bodyTextureFilePath = "resources/assets/texture/brick.png";
     const sf::Rect<int>& bodyRectBounds = sf::IntRect(0, 0, TILE_SIZE, TILE_SIZE);
-    addAnimationTextureComponent(spriteGroup, position, animationTextureFilePath, bodyRectBounds,
+    addAnimationTextureComponent(spriteGroup, position, bodyTextureFilePath, bodyRectBounds,
             sf::Vector2f(bodyRectBounds.width/2, bodyRectBounds.height/2), 1);
 
     // Arm
-    const sf::Rect<int>& armRectBounds = sf::IntRect(0, 0, TILE_SIZE, TILE_SIZE);
-    addAnimationTextureComponent(spriteGroup, position, animationTextureFilePath, armRectBounds, sf::Vector2f(60, 10), 1);
+    const std::string shotgunTextureFilePath = "resources/assets/texture/shotgun.png";
+    const sf::Rect<int>& armRectBounds = sf::IntRect(0, 0, 81, TILE_SIZE * 2);
+    const sf::Vector2<float>& gunOrigin = sf::Vector2f(0, TILE_SIZE);
+    addAnimationTextureComponent(spriteGroup, position, shotgunTextureFilePath, armRectBounds, gunOrigin, 1);
 
     player->addComponent(Component::Type::SPRITE_GROUP, spriteGroup);
     player->addComponent(Component::Type::TRANSFORM, std::make_shared<CTransform>(position, velocity));

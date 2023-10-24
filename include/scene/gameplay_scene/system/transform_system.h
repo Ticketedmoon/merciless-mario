@@ -40,6 +40,8 @@ class TransformSystem : public System
         void updatePlayerArmPositionByMousePosition(std::shared_ptr<Entity>& player);
 
     private:
+        static constexpr int SPRITE_TEXTURE_OFFSET_DEGREES = 180;
+
         EntityManager& m_entityManager;
         sf::RenderWindow& m_window;
         sf::RenderTexture& m_renderTexture;

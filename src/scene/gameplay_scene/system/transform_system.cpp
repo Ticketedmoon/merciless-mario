@@ -126,6 +126,6 @@ void TransformSystem::updatePlayerArmPositionByMousePosition(std::shared_ptr<Ent
 
     std::shared_ptr<CSpriteGroup> cSpriteGroup = std::static_pointer_cast<CSpriteGroup>(player->getComponentByType(Component::Type::SPRITE_GROUP));
     sf::Sprite& arm = cSpriteGroup->animationSprites.at(1);
-    float armRotationDegrees = cursorFollower->getArmPointAngleDegrees(arm.getPosition());
+    float armRotationDegrees = cursorFollower->getArmPointAngleDegrees(arm.getPosition()) + SPRITE_TEXTURE_OFFSET_DEGREES;
     arm.setRotation(armRotationDegrees);
 }
