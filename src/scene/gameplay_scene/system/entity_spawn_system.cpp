@@ -90,7 +90,7 @@ void EntitySpawnSystem::createPlayer(sf::Vector2f position, bool isCollidable)
     player->addComponent(Component::Type::DYNAMIC_MOVEMENT, std::make_shared<CMovement>(
             500.0f, 150.0f, 1000.0f, // movement
             1500.0f, -300.0f, // jump velocity
-            300.0f, 600.0f)); // gravity
+            400.0f, 600.0f)); // gravity
     player->addComponent(Component::Type::CURSOR_FOLLOWER, std::make_shared<CCursorFollower>());
 
     if (isCollidable)

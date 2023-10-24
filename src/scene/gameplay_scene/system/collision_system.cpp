@@ -130,9 +130,18 @@ void CollisionSystem::resolve(std::shared_ptr<Entity>& dynamicEntity, const sf::
         }
         if (manifold.x == 1 || manifold.x == -1)
         {
+            if (!cMovement->hasTouchedWall)
+            {
+                cMovement->hasTouchedWall = true;
+                cTransform->m_velocity.x = 0.0f;
+            }
             cTransform->m_velocity.x += (cTransform->m_velocity.x > 0.0f
                     ? cTransform->m_velocity.x * -0.1f
                     : cTransform->m_velocity.x * 0.1f) * DT;
+        }
+        else
+        {
+            cMovement->hasTouchedWall = false;
         }
     }
 

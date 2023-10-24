@@ -42,7 +42,6 @@ void GameEngine::update(double& currentTime, double& accumulator, size_t& totalF
     }
 
     logDebugInfo(totalFrames, frameTime);
-
 }
 
 void GameEngine::render()
