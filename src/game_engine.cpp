@@ -50,7 +50,7 @@ void GameEngine::render()
     gameScenes[currentScene]->render();
 }
 
-void GameEngine::changeScene(Scene::Type sceneType, const std::sharedd_ptr<Scene>& scene)
+void GameEngine::changeScene(Scene::Type sceneType, const std::shared_ptr<Scene>& scene)
 {
     currentScene = sceneType;
     gameScenes[currentScene] = scene;
