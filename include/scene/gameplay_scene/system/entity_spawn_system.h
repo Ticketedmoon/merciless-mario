@@ -42,7 +42,7 @@ class EntitySpawnSystem : public System
         void createPlayer(sf::Vector2f position, bool isCollidable);
         void createPlatform(sf::Vector2f position, bool isCollidable);
         void createQuestionBlock(sf::Vector2f position, bool isCollidable);
-        void createBullet(sf::Vector2f bulletPosition, sf::Vector2f velocity);
+        void createBullet(sf::Vector2f bulletPosition, sf::Vector2f velocity, float gunAngle);
         void createLevel();
 
         [[nodiscard]] static std::vector<Row> LoadLevelData(uint8_t levelNumber);
@@ -50,15 +50,14 @@ class EntitySpawnSystem : public System
         // TODO Refactor this method
         void addAnimationTextureComponent(std::shared_ptr<CSpriteGroup>& spriteGroup,
                 const sf::Vector2f& position, const std::string& animationTextureFilePath, const sf::IntRect& rectBounds,
-                const sf::Vector2f origin, const uint32_t totalAnimationFrames, const sf::Vector2f scale,
-                float spriteAnimationCompletionTime);
+                const sf::Vector2f origin, const uint32_t totalAnimationFrames,
+                float spriteAnimationCompletionTime, float rotation);
 
         std::shared_ptr<sf::Texture> buildSpriteTexture(std::shared_ptr<CSpriteGroup>& spriteGroup,
                 const std::string& animationTextureFilePath);
 
     private:
-        static constexpr float PLAYER_BULLET_SPEED = 40000.0f;
-        static inline sf::Vector2f ENTITY_SIZE{TILE_SIZE, TILE_SIZE};
+        static constexpr float PLAYER_BULLET_SPEED = 75000.0f;
 
         EntityManager& m_entityManager;
         TextureManager m_textureManager;
