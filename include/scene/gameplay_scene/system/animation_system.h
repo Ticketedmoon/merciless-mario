@@ -17,9 +17,9 @@ class AnimationSystem : public System
         void execute() override;
 
     private:
-        void tryUpdateSpriteAnimation(std::shared_ptr<CSpriteGroup>& spriteGroup) const;
-        void resolveAnimation(sf::Sprite& currentSprite, unsigned int& spriteAnimationFrameNo,
-                const unsigned int& spriteAnimationFramesTotal) const;
+        static void tryUpdateSpriteAnimation(std::shared_ptr<CSpriteGroup>& spriteGroup);
+        static void resolveAnimation(std::shared_ptr<sf::Sprite>& sprite,
+                std::shared_ptr<CSpriteGroup::SpriteAnimation>& spriteAnimation);
 
     private:
         EntityManager& m_entityManager;

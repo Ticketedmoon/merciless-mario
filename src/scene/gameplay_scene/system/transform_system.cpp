@@ -83,7 +83,7 @@ void TransformSystem::applyGravity(std::shared_ptr<CTransform>& cTransform, cons
         cMovement->isRising = false;
     }
 
-    if (cMovement->isAirborne && cTransform->m_velocity.y < cMovement->maxGravityAcceleration)
+    if (cTransform->m_velocity.y < cMovement->maxGravityAcceleration)
     {
         cTransform->m_velocity.y += cMovement->gravityRate * DT;
     }
@@ -125,7 +125,7 @@ void TransformSystem::updatePlayerArmPositionByMousePosition(std::shared_ptr<Ent
     cursorFollower->armPointLocation = m_window.mapPixelToCoords(mousePos, m_renderTexture.getView());
 
     std::shared_ptr<CSpriteGroup> cSpriteGroup = std::static_pointer_cast<CSpriteGroup>(player->getComponentByType(Component::Type::SPRITE_GROUP));
-    sf::Sprite& arm = cSpriteGroup->animationSprites.at(1);
-    float armRotationDegrees = cursorFollower->getArmPointAngleDegrees(arm.getPosition()) + SPRITE_TEXTURE_OFFSET_DEGREES;
-    arm.setRotation(armRotationDegrees);
+    std::shared_ptr<sf::Sprite>& arm = cSpriteGroup->sprites.at(1);
+    float armRotationDegrees = cursorFollower->getArmPointAngleDegrees(arm->getPosition()) + SPRITE_TEXTURE_OFFSET_DEGREES;
+    arm->setRotation(armRotationDegrees);
 }

@@ -12,21 +12,26 @@
 class CSpriteGroup : public Component
 {
     public:
-        struct AnimationTicker
+        struct SpriteAnimationTicker
         {
-            float currentTime;
-            float completionTime;
+            float timeBeforeAnimationUpdate;
+            float animationUpdateTime;
+        };
+        struct SpriteAnimation {
+            const sf::IntRect animationRectStartBounds;
+            sf::IntRect animationRectBounds;
+            const uint32_t animationIncrement{};
+
+            const uint32_t totalAnimationFrames{};
+            uint32_t currentFrame{};
+            SpriteAnimationTicker animationTicker{};
         };
 
         CSpriteGroup() = default;
 
-        std::vector<sf::IntRect> animationRectBoundsGroup;
-        std::vector<uint32_t> totalAnimationFramesGroup;
-        std::vector<uint32_t> currentFrameGroup;
-        std::vector<AnimationTicker> spriteAnimationTickerGroup;
-
-        std::vector<std::shared_ptr<sf::Texture>> animationTextures;
-        std::vector<sf::Sprite> animationSprites;
+        std::vector<std::shared_ptr<SpriteAnimation>> animations;
+        std::vector<std::shared_ptr<sf::Texture>> textures;
+        std::vector<std::shared_ptr<sf::Sprite>> sprites;
 };
 
 

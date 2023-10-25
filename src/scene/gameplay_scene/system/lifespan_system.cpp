@@ -20,11 +20,11 @@ void LifespanSystem::execute()
         else
         {
             std::shared_ptr<CSpriteGroup> spriteGroup = std::static_pointer_cast<CSpriteGroup> (e->getComponentByType(Component::Type::SPRITE_GROUP));
-            sf::Sprite& sprite = spriteGroup->animationSprites.at(0);
-            sf::Color color = sprite.getColor();
+            std::shared_ptr<sf::Sprite>& sprite = spriteGroup->sprites.at(0);
+            sf::Color color = sprite->getColor();
             color.a -= color.a >= 1 ? 1 : 0;
 
-            sprite.setColor(color);
+            sprite->setColor(color);
             lifeSpanComponent->decreaseTimeToLive();
         }
     }

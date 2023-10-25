@@ -1,4 +1,3 @@
-#include <iostream>
 #include "scene/gameplay_scene/system/collision_system.h"
 
 CollisionSystem::CollisionSystem(EntityManager& entityManager) : m_entityManager(entityManager)
@@ -51,7 +50,7 @@ void CollisionSystem::checkForEntityCollision(std::shared_ptr<Entity>& dynamicEn
     sf::FloatRect overlap;
     if (isCollidingAABB(dynamicEntitySpriteGroup, staticEntitySpriteGroup, overlap))
     {
-        auto collisionNormal = dynamicEntitySpriteGroup->animationSprites.at(0).getPosition() - staticEntitySpriteGroup->animationSprites.at(0).getPosition();
+        auto collisionNormal = dynamicEntitySpriteGroup->sprites.at(0)->getPosition() - staticEntitySpriteGroup->sprites.at(0)->getPosition();
         auto manifold = getManifold(overlap, collisionNormal);
         resolve(dynamicEntity, manifold);
     }
@@ -65,8 +64,8 @@ void CollisionSystem::checkForWindowCollision(const std::shared_ptr<Entity>& e, 
     {
         std::shared_ptr<CSpriteGroup> spriteGroup = std::static_pointer_cast<CSpriteGroup>(e->getComponentByType(Component::Type::SPRITE_GROUP));
 
-        int spriteHalfWidth = spriteGroup->animationSprites.at(0).getTextureRect().width / 2;
-        int spriteHalfHeight = spriteGroup->animationSprites.at(0).getTextureRect().height / 2;
+        int spriteHalfWidth = spriteGroup->sprites.at(0)->getTextureRect().width / 2;
+        int spriteHalfHeight = spriteGroup->sprites.at(0)->getTextureRect().height / 2;
 
         collisionComponentForEntity->isCollidingLeft = transformComponentForEntity->m_position.x <= spriteHalfWidth;
         collisionComponentForEntity->isCollidingRight = transformComponentForEntity->m_position.x >= MAX_LEVEL_WIDTH -spriteHalfWidth;
@@ -86,7 +85,9 @@ void CollisionSystem::checkForWindowCollision(const std::shared_ptr<Entity>& e, 
 bool CollisionSystem::isCollidingAABB(const std::shared_ptr<CSpriteGroup>& entitySpriteGroup,
         const std::shared_ptr<CSpriteGroup>& otherEntitySpriteGroup, sf::FloatRect& overlap)
 {
-    return entitySpriteGroup->animationSprites.at(0).getGlobalBounds().intersects(otherEntitySpriteGroup->animationSprites.at(0).getGlobalBounds(), overlap);
+    std::shared_ptr<sf::Sprite>& spriteA = entitySpriteGroup->sprites.at(0);
+    std::shared_ptr<sf::Sprite>& spriteB = otherEntitySpriteGroup->sprites.at(0);
+    return spriteA->getGlobalBounds().intersects(spriteB->getGlobalBounds(), overlap);
 }
 
 sf::Vector3f CollisionSystem::getManifold(const sf::FloatRect& overlap, const sf::Vector2f& collisionNormal)

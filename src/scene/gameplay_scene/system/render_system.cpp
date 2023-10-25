@@ -15,10 +15,10 @@ void RenderSystem::execute()
         std::shared_ptr<CTransform> cTransform = std::static_pointer_cast<CTransform>(e->getComponentByType(Component::Type::TRANSFORM));
         std::shared_ptr<CSpriteGroup> cSpriteGroup = std::static_pointer_cast<CSpriteGroup>(e->getComponentByType(Component::Type::SPRITE_GROUP));
 
-        for (sf::Sprite& sprite : cSpriteGroup->animationSprites)
+        for (std::shared_ptr<sf::Sprite>& sprite : cSpriteGroup->sprites)
         {
-            sprite.setPosition(cTransform->m_position);
-            m_renderTarget.draw(sprite);
+            sprite->setPosition(cTransform->m_position);
+            m_renderTarget.draw(*sprite);
         }
     }
 }

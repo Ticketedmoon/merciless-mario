@@ -30,22 +30,22 @@ void EntitySpawnSystem::execute()
 
             // Spawn bullet at player location or slightly in-front of sprite
             // moving to mouse destination (use cos X, sin Y)
-            sf::Sprite& arm = cSpriteGroup->animationSprites.at(1);
-            float shotAngleRadians = cCursorFollower->getArmPointAngleRadians(arm.getPosition());
+            std::shared_ptr<sf::Sprite>& arm = cSpriteGroup->sprites.at(1);
+            float shotAngleRadians = cCursorFollower->getArmPointAngleRadians(arm->getPosition());
             float shotAngleX = std::cos(shotAngleRadians);
             float shotAngleY = std::sin(shotAngleRadians);
             float shotSpeed = PLAYER_BULLET_SPEED * DT;
 
             // Spawn bullet at end of player's arm
-            float armLength = arm.getGlobalBounds().width > arm.getGlobalBounds().height
-                    ? arm.getGlobalBounds().width
-                    : arm.getGlobalBounds().height;
+            float armLength = arm->getGlobalBounds().width > arm->getGlobalBounds().height
+                    ? arm->getGlobalBounds().width
+                    : arm->getGlobalBounds().height;
             sf::Vector2f bulletPosition{cTransform->m_position.x + (shotAngleX * armLength),
                                         cTransform->m_position.y + (shotAngleY * armLength)};
 
             sf::Vector2f velocity = sf::Vector2f(shotAngleX * shotSpeed, shotAngleY * shotSpeed);
 
-            float shotAngleDegrees = cCursorFollower->getArmPointAngleDegrees(arm.getPosition());
+            float shotAngleDegrees = cCursorFollower->getArmPointAngleDegrees(arm->getPosition());
             createBullet(bulletPosition, velocity, shotAngleDegrees - 90);
 
             // Reset shooting flag
@@ -63,16 +63,16 @@ void EntitySpawnSystem::createPlayer(sf::Vector2f position, bool isCollidable)
     std::shared_ptr<CSpriteGroup> spriteGroup = std::make_shared<CSpriteGroup>();
 
     // Body
-    const std::string bodyTextureFilePath = "resources/assets/texture/mario_smw.png";
-    const sf::Rect<int>& bodyRectBounds = sf::IntRect(0, 0, TILE_SIZE, TILE_SIZE);
-    addAnimationTextureComponent(spriteGroup, position, bodyTextureFilePath, bodyRectBounds,
-            sf::Vector2f(bodyRectBounds.width / 2, bodyRectBounds.height / 2), 3, 1.0f/12.0f, 0);
+    const std::string bodyTextureFilePath = "resources/assets/texture/mario_spritesheet_smb3.png";
+    sf::IntRect bodyRectBounds = sf::IntRect(35, 0, 35, 30);
+    const sf::Vector2<float>& origin = sf::Vector2f(bodyRectBounds.width / 2, bodyRectBounds.height / 2);
+    addAnimationTextureComponent(spriteGroup, position, bodyTextureFilePath, bodyRectBounds, origin, 7, 35, 1.0f/12.0f, {1, 1}, 0);
 
     // Weapon
     const std::string shotgunTextureFilePath = "resources/assets/texture/shotgun.png";
-    const sf::Rect<int>& armRectBounds = sf::IntRect(0, 0, 81, TILE_SIZE * 2);
+    sf::IntRect armRectBounds = sf::IntRect(0, 0, 81, TILE_SIZE * 2);
     const sf::Vector2<float>& gunOrigin = sf::Vector2f(0, TILE_SIZE);
-    addAnimationTextureComponent(spriteGroup, position, shotgunTextureFilePath, armRectBounds, gunOrigin, 1, 0, 0);
+    addAnimationTextureComponent(spriteGroup, position, shotgunTextureFilePath, armRectBounds, gunOrigin, TILE_SIZE, 0, 0, {1, 1}, 0);
 
     player->addComponent(Component::Type::SPRITE_GROUP, spriteGroup);
     player->addComponent(Component::Type::TRANSFORM, std::make_shared<CTransform>(position, velocity));
@@ -99,9 +99,10 @@ void EntitySpawnSystem::createPlatform(sf::Vector2f position, bool isCollidable)
 
     std::shared_ptr<CSpriteGroup> animationComponent = std::make_shared<CSpriteGroup>();
     const std::string animationTextureFilePath = "resources/assets/texture/brick.png";
-    const sf::Rect<int>& rectBounds = sf::IntRect(0, 0, TILE_SIZE, TILE_SIZE);
+    sf::Rect<int> rectBounds = sf::IntRect(0, 0, TILE_SIZE, TILE_SIZE);
+
     addAnimationTextureComponent(animationComponent, position, animationTextureFilePath, rectBounds,
-            sf::Vector2f(rectBounds.width / 2, rectBounds.height / 2), 1, 0, 0);
+            sf::Vector2f(rectBounds.width / 2, rectBounds.height / 2), 1, TILE_SIZE, 0, {1, 1}, 0);
     platform->addComponent(Component::Type::SPRITE_GROUP, animationComponent);
 
     if (isCollidable)
@@ -120,9 +121,10 @@ void EntitySpawnSystem::createQuestionBlock(sf::Vector2f position, bool isCollid
 
     std::shared_ptr<CSpriteGroup> animationComponent = std::make_shared<CSpriteGroup>();
     const std::string animationTextureFilePath = "resources/assets/texture/question_block.png";
-    const sf::Rect<int>& rectBounds = sf::IntRect(0, 0, TILE_SIZE, TILE_SIZE);
+    sf::Rect<int> rectBounds = sf::IntRect(0, 0, TILE_SIZE, TILE_SIZE);
+
     addAnimationTextureComponent(animationComponent, position, animationTextureFilePath, rectBounds,
-            sf::Vector2f(rectBounds.width / 2, rectBounds.height / 2), 3, 1.0f/3.0f, 0);
+            sf::Vector2f(rectBounds.width / 2, rectBounds.height / 2), 3, TILE_SIZE, 1.0f/3.0f, {1, 1}, 0);
     platform->addComponent(Component::Type::SPRITE_GROUP, animationComponent);
 
     if (isCollidable)
@@ -137,9 +139,10 @@ void EntitySpawnSystem::createBullet(sf::Vector2f bulletPosition, sf::Vector2f v
 
     std::shared_ptr<CSpriteGroup> animationComponent = std::make_shared<CSpriteGroup>();
     const std::string animationTextureFilePath = "resources/assets/texture/bullet_32x32.png";
-    const sf::Rect<int>& rectBounds = sf::IntRect(0, 0, TILE_SIZE, TILE_SIZE);
+    sf::Rect<int> rectBounds = sf::IntRect(0, 0, TILE_SIZE, TILE_SIZE);
+
     addAnimationTextureComponent(animationComponent, bulletPosition, animationTextureFilePath, rectBounds,
-            sf::Vector2f(rectBounds.width / 2, rectBounds.height / 2), 1, 0, gunAngle);
+            sf::Vector2f(rectBounds.width / 2, rectBounds.height / 2), 1, TILE_SIZE, 0, {1, 1}, gunAngle);
     bullet->addComponent(Component::Type::SPRITE_GROUP, animationComponent);
 
     bullet->addComponent(Component::Type::TRANSFORM, std::make_shared<CTransform>(bulletPosition, velocity));
@@ -149,27 +152,26 @@ void EntitySpawnSystem::createBullet(sf::Vector2f bulletPosition, sf::Vector2f v
 }
 
 void EntitySpawnSystem::addAnimationTextureComponent(std::shared_ptr<CSpriteGroup>& spriteGroup,
-        const sf::Vector2f& position, const std::string& animationTextureFilePath, const sf::IntRect& rectBounds,
-        const sf::Vector2f origin, const uint32_t totalAnimationFrames,
-        float spriteAnimationCompletionTime, float rotation)
+        const sf::Vector2f& position, const std::string& animationTextureFilePath, sf::IntRect& rectBounds,
+        const sf::Vector2f origin, const uint32_t totalAnimationFrames, const uint32_t animationIncrement,
+        float spriteAnimationCompletionTime, sf::Vector2f scale, float rotation)
 {
-    spriteGroup->animationRectBoundsGroup.emplace_back(rectBounds);
-    spriteGroup->totalAnimationFramesGroup.emplace_back(totalAnimationFrames);
-    spriteGroup->currentFrameGroup.emplace_back(0);
-    spriteGroup->spriteAnimationTickerGroup.emplace_back(0, spriteAnimationCompletionTime);
+    CSpriteGroup::SpriteAnimation spriteAnimation{rectBounds, rectBounds, animationIncrement, totalAnimationFrames, 0, {0, spriteAnimationCompletionTime}};
+    spriteGroup->animations.emplace_back(std::make_shared<CSpriteGroup::SpriteAnimation>(spriteAnimation));
 
-    std::shared_ptr<sf::Texture> animationTexture = buildSpriteTexture(spriteGroup, animationTextureFilePath);
-    spriteGroup->animationTextures.emplace_back(animationTexture);
+    std::shared_ptr<sf::Texture> spriteTexture = buildSpriteTexture(spriteGroup, animationTextureFilePath);
+    spriteGroup->textures.emplace_back(spriteTexture);
 
-    sf::Sprite animationSprite;
+    sf::Sprite sprite;
     sf::Texture& texture = *m_textureManager.getTexture(animationTextureFilePath);
-    animationSprite.setTexture(texture);
-    animationSprite.setTextureRect(spriteGroup->animationRectBoundsGroup.back());
-    animationSprite.setPosition(position);
-    animationSprite.setOrigin(origin);
-    animationSprite.rotate(rotation);
+    sprite.setTexture(texture);
+    sprite.setTextureRect(spriteGroup->animations.back()->animationRectBounds);
+    sprite.setPosition(position);
+    sprite.setOrigin(origin);
+    sprite.rotate(rotation);
+    sprite.setScale(scale);
 
-    spriteGroup->animationSprites.emplace_back(animationSprite);
+    spriteGroup->sprites.emplace_back(std::make_shared<sf::Sprite>(sprite));
 }
 
 std::shared_ptr<sf::Texture> EntitySpawnSystem::buildSpriteTexture(std::shared_ptr<CSpriteGroup>& spriteGroup,
@@ -183,7 +185,7 @@ std::shared_ptr<sf::Texture> EntitySpawnSystem::buildSpriteTexture(std::shared_p
     else
     {
         bool isTextureLoaded = animationTexture->loadFromFile(animationTextureFilePath,
-                spriteGroup->animationRectBoundsGroup.back());
+                spriteGroup->animations.back()->animationRectBounds);
         assert(isTextureLoaded);
         m_textureManager.addTexture(animationTextureFilePath, animationTextureFilePath);
     }

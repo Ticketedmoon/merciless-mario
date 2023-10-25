@@ -29,42 +29,40 @@ void AnimationSystem::execute()
     }
 }
 
-void AnimationSystem::tryUpdateSpriteAnimation(std::shared_ptr<CSpriteGroup>& spriteGroup) const
+void AnimationSystem::tryUpdateSpriteAnimation(std::shared_ptr<CSpriteGroup>& spriteGroup)
 {
-    for (size_t spriteIndex = 0; spriteIndex < spriteGroup->animationSprites.size(); spriteIndex++)
+    for (size_t spriteIndex = 0; spriteIndex < spriteGroup->sprites.size(); spriteIndex++)
     {
-        float& spriteAnimationTime = spriteGroup->spriteAnimationTickerGroup.at(spriteIndex).currentTime;
-        float spriteAnimationCompletionTime = spriteGroup->spriteAnimationTickerGroup.at(spriteIndex).completionTime;
+        std::shared_ptr<CSpriteGroup::SpriteAnimation>& spriteAnimation = spriteGroup->animations.at(spriteIndex);
+        float& spriteAnimationTime = spriteAnimation->animationTicker.timeBeforeAnimationUpdate;
+        float spriteAnimationCompletionTime = spriteAnimation->animationTicker.animationUpdateTime;
 
         spriteAnimationTime += DT;
 
         if (spriteAnimationTime >= spriteAnimationCompletionTime)
         {
-            sf::Sprite& currentSprite = spriteGroup->animationSprites.at(spriteIndex);
-            unsigned int& spriteAnimationFrameNo = spriteGroup->currentFrameGroup.at(spriteIndex);
-            unsigned int& spriteAnimationFramesTotal = spriteGroup->totalAnimationFramesGroup.at(spriteIndex);
-
-            resolveAnimation(currentSprite, spriteAnimationFrameNo, spriteAnimationFramesTotal);
+            std::shared_ptr<sf::Sprite>& sprite = spriteGroup->sprites.at(spriteIndex);
+            resolveAnimation(sprite, spriteAnimation);
             spriteAnimationTime = 0;
         }
     }
 }
 
-void AnimationSystem::resolveAnimation(sf::Sprite& currentSprite, unsigned int& spriteAnimationFrameNo,
-        const unsigned int& spriteAnimationFramesTotal) const
+void AnimationSystem::resolveAnimation(std::shared_ptr<sf::Sprite>& sprite,
+        std::shared_ptr<CSpriteGroup::SpriteAnimation>& spriteAnimation)
 {
-    const sf::IntRect& spriteRectBounds = currentSprite.getTextureRect();
-    if (spriteAnimationFrameNo >= spriteAnimationFramesTotal - 1)
+    if (spriteAnimation->currentFrame >= spriteAnimation->totalAnimationFrames - 1)
     {
         // Reset animation
-        currentSprite.setTextureRect({0, spriteRectBounds.top, spriteRectBounds.width, spriteRectBounds.height});
-        spriteAnimationFrameNo = 0;
+        spriteAnimation->animationRectBounds = spriteAnimation->animationRectStartBounds;
+        spriteAnimation->currentFrame = 0;
     }
     else
     {
         // Update animation frame
-        spriteAnimationFrameNo += 1;
-        int leftPos = TILE_SIZE * spriteAnimationFrameNo;
-        currentSprite.setTextureRect({leftPos, spriteRectBounds.top, spriteRectBounds.width, spriteRectBounds.height});
+        spriteAnimation->currentFrame++;
+        spriteAnimation->animationRectBounds.left = (spriteAnimation->animationIncrement * spriteAnimation->currentFrame);
     }
+
+    sprite->setTextureRect(spriteAnimation->animationRectBounds);
 }
