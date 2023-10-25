@@ -83,7 +83,7 @@ void TransformSystem::applyGravity(std::shared_ptr<CTransform>& cTransform, cons
         cMovement->isRising = false;
     }
 
-    if (cTransform->m_velocity.y < cMovement->maxGravityAcceleration)
+    if (cMovement->isAirborne && cTransform->m_velocity.y < cMovement->maxGravityAcceleration)
     {
         cTransform->m_velocity.y += cMovement->gravityRate * DT;
     }

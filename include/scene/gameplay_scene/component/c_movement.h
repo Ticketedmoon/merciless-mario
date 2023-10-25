@@ -23,7 +23,7 @@ class CMovement : public Component
         float maxGravityAcceleration{0.0f};
 
         bool isRising{false};
-        bool isAirborne{false};
+        bool isAirborne{true};
         bool hasTouchedCeiling{false};
         bool hasTouchedWall{false};
 };
