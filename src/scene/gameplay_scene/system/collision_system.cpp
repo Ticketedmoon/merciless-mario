@@ -143,8 +143,11 @@ void CollisionSystem::resolve(std::shared_ptr<Entity>& dynamicEntity, const sf::
         {
             if (!cMovement->hasTouchedWall)
             {
+                if (cMovement->isAirborne)
+                {
+                    cTransform->m_velocity.x = 0;
+                }
                 cMovement->hasTouchedWall = true;
-                cTransform->m_velocity.x = 0.0f;
             }
             cTransform->m_velocity.x += (cTransform->m_velocity.x > 0.0f
                     ? cTransform->m_velocity.x * -0.1f
