@@ -29,7 +29,7 @@ class CollisionSystem : public System
     private:
 
         static void checkForWindowCollision(const std::shared_ptr<Entity>& e, std::shared_ptr<CMovement>& cMovement);
-        static void checkForEntityCollision(std::shared_ptr<Entity>& dynamicEntity, const std::shared_ptr<Entity>& staticEntity);
+        static void checkForEntityCollision(std::shared_ptr<Entity>& dynamicEntity, const std::shared_ptr<Entity>& otherEntity);
         static bool isCollidingAABB(const std::shared_ptr<CSpriteGroup>& entitySpriteGroup,
                 const std::shared_ptr<CSpriteGroup>& otherEntitySpriteGroup,
                 sf::FloatRect& overlap);

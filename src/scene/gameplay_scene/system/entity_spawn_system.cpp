@@ -78,7 +78,7 @@ void EntitySpawnSystem::createPlayer(sf::Vector2f position, bool isCollidable)
     player->addComponent(Component::Type::TRANSFORM, std::make_shared<CTransform>(position, velocity));
     player->addComponent(Component::Type::USER_INPUT, std::make_shared<CAction>());
     player->addComponent(Component::Type::DYNAMIC_MOVEMENT, std::make_shared<CMovement>(
-            500.0f, 150.0f, 1000.0f, // movement
+            500.0f, 150.0f, 400.0f, // movement
             1500.0f, -300.0f, // jump velocity
             400.0f, 600.0f)); // gravity
     player->addComponent(Component::Type::CURSOR_FOLLOWER, std::make_shared<CCursorFollower>());
@@ -146,7 +146,7 @@ void EntitySpawnSystem::createBullet(sf::Vector2f bulletPosition, sf::Vector2f v
     bullet->addComponent(Component::Type::SPRITE_GROUP, animationComponent);
 
     bullet->addComponent(Component::Type::TRANSFORM, std::make_shared<CTransform>(bulletPosition, velocity));
-    //bullet->addComponent(Component::Type::COLLISION, std::make_shared<CCollision>());
+    bullet->addComponent(Component::Type::COLLISION, std::make_shared<CCollision>());
     bullet->addComponent(Component::Type::DYNAMIC_MOVEMENT, std::make_shared<CMovement>());
     bullet->addComponent(Component::Type::LIFESPAN, std::make_shared<CLifespan>(255));
 }

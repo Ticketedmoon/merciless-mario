@@ -42,15 +42,25 @@ void CollisionSystem::execute()
     }
 }
 
-void CollisionSystem::checkForEntityCollision(std::shared_ptr<Entity>& dynamicEntity, const std::shared_ptr<Entity>& staticEntity)
+void CollisionSystem::checkForEntityCollision(std::shared_ptr<Entity>& dynamicEntity,
+        const std::shared_ptr<Entity>& otherEntity)
 {
-    std::shared_ptr<CSpriteGroup> staticEntitySpriteGroup = std::static_pointer_cast<CSpriteGroup>(staticEntity->getComponentByType(Component::Type::SPRITE_GROUP));
-    std::shared_ptr<CSpriteGroup> dynamicEntitySpriteGroup = std::static_pointer_cast<CSpriteGroup>(dynamicEntity->getComponentByType(Component::Type::SPRITE_GROUP));
+    std::shared_ptr<CSpriteGroup> staticEntitySpriteGroup = std::static_pointer_cast<CSpriteGroup>(
+            otherEntity->getComponentByType(Component::Type::SPRITE_GROUP));
+    std::shared_ptr<CSpriteGroup> dynamicEntitySpriteGroup = std::static_pointer_cast<CSpriteGroup>(
+            dynamicEntity->getComponentByType(Component::Type::SPRITE_GROUP));
 
     sf::FloatRect overlap;
     if (isCollidingAABB(dynamicEntitySpriteGroup, staticEntitySpriteGroup, overlap))
     {
-        auto collisionNormal = dynamicEntitySpriteGroup->sprites.at(0)->getPosition() - staticEntitySpriteGroup->sprites.at(0)->getPosition();
+        if (dynamicEntity->getType() == Entity::Type::BULLET)
+        {
+            dynamicEntity->destroy();
+            otherEntity->destroy();
+        }
+
+        auto collisionNormal = dynamicEntitySpriteGroup->sprites.at(0)->getPosition() -
+                staticEntitySpriteGroup->sprites.at(0)->getPosition();
         auto manifold = getManifold(overlap, collisionNormal);
         resolve(dynamicEntity, manifold);
     }
