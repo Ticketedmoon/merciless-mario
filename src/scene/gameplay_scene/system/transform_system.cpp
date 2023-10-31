@@ -76,6 +76,11 @@ void TransformSystem::updatePosition(std::shared_ptr<CTransform>& cTransform)
 void TransformSystem::applyGravity(std::shared_ptr<CTransform>& cTransform, const std::shared_ptr<CMovement>& cMovement,
         std::shared_ptr<CSpriteGroup>& spriteGroup)
 {
+    if (cTransform->m_velocity.y >= 20)
+    {
+        cMovement->isAirborne = true;
+    }
+
     if (cMovement->isRising && !cMovement->hasTouchedCeiling && cTransform->m_velocity.y > cMovement->maxJumpVelocity)
     {
         m_audioManger->playSound(AudioManager::AudioType::JUMP, 5.0f);

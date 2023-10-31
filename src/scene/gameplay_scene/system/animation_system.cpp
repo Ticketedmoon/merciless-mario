@@ -32,7 +32,7 @@ void AnimationSystem::execute()
                 spriteGroup->animations.at(0)->animationRectBounds.top = TILE_SIZE;
                 tryUpdateSpriteAnimation(spriteGroup);
             }
-            if (cMovement->isAirborne)
+            if (cMovement->isRising)
             {
                 tryUpdateSpriteAnimation(spriteGroup);
             }
