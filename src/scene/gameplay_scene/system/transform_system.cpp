@@ -21,8 +21,10 @@ void TransformSystem::execute()
         std::shared_ptr<CAction> cAction = std::static_pointer_cast<CAction>(player->getComponentByType(Component::Type::USER_INPUT));
         std::shared_ptr<CMovement> cMovement = std::static_pointer_cast<CMovement>(player->getComponentByType(Component::Type::DYNAMIC_MOVEMENT));
         std::shared_ptr<CTransform> cTransform = std::static_pointer_cast<CTransform>(player->getComponentByType(Component::Type::TRANSFORM));
+        std::shared_ptr<CSpriteGroup> spriteGroup = std::static_pointer_cast<CSpriteGroup>(
+                player->getComponentByType(Component::Type::SPRITE_GROUP));
         updateVelocity(cTransform, cAction, cMovement);
-        applyGravity(cTransform, cMovement);
+        applyGravity(cTransform, cMovement, spriteGroup);
 
         updatePlayerArmPositionByMousePosition(player);
     }
@@ -71,13 +73,19 @@ void TransformSystem::updatePosition(std::shared_ptr<CTransform>& cTransform)
     cTransform->m_position.y += cTransform->m_velocity.y * DT;
 }
 
-void TransformSystem::applyGravity(std::shared_ptr<CTransform>& cTransform, const std::shared_ptr<CMovement>& cMovement)
+void TransformSystem::applyGravity(std::shared_ptr<CTransform>& cTransform, const std::shared_ptr<CMovement>& cMovement,
+        std::shared_ptr<CSpriteGroup>& spriteGroup)
 {
     if (cMovement->isRising && !cMovement->hasTouchedCeiling && cTransform->m_velocity.y > cMovement->maxJumpVelocity)
     {
         m_audioManger->playSound(AudioManager::AudioType::JUMP, 5.0f);
         cTransform->m_velocity.y -= cMovement->jumpAcceleration * DT;
         cMovement->isAirborne = true;
+
+        spriteGroup->animations.at(0)->animationRectStartBounds = {160, 0, TILE_SIZE, TILE_SIZE};
+        spriteGroup->animations.at(0)->animationRectBounds = {160, 0, TILE_SIZE, TILE_SIZE};
+        spriteGroup->animations.at(0)->currentFrame = 0;
+        spriteGroup->animations.at(0)->totalAnimationFrames = 1;
     }
     else
     {

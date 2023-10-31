@@ -37,7 +37,8 @@ class TransformSystem : public System
         void updatePosition(std::shared_ptr<CTransform>& cTransform);
         void checkForWindowCollision(std::shared_ptr<CTransform>& cTransform,
                 const std::shared_ptr<CCollision>& cCollision);
-        void applyGravity(std::shared_ptr<CTransform>& cTransform, const std::shared_ptr<CMovement>& cMovement);
+        void applyGravity(std::shared_ptr<CTransform>& cTransform, const std::shared_ptr<CMovement>& cMovement,
+                std::shared_ptr<CSpriteGroup>& spriteGroup);
         void updatePlayerArmPositionByMousePosition(std::shared_ptr<Entity>& player);
 
     private:
