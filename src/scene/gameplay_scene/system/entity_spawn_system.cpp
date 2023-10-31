@@ -62,11 +62,10 @@ void EntitySpawnSystem::createPlayer(sf::Vector2f position, bool isCollidable)
 
     std::shared_ptr<CSpriteGroup> spriteGroup = std::make_shared<CSpriteGroup>();
 
-    // Body
-    const std::string bodyTextureFilePath = "resources/assets/texture/mario_spritesheet_smb3.png";
-    sf::IntRect bodyRectBounds = sf::IntRect(35, 0, 35, 30);
-    const sf::Vector2<float>& origin = sf::Vector2f(bodyRectBounds.width / 2, bodyRectBounds.height / 2);
-    addAnimationTextureComponent(spriteGroup, position, bodyTextureFilePath, bodyRectBounds, origin, 3, 35, 1.0f/12.0f, {1, 1}, 0);
+    const std::string bodyTextureFilePath = "resources/assets/texture/small_mario.png";
+    sf::IntRect body = sf::IntRect(0, 0, TILE_SIZE, TILE_SIZE);
+    const sf::Vector2<float>& bodyOrigin = sf::Vector2f(body.width / 2, body.height / 2);
+    addAnimationTextureComponent(spriteGroup, position, bodyTextureFilePath, body, bodyOrigin, 4, TILE_SIZE, 1.0f/10.0f, {1, 1}, 0);
 
     // Weapon
     const std::string shotgunTextureFilePath = "resources/assets/texture/shotgun.png";

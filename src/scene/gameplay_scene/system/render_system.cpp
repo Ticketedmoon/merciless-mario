@@ -1,4 +1,3 @@
-#include <iostream>
 #include "render_system.h"
 
 RenderSystem::RenderSystem(sf::RenderTarget& renderTarget, EntityManager& entityManager)
