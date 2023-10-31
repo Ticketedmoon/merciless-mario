@@ -18,11 +18,11 @@ class CSpriteGroup : public Component
             float animationUpdateTime;
         };
         struct SpriteAnimation {
-            const sf::IntRect animationRectStartBounds;
+            sf::IntRect animationRectStartBounds;
             sf::IntRect animationRectBounds;
-            const uint32_t animationIncrement{};
+            uint32_t animationIncrement{};
 
-            const uint32_t totalAnimationFrames{};
+            uint32_t totalAnimationFrames{};
             uint32_t currentFrame{};
             SpriteAnimationTicker animationTicker{};
         };

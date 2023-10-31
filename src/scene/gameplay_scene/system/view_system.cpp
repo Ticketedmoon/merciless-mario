@@ -34,7 +34,7 @@ void ViewSystem::execute()
 
     // Update to New View
     sf::View newView = m_renderTexture.getView();
-    newView.zoom(VIEW_ZOOM_FACTOR);
+    newView.zoom(VIEW_ZOOM_OUT_FACTOR);
     newView.setCenter(centreX, centreY);
     m_renderTexture.setView(newView);
 }

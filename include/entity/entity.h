@@ -31,6 +31,7 @@ class Entity
             ENEMY,
             BULLET,
             PLATFORM,
+            QUESTION_BLOCK,
             NONE
         };
 

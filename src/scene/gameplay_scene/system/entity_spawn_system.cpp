@@ -66,7 +66,7 @@ void EntitySpawnSystem::createPlayer(sf::Vector2f position, bool isCollidable)
     const std::string bodyTextureFilePath = "resources/assets/texture/mario_spritesheet_smb3.png";
     sf::IntRect bodyRectBounds = sf::IntRect(35, 0, 35, 30);
     const sf::Vector2<float>& origin = sf::Vector2f(bodyRectBounds.width / 2, bodyRectBounds.height / 2);
-    addAnimationTextureComponent(spriteGroup, position, bodyTextureFilePath, bodyRectBounds, origin, 7, 35, 1.0f/12.0f, {1, 1}, 0);
+    addAnimationTextureComponent(spriteGroup, position, bodyTextureFilePath, bodyRectBounds, origin, 3, 35, 1.0f/12.0f, {1, 1}, 0);
 
     // Weapon
     const std::string shotgunTextureFilePath = "resources/assets/texture/shotgun.png";
@@ -98,8 +98,8 @@ void EntitySpawnSystem::createPlatform(sf::Vector2f position, bool isCollidable)
     platform->addComponent(Component::Type::STATIC_MOVEMENT, std::make_shared<CMovement>());
 
     std::shared_ptr<CSpriteGroup> animationComponent = std::make_shared<CSpriteGroup>();
-    const std::string animationTextureFilePath = "resources/assets/texture/brick.png";
-    sf::Rect<int> rectBounds = sf::IntRect(0, 0, TILE_SIZE, TILE_SIZE);
+    const std::string animationTextureFilePath = "resources/assets/texture/blocks.png";
+    sf::Rect<int> rectBounds = sf::IntRect(64, 64, TILE_SIZE, TILE_SIZE);
 
     addAnimationTextureComponent(animationComponent, position, animationTextureFilePath, rectBounds,
             sf::Vector2f(rectBounds.width / 2, rectBounds.height / 2), 1, TILE_SIZE, 0, {1, 1}, 0);
@@ -113,18 +113,18 @@ void EntitySpawnSystem::createPlatform(sf::Vector2f position, bool isCollidable)
 
 void EntitySpawnSystem::createQuestionBlock(sf::Vector2f position, bool isCollidable)
 {
-    std::shared_ptr<Entity> platform = m_entityManager.addEntity(Entity::Type::PLATFORM);
+    std::shared_ptr<Entity> platform = m_entityManager.addEntity(Entity::Type::QUESTION_BLOCK);
 
     sf::Vector2f velocity = sf::Vector2f(0, 0);
     platform->addComponent(Component::Type::TRANSFORM, std::make_shared<CTransform>(position, velocity));
     platform->addComponent(Component::Type::STATIC_MOVEMENT, std::make_shared<CMovement>());
 
     std::shared_ptr<CSpriteGroup> animationComponent = std::make_shared<CSpriteGroup>();
-    const std::string animationTextureFilePath = "resources/assets/texture/question_block.png";
+    const std::string animationTextureFilePath = "resources/assets/texture/blocks.png";
     sf::Rect<int> rectBounds = sf::IntRect(0, 0, TILE_SIZE, TILE_SIZE);
 
     addAnimationTextureComponent(animationComponent, position, animationTextureFilePath, rectBounds,
-            sf::Vector2f(rectBounds.width / 2, rectBounds.height / 2), 3, TILE_SIZE, 1.0f/3.0f, {1, 1}, 0);
+            sf::Vector2f(rectBounds.width / 2, rectBounds.height / 2), 3, TILE_SIZE, 1.0f/3.5f, {1, 1}, 0);
     platform->addComponent(Component::Type::SPRITE_GROUP, animationComponent);
 
     if (isCollidable)

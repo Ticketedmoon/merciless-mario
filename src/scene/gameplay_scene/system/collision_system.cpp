@@ -27,12 +27,12 @@ void CollisionSystem::execute()
             dynamicEntity->destroy();
         }
 
-        for (const std::shared_ptr<Entity>& staticEntity: staticEntities)
+        for (std::shared_ptr<Entity>& staticEntity: staticEntities)
         {
             checkForEntityCollision(dynamicEntity, staticEntity);
         }
 
-        for (const std::shared_ptr<Entity>& otherDynamicEntity: dynamicEntities)
+        for (std::shared_ptr<Entity>& otherDynamicEntity: dynamicEntities)
         {
             if (dynamicEntity->getId() != otherDynamicEntity->getId())
             {
@@ -42,8 +42,7 @@ void CollisionSystem::execute()
     }
 }
 
-void CollisionSystem::checkForEntityCollision(std::shared_ptr<Entity>& dynamicEntity,
-        const std::shared_ptr<Entity>& otherEntity)
+void CollisionSystem::checkForEntityCollision(std::shared_ptr<Entity>& dynamicEntity,std::shared_ptr<Entity>& otherEntity)
 {
     std::shared_ptr<CSpriteGroup> staticEntitySpriteGroup = std::static_pointer_cast<CSpriteGroup>(
             otherEntity->getComponentByType(Component::Type::SPRITE_GROUP));
@@ -62,7 +61,7 @@ void CollisionSystem::checkForEntityCollision(std::shared_ptr<Entity>& dynamicEn
         auto collisionNormal = dynamicEntitySpriteGroup->sprites.at(0)->getPosition() -
                 staticEntitySpriteGroup->sprites.at(0)->getPosition();
         auto manifold = getManifold(overlap, collisionNormal);
-        resolve(dynamicEntity, manifold);
+        resolve(dynamicEntity, otherEntity, manifold);
     }
 }
 
@@ -119,26 +118,48 @@ sf::Vector3f CollisionSystem::getManifold(const sf::FloatRect& overlap, const sf
     return manifold;
 }
 
-void CollisionSystem::resolve(std::shared_ptr<Entity>& dynamicEntity, const sf::Vector3f& manifold)
+void CollisionSystem::resolve(std::shared_ptr<Entity>& entity, std::shared_ptr<Entity>& otherEntity,
+        const sf::Vector3f& manifold)
 {
-    if (!dynamicEntity->hasComponents({Component::Type::TRANSFORM, Component::Type::DYNAMIC_MOVEMENT}))
+    if (!entity->hasComponents({Component::Type::TRANSFORM, Component::Type::DYNAMIC_MOVEMENT}))
     {
         return;
     }
 
-    std::shared_ptr<CTransform> cTransform = std::static_pointer_cast<CTransform>(dynamicEntity->getComponentByType(Component::Type::TRANSFORM));
-    std::shared_ptr<CMovement> cMovement = std::static_pointer_cast<CMovement>(dynamicEntity->getComponentByType(Component::Type::DYNAMIC_MOVEMENT));
+    std::shared_ptr<CTransform> cTransform = std::static_pointer_cast<CTransform>(entity->getComponentByType(Component::Type::TRANSFORM));
+    std::shared_ptr<CMovement> cMovement = std::static_pointer_cast<CMovement>(entity->getComponentByType(Component::Type::DYNAMIC_MOVEMENT));
 
-    if (dynamicEntity->hasComponent(Component::Type::USER_INPUT))
+    if (entity->hasComponent(Component::Type::USER_INPUT))
     {
-        if (manifold.y == 1 || manifold.y == -1)
+        // Ground
+        if (manifold.y == 1)
         {
             std::shared_ptr<CAction> cAction = std::static_pointer_cast<CAction>(
-                    dynamicEntity->getComponentByType(Component::Type::USER_INPUT));
+                    entity->getComponentByType(Component::Type::USER_INPUT));
             cMovement->isAirborne = false;
             cMovement->hasTouchedCeiling = false;
             cTransform->m_velocity.y = 0;
         }
+
+        // Ceiling
+        if (manifold.y == -1 && !cMovement->hasTouchedCeiling)
+        {
+            cTransform->m_velocity.y = 0;
+            cMovement->hasTouchedCeiling = true;
+
+            // If question-block, turn off and get coin
+            if (otherEntity->getType() == Entity::Type::QUESTION_BLOCK)
+            {
+                std::shared_ptr<CSpriteGroup> otherEntitySpriteGroup = std::static_pointer_cast<CSpriteGroup>(
+                        otherEntity->getComponentByType(Component::Type::SPRITE_GROUP));
+                otherEntitySpriteGroup->animations.at(0)->animationRectStartBounds = sf::IntRect(96, 0, TILE_SIZE, TILE_SIZE);
+                otherEntitySpriteGroup->animations.at(0)->animationRectBounds = sf::IntRect(96, 0, TILE_SIZE, TILE_SIZE);
+                otherEntitySpriteGroup->animations.at(0)->currentFrame = 0;
+                otherEntitySpriteGroup->animations.at(0)->totalAnimationFrames = 1;
+            }
+        }
+
+        // Left/Right Wall
         if (manifold.x == 1 || manifold.x == -1)
         {
             if (!cMovement->hasTouchedWall)
@@ -159,23 +180,8 @@ void CollisionSystem::resolve(std::shared_ptr<Entity>& dynamicEntity, const sf::
         }
     }
 
-    updateVelocityOnCollision(manifold, cTransform, cMovement);
-
     // move the shape out of the solid object by the penetration amount
     sf::Vector2f normal(manifold.x, manifold.y);
     const sf::Vector2<float>& offset = normal * manifold.z;
     cTransform->m_position -= offset;
-}
-
-void CollisionSystem::updateVelocityOnCollision(const sf::Vector3f& manifold, std::shared_ptr<CTransform>& cTransform,
-        std::shared_ptr<CMovement>& cMovement)
-{
-
-    // Reset velocity if hit collidable entity.
-    bool isCollisionOverlapFromTop = manifold.y == -1;
-    if (isCollisionOverlapFromTop && !cMovement->hasTouchedCeiling)
-    {
-        cTransform->m_velocity.y = 0;
-        cMovement->hasTouchedCeiling = true;
-    }
 }
