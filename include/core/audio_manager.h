@@ -13,6 +13,7 @@ class AudioManager {
     public:
         enum class AudioType
         {
+                JUMP
         };
 
         ~AudioManager();
@@ -30,6 +31,8 @@ class AudioManager {
         AudioManager();
 
     private:
+        static const inline std::string JUMP_SFX_PATH = "resources/assets/sound/sfx/mario-jump-sfx_1.ogg";
+
         static inline AudioManager* m_audioManager;
 
         static inline std::unordered_map<AudioType, sf::SoundBuffer> m_soundBufferMap;

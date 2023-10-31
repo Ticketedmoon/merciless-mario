@@ -2,6 +2,10 @@
 
 AudioManager::AudioManager()
 {
+    m_soundBufferMap[AudioType::JUMP] = sf::SoundBuffer();
+    m_soundMap[AudioType::JUMP] = sf::Sound(m_soundBufferMap[AudioType::JUMP]);
+    bool wasSfxLoaded = m_soundBufferMap[AudioType::JUMP].loadFromFile(JUMP_SFX_PATH);
+    assert(wasSfxLoaded);
 }
 
 AudioManager::~AudioManager()

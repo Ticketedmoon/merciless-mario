@@ -60,6 +60,11 @@ void GameplayScene::performAction(Action& action)
     }
     if (action.getType() == Action::Type::JUMP)
     {
+        if (action.getMode() == Action::Mode::RELEASE)
+        {
+            return;
+        }
+
         actionComponent->isJumping = action.getMode() == Action::Mode::PRESS;
     }
     if (action.getType() == Action::Type::SHOOT)

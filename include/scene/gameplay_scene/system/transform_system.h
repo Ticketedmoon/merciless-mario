@@ -21,6 +21,7 @@
 #include "c_action.h"
 #include "system.h"
 #include "c_movement.h"
+#include "audio_manager.h"
 
 class TransformSystem : public System
 {
@@ -30,19 +31,20 @@ class TransformSystem : public System
         void execute() override;
 
     private:
-        static void reduceVelocity(std::shared_ptr<CTransform>& cTransform, std::shared_ptr<CMovement>& cMovement);
-        static void updateVelocity(std::shared_ptr<CTransform>& cTransform, const std::shared_ptr<CAction>& cAction,
+        void reduceVelocity(std::shared_ptr<CTransform>& cTransform, std::shared_ptr<CMovement>& cMovement);
+        void updateVelocity(std::shared_ptr<CTransform>& cTransform, const std::shared_ptr<CAction>& cAction,
                 std::shared_ptr<CMovement>& cMovement);
-        static void updatePosition(std::shared_ptr<CTransform>& cTransform);
-        static void checkForWindowCollision(std::shared_ptr<CTransform>& cTransform,
+        void updatePosition(std::shared_ptr<CTransform>& cTransform);
+        void checkForWindowCollision(std::shared_ptr<CTransform>& cTransform,
                 const std::shared_ptr<CCollision>& cCollision);
-        static void applyGravity(std::shared_ptr<CTransform>& cTransform, const std::shared_ptr<CMovement>& cMovement);
+        void applyGravity(std::shared_ptr<CTransform>& cTransform, const std::shared_ptr<CMovement>& cMovement);
         void updatePlayerArmPositionByMousePosition(std::shared_ptr<Entity>& player);
 
     private:
         static constexpr int SPRITE_TEXTURE_OFFSET_DEGREES = 185;
 
         EntityManager& m_entityManager;
+        AudioManager* m_audioManger = AudioManager::getInstance();
         sf::RenderWindow& m_window;
         sf::RenderTexture& m_renderTexture;
 };
