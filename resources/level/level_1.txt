@@ -1,5 +1,5 @@
 ENTITY_TYPE     ANIMATION        LOCATION_X     LOCATION_Y      IS_COLLIDABLE
-PLAYER          _                        0              10              1
+PLAYER          _                        0              3              1
 TILE            GROUND                   0              0               1
 TILE            GROUND                   1              0               1
 TILE            GROUND                   2              0               1

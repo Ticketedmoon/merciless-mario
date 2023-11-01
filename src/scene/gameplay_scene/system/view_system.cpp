@@ -26,8 +26,7 @@ void ViewSystem::execute()
 
     sf::Vector2f entityPos = cTransform->m_position;
 
-    float centreX = getViewCentreForCoordinate(entityPos.x, MAX_LEVEL_WIDTH, WINDOW_WIDTH, cSpriteGroup->sprites.at(0)->getTextureRect().width);
-    float centreY = getViewCentreForCoordinate(entityPos.y, MAX_LEVEL_HEIGHT, WINDOW_HEIGHT, cSpriteGroup->sprites.at(0)->getTextureRect().height);
+    float playerCentreX = getViewCentreForCoordinate(entityPos.x, MAX_LEVEL_WIDTH, WINDOW_WIDTH, cSpriteGroup->sprites.at(0)->getTextureRect().width);
 
     // Reset View
     m_renderTexture.setView(m_renderTexture.getDefaultView());
@@ -35,7 +34,7 @@ void ViewSystem::execute()
     // Update to New View
     sf::View newView = m_renderTexture.getView();
     newView.zoom(VIEW_ZOOM_OUT_FACTOR);
-    newView.setCenter(centreX, centreY);
+    newView.setCenter(playerCentreX, newView.getCenter().y + VIEW_Y_OFFSET);
     m_renderTexture.setView(newView);
 }
 

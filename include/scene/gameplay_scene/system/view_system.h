@@ -22,7 +22,8 @@ class ViewSystem : public System
         static float getViewCentreForCoordinate(float playerCoordinatePosition, float worldDimension,
                 float windowDimensionValue, float playerDimensionValue);
     private:
-        static constexpr float VIEW_ZOOM_OUT_FACTOR = 0.85f;
+        static constexpr float VIEW_ZOOM_OUT_FACTOR = 0.65f;
+        static constexpr uint32_t VIEW_Y_OFFSET = 175;
 
         EntityManager& m_entityManager;
         sf::RenderTexture& m_renderTexture;

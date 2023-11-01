@@ -20,20 +20,20 @@ void AnimationSystem::execute()
                     entity->getComponentByType(Component::Type::USER_INPUT));
             std::shared_ptr<CMovement> cMovement = std::static_pointer_cast<CMovement>(
                     entity->getComponentByType(Component::Type::DYNAMIC_MOVEMENT));
+            if (cMovement->isRising)
+            {
+                tryUpdateSpriteAnimation(spriteGroup);
+            }
             if (cAction->isMovingRight)
             {
                 spriteGroup->animations.at(0)->animationRectStartBounds.top = 0;
                 spriteGroup->animations.at(0)->animationRectBounds.top = 0;
                 tryUpdateSpriteAnimation(spriteGroup);
             }
-            if (cAction->isMovingLeft)
+            else if (cAction->isMovingLeft)
             {
                 spriteGroup->animations.at(0)->animationRectStartBounds.top = TILE_SIZE;
                 spriteGroup->animations.at(0)->animationRectBounds.top = TILE_SIZE;
-                tryUpdateSpriteAnimation(spriteGroup);
-            }
-            if (cMovement->isRising)
-            {
                 tryUpdateSpriteAnimation(spriteGroup);
             }
         }
