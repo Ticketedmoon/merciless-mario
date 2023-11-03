@@ -123,12 +123,20 @@ void TransformSystem::updateVelocity(std::shared_ptr<CTransform>& cTransform, co
 
 void TransformSystem::reduceVelocity(std::shared_ptr<CTransform>& cTransform, std::shared_ptr<CMovement>& cMovement)
 {
-    cTransform->m_velocity.x -= cTransform->m_velocity.x > 0.0f
-            ? std::abs(cMovement->movementDecelerationPerFrame) * DT
-            : 0;
-    cTransform->m_velocity.x += cTransform->m_velocity.x < 0.0f
-            ? std::abs(cMovement->movementDecelerationPerFrame) * DT
-            : 0;
+    float movementDeceleration = std::abs(cMovement->movementDecelerationPerFrame) * DT;
+
+    if (cTransform->m_velocity.x > movementDeceleration)
+    {
+        cTransform->m_velocity.x -= movementDeceleration;
+    }
+    else if (cTransform->m_velocity.x < -std::abs(cMovement->movementDecelerationPerFrame) * DT)
+    {
+        cTransform->m_velocity.x += movementDeceleration;
+    }
+    else
+    {
+        cTransform->m_velocity.x = 0;
+    }
 }
 
 void TransformSystem::updatePlayerArmPositionByMousePosition(std::shared_ptr<Entity>& player)
