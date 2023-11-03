@@ -23,7 +23,7 @@ class ViewSystem : public System
                 float windowDimensionValue, float playerDimensionValue);
     private:
         static constexpr float VIEW_ZOOM_OUT_FACTOR = 0.65f;
-        static constexpr uint32_t VIEW_Y_OFFSET = 175;
+        static constexpr uint32_t VIEW_Y_OFFSET = 136;
 
         EntityManager& m_entityManager;
         sf::RenderTexture& m_renderTexture;

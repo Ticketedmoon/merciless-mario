@@ -1,54 +1,93 @@
-ENTITY_TYPE     ANIMATION        LOCATION_X     LOCATION_Y      IS_COLLIDABLE
-PLAYER          _                        0              3              1
-TILE            GROUND                   0              0               1
-TILE            GROUND                   1              0               1
-TILE            GROUND                   2              0               1
-TILE            GROUND                   3              0               1
-TILE            GROUND                   4              0               1
-TILE            GROUND                   5              0               1
-TILE            GROUND                   6              0               1
-TILE            GROUND                   7              0               1
-TILE            GROUND                   8              0               1
-TILE            GROUND                   9              0               1
-TILE            GROUND                   10             0               1
-TILE            GROUND                   11             0               1
-TILE            GROUND                   12             0               1
-TILE            GROUND                   13             0               1
-TILE            GROUND                   14             0               1
-TILE            GROUND                   15             0               1
-TILE            GROUND                   16             0               1
-TILE            GROUND                   17             0               1
-TILE            GROUND                   18             0               1
-TILE            GROUND                   19             0               1
-TILE            GROUND                   20             0               1
-TILE            GROUND                   21             0               1
-TILE            GROUND                   22             0               1
-TILE            GROUND                   23             0               1
-TILE            GROUND                   24             0               1
-TILE            GROUND                   25             0               1
-TILE            GROUND                   26             0               1
-TILE            GROUND                   27             0               1
-TILE            GROUND                   28             0               1
-TILE            GROUND                   29             0               1
-TILE            GROUND                   30             0               1
-TILE            GROUND                   31             0               1
-TILE            GROUND                   32             0               1
-TILE            GROUND                   33             0               1
-TILE            GROUND                   34             0               1
-TILE            GROUND                   35             0               1
-TILE            GROUND                   36             0               1
+ENTITY_TYPE     ANIMATION        LOCATION_X     LOCATION_Y
+PLAYER          _                        0              3
 
-TILE            GROUND                   0              10               1
-TILE            GROUND                   3              10               1
-TILE            GROUND                   6              10               1
-TILE            GROUND                   9              10               1
-TILE            GROUND                   12             10               1
-TILE            GROUND                   15             10               1
-TILE            GROUND                   18             10               1
-TILE            GROUND                   21             10               1
-TILE            GROUND                   24             10               1
-TILE            GROUND                   27             10               1
+TILE            GROUND                   0              0
+TILE            GROUND                   1              0
+TILE            GROUND                   2              0
+TILE            GROUND                   3              0
+TILE            GROUND                   4              0
+TILE            GROUND                   5              0
+TILE            GROUND                   6              0
+TILE            GROUND                   7              0
+TILE            GROUND                   8              0
+TILE            GROUND                   9              0
+TILE            GROUND                   10             0
+TILE            GROUND                   11             0
+TILE            GROUND                   12             0
+TILE            GROUND                   13             0
+TILE            GROUND                   14             0
+TILE            GROUND                   15             0
+TILE            GROUND                   16             0
+TILE            GROUND                   17             0
+TILE            GROUND                   18             0
+TILE            GROUND                   19             0
+TILE            GROUND                   20             0
+TILE            GROUND                   21             0
+TILE            GROUND                   22             0
+TILE            GROUND                   23             0
+TILE            GROUND                   24             0
+TILE            GROUND                   25             0
+TILE            GROUND                   26             0
+TILE            GROUND                   27             0
+TILE            GROUND                   28             0
+TILE            GROUND                   29             0
+TILE            GROUND                   30             0
+TILE            GROUND                   31             0
+TILE            GROUND                   32             0
+TILE            GROUND                   33             0
+TILE            GROUND                   34             0
+TILE            GROUND                   35             0
+TILE            GROUND                   36             0
 
-TILE            QUESTION_BLOCK           3              5               1
-TILE            QUESTION_BLOCK           6              5               1
-TILE            QUESTION_BLOCK           9              5               1
+TILE            GROUND                   0              1
+TILE            GROUND                   1              1
+TILE            GROUND                   2              1
+TILE            GROUND                   3              1
+TILE            GROUND                   4              1
+TILE            GROUND                   5              1
+TILE            GROUND                   6              1
+TILE            GROUND                   7              1
+TILE            GROUND                   8              1
+TILE            GROUND                   9              1
+TILE            GROUND                   10             1
+TILE            GROUND                   11             1
+TILE            GROUND                   12             1
+TILE            GROUND                   13             1
+TILE            GROUND                   14             1
+TILE            GROUND                   15             1
+TILE            GROUND                   16             1
+TILE            GROUND                   17             1
+TILE            GROUND                   18             1
+TILE            GROUND                   19             1
+TILE            GROUND                   20             1
+TILE            GROUND                   21             1
+TILE            GROUND                   22             1
+TILE            GROUND                   23             1
+TILE            GROUND                   24             1
+TILE            GROUND                   25             1
+TILE            GROUND                   26             1
+TILE            GROUND                   27             1
+TILE            GROUND                   28             1
+TILE            GROUND                   29             1
+TILE            GROUND                   30             1
+TILE            GROUND                   31             1
+TILE            GROUND                   32             1
+TILE            GROUND                   33             1
+TILE            GROUND                   34             1
+TILE            GROUND                   35             1
+TILE            GROUND                   36             1
+
+TILE            BRICK                    0              10
+TILE            BRICK                    3              10
+TILE            BRICK                    6              10
+TILE            BRICK                    9              10
+TILE            BRICK                    12             10
+TILE            BRICK                    15             10
+TILE            BRICK                    18             10
+TILE            BRICK                    21             10
+TILE            BRICK                    24             10
+TILE            BRICK                    27             10
+
+TILE            QUESTION_BLOCK           3              5
+TILE            QUESTION_BLOCK           6              5
+TILE            QUESTION_BLOCK           9              5

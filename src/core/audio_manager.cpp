@@ -2,9 +2,19 @@
 
 AudioManager::AudioManager()
 {
-    m_soundBufferMap[AudioType::JUMP] = sf::SoundBuffer();
-    m_soundMap[AudioType::JUMP] = sf::Sound(m_soundBufferMap[AudioType::JUMP]);
-    bool wasSfxLoaded = m_soundBufferMap[AudioType::JUMP].loadFromFile(JUMP_SFX_PATH);
+    loadSfx(AudioType::JUMP, JUMP_SFX_PATH);
+    loadSfx(AudioType::BUMP, BUMP_SFX_PATH);
+    loadSfx(AudioType::BREAK_BRICK, BREAK_BRICK_SFX_PATH);
+    loadSfx(AudioType::POWER_UP_APPEARS, POWER_UP_APPEARS_SFX_PATH);
+}
+void AudioManager::loadSfx(const AudioType audioType, const std::string& sfxPath)
+{
+    assert(!m_soundBufferMap.contains(audioType));
+
+    m_soundBufferMap[audioType] = sf::SoundBuffer();
+    m_soundMap[audioType] = sf::Sound(m_soundBufferMap[audioType]);
+    bool wasSfxLoaded = m_soundBufferMap[audioType].loadFromFile(sfxPath);
+
     assert(wasSfxLoaded);
 }
 

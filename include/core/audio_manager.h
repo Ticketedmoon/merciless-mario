@@ -13,7 +13,10 @@ class AudioManager {
     public:
         enum class AudioType
         {
-                JUMP
+                JUMP,
+                POWER_UP_APPEARS,
+                BUMP,
+                BREAK_BRICK,
         };
 
         ~AudioManager();
@@ -30,8 +33,13 @@ class AudioManager {
     private:
         AudioManager();
 
+        static void loadSfx(AudioType audioType, const std::string& sfxPath);
+
     private:
-        static const inline std::string JUMP_SFX_PATH = "resources/assets/sound/sfx/mario-jump-sfx_1.ogg";
+        static const inline std::string JUMP_SFX_PATH = "resources/assets/sound/sfx/smb_jump.ogg";
+        static const inline std::string BUMP_SFX_PATH = "resources/assets/sound/sfx/smb_bump.ogg";
+        static const inline std::string BREAK_BRICK_SFX_PATH = "resources/assets/sound/sfx/smb_breakbrick.ogg";
+        static const inline std::string POWER_UP_APPEARS_SFX_PATH = "resources/assets/sound/sfx/smb_powerup_appears.ogg";
 
         static inline AudioManager* m_audioManager;
 

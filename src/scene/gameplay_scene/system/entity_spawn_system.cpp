@@ -54,7 +54,7 @@ void EntitySpawnSystem::execute()
     }
 }
 
-void EntitySpawnSystem::createPlayer(sf::Vector2f position, bool isCollidable)
+void EntitySpawnSystem::createPlayer(sf::Vector2f position)
 {
     std::shared_ptr<Entity>& player = m_entityManager.addEntity(Entity::Type::PLAYER);
 
@@ -81,42 +81,34 @@ void EntitySpawnSystem::createPlayer(sf::Vector2f position, bool isCollidable)
             1500.0f, -300.0f, // jump velocity
             400.0f, 600.0f)); // gravity
     player->addComponent(Component::Type::CURSOR_FOLLOWER, std::make_shared<CCursorFollower>());
-
-    if (isCollidable)
-    {
-        player->addComponent(Component::Type::COLLISION, std::make_shared<CCollision>());
-    }
+    player->addComponent(Component::Type::COLLISION, std::make_shared<CCollision>());
 }
 
-void EntitySpawnSystem::createPlatform(sf::Vector2f position, bool isCollidable)
+void EntitySpawnSystem::createBricks(sf::Vector2f position)
 {
-    std::shared_ptr<Entity> platform = m_entityManager.addEntity(Entity::Type::PLATFORM);
+    std::shared_ptr<Entity> brick = m_entityManager.addEntity(Entity::Type::BRICK);
 
     sf::Vector2f velocity = sf::Vector2f(0, 0);
-    platform->addComponent(Component::Type::TRANSFORM, std::make_shared<CTransform>(position, velocity));
-    platform->addComponent(Component::Type::STATIC_MOVEMENT, std::make_shared<CMovement>());
+    brick->addComponent(Component::Type::TRANSFORM, std::make_shared<CTransform>(position, velocity));
+    brick->addComponent(Component::Type::STATIC_MOVEMENT, std::make_shared<CMovement>());
 
     std::shared_ptr<CSpriteGroup> animationComponent = std::make_shared<CSpriteGroup>();
     const std::string animationTextureFilePath = "resources/assets/texture/blocks.png";
-    sf::Rect<int> rectBounds = sf::IntRect(64, 64, TILE_SIZE, TILE_SIZE);
+    sf::Rect<int> rectBounds = sf::IntRect(TILE_SIZE, TILE_SIZE, TILE_SIZE, TILE_SIZE);
 
     addAnimationTextureComponent(animationComponent, position, animationTextureFilePath, rectBounds,
             sf::Vector2f(rectBounds.width / 2, rectBounds.height / 2), 1, TILE_SIZE, 0, {1, 1}, 0);
-    platform->addComponent(Component::Type::SPRITE_GROUP, animationComponent);
-
-    if (isCollidable)
-    {
-        platform->addComponent(Component::Type::COLLISION, std::make_shared<CCollision>());
-    }
+    brick->addComponent(Component::Type::SPRITE_GROUP, animationComponent);
+    brick->addComponent(Component::Type::COLLISION, std::make_shared<CCollision>());
 }
 
-void EntitySpawnSystem::createQuestionBlock(sf::Vector2f position, bool isCollidable)
+void EntitySpawnSystem::createQuestionBlock(sf::Vector2f position)
 {
-    std::shared_ptr<Entity> platform = m_entityManager.addEntity(Entity::Type::QUESTION_BLOCK);
+    std::shared_ptr<Entity> questionBlock = m_entityManager.addEntity(Entity::Type::QUESTION_BLOCK);
 
     sf::Vector2f velocity = sf::Vector2f(0, 0);
-    platform->addComponent(Component::Type::TRANSFORM, std::make_shared<CTransform>(position, velocity));
-    platform->addComponent(Component::Type::STATIC_MOVEMENT, std::make_shared<CMovement>());
+    questionBlock->addComponent(Component::Type::TRANSFORM, std::make_shared<CTransform>(position, velocity));
+    questionBlock->addComponent(Component::Type::STATIC_MOVEMENT, std::make_shared<CMovement>());
 
     std::shared_ptr<CSpriteGroup> animationComponent = std::make_shared<CSpriteGroup>();
     const std::string animationTextureFilePath = "resources/assets/texture/blocks.png";
@@ -124,12 +116,27 @@ void EntitySpawnSystem::createQuestionBlock(sf::Vector2f position, bool isCollid
 
     addAnimationTextureComponent(animationComponent, position, animationTextureFilePath, rectBounds,
             sf::Vector2f(rectBounds.width / 2, rectBounds.height / 2), 3, TILE_SIZE, 1.0f/3.5f, {1, 1}, 0);
-    platform->addComponent(Component::Type::SPRITE_GROUP, animationComponent);
+    questionBlock->addComponent(Component::Type::SPRITE_GROUP, animationComponent);
+    questionBlock->addComponent(Component::Type::COLLISION, std::make_shared<CCollision>());
+    questionBlock->addComponent(Component::Type::INTERACTABLE, std::make_shared<CInteractable>());
+}
 
-    if (isCollidable)
-    {
-        platform->addComponent(Component::Type::COLLISION, std::make_shared<CCollision>());
-    }
+void EntitySpawnSystem::createGroundBlock(sf::Vector2f position)
+{
+    std::shared_ptr<Entity> questionBlock = m_entityManager.addEntity(Entity::Type::QUESTION_BLOCK);
+
+    sf::Vector2f velocity = sf::Vector2f(0, 0);
+    questionBlock->addComponent(Component::Type::TRANSFORM, std::make_shared<CTransform>(position, velocity));
+    questionBlock->addComponent(Component::Type::STATIC_MOVEMENT, std::make_shared<CMovement>());
+
+    std::shared_ptr<CSpriteGroup> animationComponent = std::make_shared<CSpriteGroup>();
+    const std::string animationTextureFilePath = "resources/assets/texture/blocks.png";
+    sf::Rect<int> rectBounds = sf::IntRect(0, 32, TILE_SIZE, TILE_SIZE);
+
+    addAnimationTextureComponent(animationComponent, position, animationTextureFilePath, rectBounds,
+            sf::Vector2f(rectBounds.width / 2, rectBounds.height / 2), 1, TILE_SIZE, 0, {1, 1}, 0);
+    questionBlock->addComponent(Component::Type::SPRITE_GROUP, animationComponent);
+    questionBlock->addComponent(Component::Type::COLLISION, std::make_shared<CCollision>());
 }
 
 void EntitySpawnSystem::createBullet(sf::Vector2f bulletPosition, sf::Vector2f velocity, float gunAngle)
@@ -202,27 +209,21 @@ void EntitySpawnSystem::createLevel()
                 WINDOW_HEIGHT - (row.locationY * TILE_SIZE));
         if (row.entityType == "PLAYER")
         {
-            createPlayer(position, row.isCollidable);
+            createPlayer(position);
         }
         else if (row.entityType == "TILE")
         {
             if (row.animation == "GROUND")
             {
-                // Apply 'GROUND' Animation
-                // ---
-                // Add animation component, keep sf::Texture and sf::Sprite managed in here.
-                // Add texture to IntRect
-                //  > contains appropriate texture with animation.
-                //  > Remember we can have single-frame animations, e.g., so basically an unchanging texture.
-                // create animation system.
-                // For all entities with an animation component, update animation frame by 1.
-                // If reach end, reset the animation.
-                // Allow looping and non-looping animations.
-                createPlatform(position, row.isCollidable);
+                createGroundBlock(position);
+            }
+            if (row.animation == "BRICK")
+            {
+                createBricks(position);
             }
             if (row.animation == "QUESTION_BLOCK")
             {
-                createQuestionBlock(position, row.isCollidable);
+                createQuestionBlock(position);
             }
         }
     }
@@ -240,7 +241,7 @@ std::vector<EntitySpawnSystem::Row> EntitySpawnSystem::LoadLevelData(uint8_t lev
     while (getline(file, line))
     {
         Row row{};
-        file >> row.entityType >> row.animation >> row.locationX >> row.locationY >> row.isCollidable;
+        file >> row.entityType >> row.animation >> row.locationX >> row.locationY;
         rows.push_back(row);
     }
     return rows;

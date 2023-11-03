@@ -22,6 +22,7 @@ class AnimationSystem : public System
         static void tryUpdateSpriteAnimation(std::shared_ptr<CSpriteGroup>& spriteGroup);
         static void resolveAnimation(std::shared_ptr<sf::Sprite>& sprite,
                 std::shared_ptr<CSpriteGroup::SpriteAnimation>& spriteAnimation);
+        static void handlePlayerAnimation(std::shared_ptr<Entity>& entity, std::shared_ptr<CSpriteGroup>& spriteGroup);
         static void handlePlayerGroundAnimations(const std::shared_ptr<CAction>& cAction,
                 std::shared_ptr<CSpriteGroup::SpriteAnimation>& spriteAnimation);
         static void updateSpriteAnimationFrame(std::shared_ptr<CSpriteGroup::SpriteAnimation>& spriteAnimationToUpdate,

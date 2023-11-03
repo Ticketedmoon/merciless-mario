@@ -30,7 +30,7 @@ class Entity
             PLAYER,
             ENEMY,
             BULLET,
-            PLATFORM,
+            BRICK,
             QUESTION_BLOCK,
             NONE
         };

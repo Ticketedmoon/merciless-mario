@@ -15,24 +15,28 @@ void AnimationSystem::execute()
                 entity->getComponentByType(Component::Type::SPRITE_GROUP));
         if (entity->hasComponent(Component::USER_INPUT))
         {
-            std::shared_ptr<CAction> cAction = std::static_pointer_cast<CAction>(
-                    entity->getComponentByType(Component::Type::USER_INPUT));
-            std::shared_ptr<CMovement> cMovement = std::static_pointer_cast<CMovement>(
-                    entity->getComponentByType(Component::Type::DYNAMIC_MOVEMENT));
-
-            std::shared_ptr<CSpriteGroup::SpriteAnimation>& spriteAnimation = spriteGroup->animations.at(0);
-
-            if (cMovement->isRising)
-            {
-                updateSpriteAnimationFrame(spriteAnimation, {160, spriteAnimation->animationRectStartBounds.top, TILE_SIZE, TILE_SIZE}, 0, 1);
-            }
-            else if (!cMovement->isAirborne)
-            {
-                handlePlayerGroundAnimations(cAction, spriteAnimation);
-            }
+            handlePlayerAnimation(entity, spriteGroup);
         }
 
         tryUpdateSpriteAnimation(spriteGroup);
+    }
+}
+void AnimationSystem::handlePlayerAnimation(std::shared_ptr<Entity>& entity, std::shared_ptr<CSpriteGroup>& spriteGroup)
+{
+    std::shared_ptr<CAction> cAction = std::static_pointer_cast<CAction>(
+            entity->getComponentByType(Component::USER_INPUT));
+    std::shared_ptr<CMovement> cMovement = std::static_pointer_cast<CMovement>(
+            entity->getComponentByType(Component::DYNAMIC_MOVEMENT));
+
+    std::shared_ptr<CSpriteGroup::SpriteAnimation>& spriteAnimation = spriteGroup->animations.at(0);
+
+    if (cMovement->isRising)
+    {
+        updateSpriteAnimationFrame(spriteAnimation, {160, spriteAnimation->animationRectStartBounds.top, TILE_SIZE, TILE_SIZE}, 0, 1);
+    }
+    else if (!cMovement->isAirborne)
+    {
+        handlePlayerGroundAnimations(cAction, spriteAnimation);
     }
 }
 

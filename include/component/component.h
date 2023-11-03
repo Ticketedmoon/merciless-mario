@@ -20,7 +20,8 @@ class Component
             STATIC_MOVEMENT = 5,
             LIFESPAN = 6,
             CURSOR_FOLLOWER = 7,
-            COUNT = 8
+            INTERACTABLE = 8,
+            COUNT = 9
         };
 };
 

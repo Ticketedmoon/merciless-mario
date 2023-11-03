@@ -147,15 +147,35 @@ void CollisionSystem::resolve(std::shared_ptr<Entity>& entity, std::shared_ptr<E
             cTransform->m_velocity.y = 0;
             cMovement->hasTouchedCeiling = true;
 
+
+            if (otherEntity->getType() == Entity::Type::BRICK)
+            {
+                m_audioManager->playSound(AudioManager::AudioType::BREAK_BRICK, 30.0f);
+                otherEntity->destroy();
+            }
+
             // If question-block, turn off and get coin
             if (otherEntity->getType() == Entity::Type::QUESTION_BLOCK)
             {
-                std::shared_ptr<CSpriteGroup> otherEntitySpriteGroup = std::static_pointer_cast<CSpriteGroup>(
-                        otherEntity->getComponentByType(Component::Type::SPRITE_GROUP));
-                otherEntitySpriteGroup->animations.at(0)->animationRectStartBounds = sf::IntRect(96, 0, TILE_SIZE, TILE_SIZE);
-                otherEntitySpriteGroup->animations.at(0)->animationRectBounds = sf::IntRect(96, 0, TILE_SIZE, TILE_SIZE);
-                otherEntitySpriteGroup->animations.at(0)->currentFrame = 0;
-                otherEntitySpriteGroup->animations.at(0)->totalAnimationFrames = 1;
+                std::shared_ptr<CInteractable> otherEntityInteractableState = std::static_pointer_cast<CInteractable>(
+                        otherEntity->getComponentByType(Component::Type::INTERACTABLE));
+                if (otherEntityInteractableState->isInteractable())
+                {
+                    m_audioManager->playSound(AudioManager::AudioType::POWER_UP_APPEARS, 30.0f);
+
+                    std::shared_ptr<CSpriteGroup> otherEntitySpriteGroup = std::static_pointer_cast<CSpriteGroup>(
+                            otherEntity->getComponentByType(Component::Type::SPRITE_GROUP));
+                    otherEntitySpriteGroup->animations.at(0)->animationRectStartBounds = sf::IntRect(96, 0, TILE_SIZE, TILE_SIZE);
+                    otherEntitySpriteGroup->animations.at(0)->animationRectBounds = sf::IntRect(96, 0, TILE_SIZE, TILE_SIZE);
+                    otherEntitySpriteGroup->animations.at(0)->currentFrame = 0;
+                    otherEntitySpriteGroup->animations.at(0)->totalAnimationFrames = 1;
+
+                    otherEntityInteractableState->deactivate();
+                }
+                else
+                {
+                    m_audioManager->playSound(AudioManager::AudioType::BUMP, 30.0f);
+                }
             }
         }
 

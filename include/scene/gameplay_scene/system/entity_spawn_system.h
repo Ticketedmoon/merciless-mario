@@ -14,6 +14,7 @@
 #include "c_cursor_follower.h"
 #include "c_sprite_group.h"
 #include "c_transform.h"
+#include "c_interactable.h"
 #include "c_collision.h"
 #include "c_action.h"
 #include "c_lifespan.h"
@@ -36,12 +37,12 @@ class EntitySpawnSystem : public System
             std::string animation;
             uint16_t locationX;
             uint16_t locationY;
-            bool isCollidable;
         };
 
-        void createPlayer(sf::Vector2f position, bool isCollidable);
-        void createPlatform(sf::Vector2f position, bool isCollidable);
-        void createQuestionBlock(sf::Vector2f position, bool isCollidable);
+        void createPlayer(sf::Vector2f position);
+        void createBricks(sf::Vector2f position);
+        void createQuestionBlock(sf::Vector2f position);
+        void createGroundBlock(sf::Vector2f position);
         void createBullet(sf::Vector2f bulletPosition, sf::Vector2f velocity, float gunAngle);
         void createLevel();
 
