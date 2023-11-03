@@ -86,11 +86,6 @@ void TransformSystem::applyGravity(std::shared_ptr<CTransform>& cTransform, cons
         m_audioManger->playSound(AudioManager::AudioType::JUMP, 5.0f);
         cTransform->m_velocity.y -= cMovement->jumpAcceleration * DT;
         cMovement->isAirborne = true;
-
-        spriteGroup->animations.at(0)->animationRectStartBounds = {160, 0, TILE_SIZE, TILE_SIZE};
-        spriteGroup->animations.at(0)->animationRectBounds = {160, 0, TILE_SIZE, TILE_SIZE};
-        spriteGroup->animations.at(0)->currentFrame = 0;
-        spriteGroup->animations.at(0)->totalAnimationFrames = 1;
     }
     else
     {

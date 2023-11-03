@@ -7,6 +7,8 @@
 #include "c_action.h"
 #include "entity_manager.h"
 #include "c_sprite_group.h"
+#include "c_movement.h"
+#include "c_transform.h"
 #include "common_constants.h"
 
 class AnimationSystem : public System

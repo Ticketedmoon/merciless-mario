@@ -1,5 +1,4 @@
 #include "animation_system.h"
-#include "c_movement.h"
 
 AnimationSystem::AnimationSystem(EntityManager& entityManager) : m_entityManager(entityManager)
 {
@@ -20,10 +19,9 @@ void AnimationSystem::execute()
                     entity->getComponentByType(Component::Type::USER_INPUT));
             std::shared_ptr<CMovement> cMovement = std::static_pointer_cast<CMovement>(
                     entity->getComponentByType(Component::Type::DYNAMIC_MOVEMENT));
-            if (cMovement->isRising)
-            {
-                tryUpdateSpriteAnimation(spriteGroup);
-            }
+            std::shared_ptr<CTransform> cTransform = std::static_pointer_cast<CTransform>(
+                    entity->getComponentByType(Component::Type::TRANSFORM));
+
             if (cAction->isMovingRight)
             {
                 spriteGroup->animations.at(0)->animationRectStartBounds.top = 0;
@@ -34,6 +32,16 @@ void AnimationSystem::execute()
             {
                 spriteGroup->animations.at(0)->animationRectStartBounds.top = TILE_SIZE;
                 spriteGroup->animations.at(0)->animationRectBounds.top = TILE_SIZE;
+                tryUpdateSpriteAnimation(spriteGroup);
+            }
+
+            if (cMovement->isRising)
+            {
+                int top = spriteGroup->animations.at(0)->animationRectStartBounds.top;
+                spriteGroup->animations.at(0)->animationRectStartBounds = {160, top, TILE_SIZE, TILE_SIZE};
+                spriteGroup->animations.at(0)->animationRectBounds = {160, top, TILE_SIZE, TILE_SIZE};
+                spriteGroup->animations.at(0)->currentFrame = 0;
+                spriteGroup->animations.at(0)->totalAnimationFrames = 1;
                 tryUpdateSpriteAnimation(spriteGroup);
             }
         }
