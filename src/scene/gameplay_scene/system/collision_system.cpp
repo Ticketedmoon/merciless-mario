@@ -136,16 +136,6 @@ void CollisionSystem::resolve(std::shared_ptr<Entity>& entity, std::shared_ptr<E
         {
             std::shared_ptr<CAction> cAction = std::static_pointer_cast<CAction>(
                     entity->getComponentByType(Component::Type::USER_INPUT));
-            if (cMovement->isAirborne)
-            {
-                std::shared_ptr<CSpriteGroup> spriteGroup = std::static_pointer_cast<CSpriteGroup>(
-                        entity->getComponentByType(Component::Type::SPRITE_GROUP));
-                spriteGroup->animations.at(0)->animationRectStartBounds = {0, 0, TILE_SIZE, TILE_SIZE};
-                spriteGroup->animations.at(0)->animationRectBounds = {0, 0, TILE_SIZE, TILE_SIZE};
-                spriteGroup->animations.at(0)->currentFrame = 0;
-                spriteGroup->animations.at(0)->totalAnimationFrames = 4;
-            }
-
             cMovement->isAirborne = false;
             cMovement->hasTouchedCeiling = false;
             cTransform->m_velocity.y = 0;
