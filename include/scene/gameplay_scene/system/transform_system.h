@@ -32,7 +32,7 @@ class TransformSystem : public System
 
     private:
         static void reduceVelocity(std::shared_ptr<CTransform>& cTransform, std::shared_ptr<CMovement>& cMovement);
-        static void updateVelocity(std::shared_ptr<CTransform>& cTransform, const std::shared_ptr<CAction>& cAction,
+        static void updatePlayerVelocityOnAction(std::shared_ptr<CTransform>& cTransform, const std::shared_ptr<CAction>& cAction,
                 std::shared_ptr<CMovement>& cMovement);
         static void updatePosition(std::shared_ptr<CTransform>& cTransform);
         static void checkForWindowCollision(std::shared_ptr<CTransform>& cTransform,
