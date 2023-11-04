@@ -34,7 +34,7 @@ void ViewSystem::execute()
     // Update to New View
     sf::View newView = m_renderTexture.getView();
     newView.zoom(VIEW_ZOOM_OUT_FACTOR);
-    newView.setCenter(playerCentreX, newView.getCenter().y + VIEW_Y_OFFSET);
+    newView.setCenter(playerCentreX + VIEW_X_OFFSET, newView.getCenter().y + VIEW_Y_OFFSET);
     m_renderTexture.setView(newView);
 }
 

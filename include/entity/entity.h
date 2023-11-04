@@ -31,6 +31,7 @@ class Entity
             ENEMY,
             BULLET,
             BRICK,
+            BUSH_LARGE,
             QUESTION_BLOCK,
             NONE
         };

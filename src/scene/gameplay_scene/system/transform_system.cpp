@@ -83,7 +83,7 @@ void TransformSystem::applyGravity(std::shared_ptr<CTransform>& cTransform, cons
 
     if (cMovement->isRising && !cMovement->hasTouchedCeiling && cTransform->m_velocity.y > cMovement->maxJumpVelocity)
     {
-        m_audioManger->playSound(AudioManager::AudioType::JUMP, 2.5f);
+        m_audioManger->playSound(AudioManager::AudioType::JUMP, JUMP_SFX_VOLUME);
         cTransform->m_velocity.y -= cMovement->jumpAcceleration * DT;
         cMovement->isAirborne = true;
     }

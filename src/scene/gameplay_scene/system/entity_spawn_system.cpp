@@ -102,6 +102,31 @@ void EntitySpawnSystem::createBricks(sf::Vector2f position)
     brick->addComponent(Component::Type::COLLISION, std::make_shared<CCollision>());
 }
 
+void EntitySpawnSystem::createDecoration(sf::Vector2f position, Decoration decoration)
+{
+    std::shared_ptr<Entity> brick = m_entityManager.addEntity(Entity::Type::BUSH_LARGE);
+
+    std::shared_ptr<CSpriteGroup> animationComponent = std::make_shared<CSpriteGroup>();
+    std::string decorationTypeString = decoration.type == DecorationType::BUSH
+            ? "bush"
+            : decoration.type == DecorationType::HILL
+                    ? "hill"
+                    : "cloud";
+    std::string decorationSizeString = decoration.sizeType == DecorationSizeType::SMALL
+            ? "small"
+            : decoration.sizeType == DecorationSizeType::MEDIUM
+                    ? "mid"
+                    : "large";
+    const std::string& animationTextureFilePath = "resources/assets/texture/mario_1_1_" + decorationTypeString + "_" +
+            decorationSizeString + ".png";
+
+    sf::Rect<int> rectBounds = sf::IntRect(0, 0, decoration.sizeValueX * TILE_SIZE, decoration.sizeValueY * TILE_SIZE);
+
+    addAnimationTextureComponent(animationComponent, position, animationTextureFilePath, rectBounds,
+            sf::Vector2f(rectBounds.width / 2, rectBounds.height / 2), 1, 0, 0, {1, 1}, 0);
+    brick->addComponent(Component::Type::SPRITE_GROUP, animationComponent);
+}
+
 void EntitySpawnSystem::createQuestionBlock(sf::Vector2f position)
 {
     std::shared_ptr<Entity> questionBlock = m_entityManager.addEntity(Entity::Type::QUESTION_BLOCK);
@@ -205,8 +230,7 @@ void EntitySpawnSystem::createLevel()
     std::vector<Row> levelRows = LoadLevelData(1);
     for (const auto& row: levelRows)
     {
-        sf::Vector2f position = sf::Vector2f(WINDOW_WIDTH + (row.locationX * TILE_SIZE),
-                WINDOW_HEIGHT - (row.locationY * TILE_SIZE));
+        sf::Vector2f position = sf::Vector2f(row.locationX * TILE_SIZE, WINDOW_HEIGHT - (row.locationY * TILE_SIZE));
         if (row.entityType == "PLAYER")
         {
             createPlayer(position);
@@ -224,6 +248,46 @@ void EntitySpawnSystem::createLevel()
             if (row.animation == "QUESTION_BLOCK")
             {
                 createQuestionBlock(position);
+            }
+        }
+        else if (row.entityType == "DECORATION")
+        {
+            // Bush
+            if (row.animation == "BUSH_SMALL")
+            {
+                createDecoration(position, {DecorationType::BUSH, DecorationSizeType::SMALL, 3, 1});
+            }
+            if (row.animation == "BUSH_MID")
+            {
+                createDecoration(position, {DecorationType::BUSH, DecorationSizeType::MEDIUM, 4, 1});
+            }
+            if (row.animation == "BUSH_BIG")
+            {
+                createDecoration(position, {DecorationType::BUSH, DecorationSizeType::LARGE, 5, 1});
+            }
+            
+            // Hill
+            if (row.animation == "HILL_SMALL")
+            {
+                createDecoration(position, {DecorationType::HILL, DecorationSizeType::SMALL, 5, 3});
+            }
+            if (row.animation == "HILL_LARGE")
+            {
+                createDecoration(position, {DecorationType::HILL, DecorationSizeType::LARGE, 5, 3});
+            }
+            
+            // Cloud
+            if (row.animation == "CLOUD_SMALL")
+            {
+                createDecoration(position, {DecorationType::CLOUD, DecorationSizeType::SMALL, 3, 2});
+            }
+            if (row.animation == "CLOUD_MID")
+            {
+                createDecoration(position, {DecorationType::CLOUD, DecorationSizeType::MEDIUM, 4, 2});
+            }
+            if (row.animation == "CLOUD_LARGE")
+            {
+                createDecoration(position, {DecorationType::CLOUD, DecorationSizeType::LARGE, 5, 2});
             }
         }
     }

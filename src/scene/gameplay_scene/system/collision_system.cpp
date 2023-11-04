@@ -150,7 +150,7 @@ void CollisionSystem::resolve(std::shared_ptr<Entity>& entity, std::shared_ptr<E
 
             if (otherEntity->getType() == Entity::Type::BRICK)
             {
-                m_audioManager->playSound(AudioManager::AudioType::BREAK_BRICK, 30.0f);
+                m_audioManager->playSound(AudioManager::AudioType::BREAK_BRICK, DEFAULT_SFX_VOLUME);
                 otherEntity->destroy();
             }
 
@@ -161,7 +161,7 @@ void CollisionSystem::resolve(std::shared_ptr<Entity>& entity, std::shared_ptr<E
                         otherEntity->getComponentByType(Component::Type::INTERACTABLE));
                 if (otherEntityInteractableState->isInteractable())
                 {
-                    m_audioManager->playSound(AudioManager::AudioType::POWER_UP_APPEARS, 30.0f);
+                    m_audioManager->playSound(AudioManager::AudioType::POWER_UP_APPEARS, DEFAULT_SFX_VOLUME);
 
                     std::shared_ptr<CSpriteGroup> otherEntitySpriteGroup = std::static_pointer_cast<CSpriteGroup>(
                             otherEntity->getComponentByType(Component::Type::SPRITE_GROUP));
@@ -174,7 +174,7 @@ void CollisionSystem::resolve(std::shared_ptr<Entity>& entity, std::shared_ptr<E
                 }
                 else
                 {
-                    m_audioManager->playSound(AudioManager::AudioType::BUMP, 30.0f);
+                    m_audioManager->playSound(AudioManager::AudioType::BUMP, DEFAULT_SFX_VOLUME);
                 }
             }
         }

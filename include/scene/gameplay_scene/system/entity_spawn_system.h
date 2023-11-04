@@ -39,11 +39,34 @@ class EntitySpawnSystem : public System
             uint16_t locationY;
         };
 
+        enum class DecorationType
+        {
+                BUSH,
+                HILL,
+                CLOUD
+        };
+
+        enum class DecorationSizeType
+        {
+                SMALL,
+                MEDIUM,
+                LARGE
+        };
+
+        struct Decoration
+        {
+            DecorationType type;
+            DecorationSizeType sizeType;
+            uint8_t sizeValueX;
+            uint8_t sizeValueY;
+        };
+
         void createPlayer(sf::Vector2f position);
         void createBricks(sf::Vector2f position);
         void createQuestionBlock(sf::Vector2f position);
         void createGroundBlock(sf::Vector2f position);
         void createBullet(sf::Vector2f bulletPosition, sf::Vector2f velocity, float gunAngle);
+        void createDecoration(sf::Vector2f position, Decoration decoration);
         void createLevel();
 
         [[nodiscard]] static std::vector<Row> LoadLevelData(uint8_t levelNumber);

@@ -19,8 +19,7 @@ void GameplayScene::update()
 void GameplayScene::render()
 {
     gameEngine.window.clear();
-
-    m_renderTexture.clear(sf::Color{0, 124, 224});
+    m_renderTexture.clear(LEVEL_BACKGROUND_COLOR);
 
     m_systemManager.render();
 
