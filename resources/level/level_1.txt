@@ -1,5 +1,4 @@
 ENTITY_TYPE     ANIMATION        LOCATION_X     LOCATION_Y
-PLAYER          _                        3              3
 
 DECORATION      HILL_LARGE               3              3
 DECORATION      CLOUD_SMALL              15             11
@@ -12,6 +11,8 @@ DECORATION      CLOUD_MID                43             12
 DECORATION      BUSH_MID                 49             2
 DECORATION      HILL_LARGE               58             3
 
+PLAYER          _                        3              3
+
 TILE            QUESTION_BLOCK           22             5
 TILE            BRICK                    26             5
 TILE            QUESTION_BLOCK           27             5
@@ -19,6 +20,11 @@ TILE            BRICK                    28             5
 TILE            QUESTION_BLOCK           28             9
 TILE            QUESTION_BLOCK           29             5
 TILE            BRICK                    30             5
+
+TILE            PIPE_SMALL               34             2
+TILE            PIPE_MEDIUM              45             2
+TILE            PIPE_LARGE               54             2
+TILE            PIPE_LARGE               66             2
 
 TILE            GROUND                   0              0
 TILE            GROUND                   1              0

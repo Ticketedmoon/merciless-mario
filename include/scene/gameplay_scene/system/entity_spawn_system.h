@@ -39,24 +39,17 @@ class EntitySpawnSystem : public System
             uint16_t locationY;
         };
 
-        enum class DecorationType
-        {
-                BUSH,
-                HILL,
-                CLOUD
-        };
-
-        enum class DecorationSizeType
+        enum class LevelSpriteSizeType
         {
                 SMALL,
                 MEDIUM,
                 LARGE
         };
 
-        struct Decoration
+        struct LevelSprite
         {
-            DecorationType type;
-            DecorationSizeType sizeType;
+            std::string type;
+            LevelSpriteSizeType sizeType;
             uint8_t sizeValueX;
             uint8_t sizeValueY;
         };
@@ -66,7 +59,9 @@ class EntitySpawnSystem : public System
         void createQuestionBlock(sf::Vector2f position);
         void createGroundBlock(sf::Vector2f position);
         void createBullet(sf::Vector2f bulletPosition, sf::Vector2f velocity, float gunAngle);
-        void createDecoration(sf::Vector2f position, Decoration decoration);
+        void createLevelDecoration(sf::Vector2f position, Entity::Type entityType, const LevelSprite& levelSprite);
+        void createLevelCollidableSprite(sf::Vector2f position, Entity::Type entityType, const LevelSprite& levelSprite);
+
         void createLevel();
 
         [[nodiscard]] static std::vector<Row> LoadLevelData(uint8_t levelNumber);
@@ -85,6 +80,8 @@ class EntitySpawnSystem : public System
 
         EntityManager& m_entityManager;
         TextureManager m_textureManager;
+        void applySpriteGroupForEntity(const sf::Vector2f& position, const LevelSprite& levelSprite,
+                std::shared_ptr<Entity>& decoration);
 };
 
 

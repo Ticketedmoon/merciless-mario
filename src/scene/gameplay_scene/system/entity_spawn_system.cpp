@@ -102,29 +102,18 @@ void EntitySpawnSystem::createBricks(sf::Vector2f position)
     brick->addComponent(Component::Type::COLLISION, std::make_shared<CCollision>());
 }
 
-void EntitySpawnSystem::createDecoration(sf::Vector2f position, Decoration decoration)
+void EntitySpawnSystem::createLevelDecoration(sf::Vector2f position, Entity::Type entityType, const LevelSprite& levelSprite)
 {
-    std::shared_ptr<Entity> brick = m_entityManager.addEntity(Entity::Type::BUSH_LARGE);
+    std::shared_ptr<Entity> decoration = m_entityManager.addEntity(entityType);
+    applySpriteGroupForEntity(position, levelSprite, decoration);
+}
 
-    std::shared_ptr<CSpriteGroup> animationComponent = std::make_shared<CSpriteGroup>();
-    std::string decorationTypeString = decoration.type == DecorationType::BUSH
-            ? "bush"
-            : decoration.type == DecorationType::HILL
-                    ? "hill"
-                    : "cloud";
-    std::string decorationSizeString = decoration.sizeType == DecorationSizeType::SMALL
-            ? "small"
-            : decoration.sizeType == DecorationSizeType::MEDIUM
-                    ? "mid"
-                    : "large";
-    const std::string& animationTextureFilePath = "resources/assets/texture/mario_1_1_" + decorationTypeString + "_" +
-            decorationSizeString + ".png";
-
-    sf::Rect<int> rectBounds = sf::IntRect(0, 0, decoration.sizeValueX * TILE_SIZE, decoration.sizeValueY * TILE_SIZE);
-
-    addAnimationTextureComponent(animationComponent, position, animationTextureFilePath, rectBounds,
-            sf::Vector2f(rectBounds.width / 2, rectBounds.height / 2), 1, 0, 0, {1, 1}, 0);
-    brick->addComponent(Component::Type::SPRITE_GROUP, animationComponent);
+void EntitySpawnSystem::createLevelCollidableSprite(sf::Vector2f position, Entity::Type entityType, const LevelSprite& levelSprite)
+{
+    std::shared_ptr<Entity> collidableEntity = m_entityManager.addEntity(entityType);
+    applySpriteGroupForEntity(position, levelSprite, collidableEntity);
+    collidableEntity->addComponent(Component::Type::COLLISION, std::make_shared<CCollision>());
+    collidableEntity->addComponent(Component::Type::STATIC_MOVEMENT, std::make_shared<CMovement>());
 }
 
 void EntitySpawnSystem::createQuestionBlock(sf::Vector2f position)
@@ -180,6 +169,25 @@ void EntitySpawnSystem::createBullet(sf::Vector2f bulletPosition, sf::Vector2f v
     bullet->addComponent(Component::Type::COLLISION, std::make_shared<CCollision>());
     bullet->addComponent(Component::Type::DYNAMIC_MOVEMENT, std::make_shared<CMovement>());
     bullet->addComponent(Component::Type::LIFESPAN, std::make_shared<CLifespan>(255));
+}
+
+void EntitySpawnSystem::applySpriteGroupForEntity(const sf::Vector2f& position,
+        const EntitySpawnSystem::LevelSprite& levelSprite, std::shared_ptr<Entity>& decoration)
+{
+    std::shared_ptr<CSpriteGroup> animationComponent = std::make_shared<CSpriteGroup>();
+    std::string decorationSizeString = levelSprite.sizeType == LevelSpriteSizeType::SMALL
+            ? "small"
+            : levelSprite.sizeType == LevelSpriteSizeType::MEDIUM
+                    ? "mid"
+                    : "large";
+    const std::string& animationTextureFilePath = "resources/assets/texture/mario_1_1_" + levelSprite.type + "_" +
+            decorationSizeString + ".png";
+
+    sf::Rect<int> rectBounds = sf::IntRect(0, 0, levelSprite.sizeValueX * TILE_SIZE, levelSprite.sizeValueY * TILE_SIZE);
+
+    addAnimationTextureComponent(animationComponent, position, animationTextureFilePath, rectBounds,
+            sf::Vector2f(rectBounds.width / 2, rectBounds.height / 2), 1, 0, 0, {1, 1}, 0);
+    decoration->addComponent(Component::SPRITE_GROUP, animationComponent);
 }
 
 void EntitySpawnSystem::addAnimationTextureComponent(std::shared_ptr<CSpriteGroup>& spriteGroup,
@@ -249,45 +257,57 @@ void EntitySpawnSystem::createLevel()
             {
                 createQuestionBlock(position);
             }
+            if (row.animation == "PIPE_SMALL")
+            {
+                createLevelCollidableSprite(position, Entity::Type::BUSH, {"pipe", LevelSpriteSizeType::SMALL, 2, 3});
+            }
+            if (row.animation == "PIPE_MEDIUM")
+            {
+                createLevelCollidableSprite(position, Entity::Type::BUSH, {"pipe", LevelSpriteSizeType::MEDIUM, 2, 5});
+            }
+            if (row.animation == "PIPE_LARGE")
+            {
+                createLevelCollidableSprite(position, Entity::Type::BUSH, {"pipe", LevelSpriteSizeType::LARGE, 2, 7});
+            }
         }
         else if (row.entityType == "DECORATION")
         {
             // Bush
             if (row.animation == "BUSH_SMALL")
             {
-                createDecoration(position, {DecorationType::BUSH, DecorationSizeType::SMALL, 3, 1});
+                createLevelDecoration(position, Entity::Type::BUSH, {"bush", LevelSpriteSizeType::SMALL, 3, 1});
             }
             if (row.animation == "BUSH_MID")
             {
-                createDecoration(position, {DecorationType::BUSH, DecorationSizeType::MEDIUM, 4, 1});
+                createLevelDecoration(position, Entity::Type::BUSH, {"bush", LevelSpriteSizeType::MEDIUM, 4, 1});
             }
             if (row.animation == "BUSH_BIG")
             {
-                createDecoration(position, {DecorationType::BUSH, DecorationSizeType::LARGE, 5, 1});
+                createLevelDecoration(position, Entity::Type::BUSH, {"bush", LevelSpriteSizeType::LARGE, 5, 1});
             }
-            
+
             // Hill
             if (row.animation == "HILL_SMALL")
             {
-                createDecoration(position, {DecorationType::HILL, DecorationSizeType::SMALL, 5, 3});
+                createLevelDecoration(position, Entity::Type::HILL, {"hill", LevelSpriteSizeType::SMALL, 5, 3});
             }
             if (row.animation == "HILL_LARGE")
             {
-                createDecoration(position, {DecorationType::HILL, DecorationSizeType::LARGE, 5, 3});
+                createLevelDecoration(position, Entity::Type::HILL, {"hill", LevelSpriteSizeType::LARGE, 5, 3});
             }
-            
+
             // Cloud
             if (row.animation == "CLOUD_SMALL")
             {
-                createDecoration(position, {DecorationType::CLOUD, DecorationSizeType::SMALL, 3, 2});
+                createLevelDecoration(position, Entity::Type::CLOUD, {"cloud", LevelSpriteSizeType::SMALL, 3, 2});
             }
             if (row.animation == "CLOUD_MID")
             {
-                createDecoration(position, {DecorationType::CLOUD, DecorationSizeType::MEDIUM, 4, 2});
+                createLevelDecoration(position, Entity::Type::CLOUD, {"cloud", LevelSpriteSizeType::MEDIUM, 4, 2});
             }
             if (row.animation == "CLOUD_LARGE")
             {
-                createDecoration(position, {DecorationType::CLOUD, DecorationSizeType::LARGE, 5, 2});
+                createLevelDecoration(position, Entity::Type::CLOUD, {"cloud", LevelSpriteSizeType::LARGE, 5, 2});
             }
         }
     }
