@@ -53,6 +53,7 @@ Date: `04/11/2023`
 
 Date: `07/11/2023`
 
+- Updated Mario's appearance to wear sunglasses (Because he's merciless!)
 - Added Enemy Type: `Goombas`
   - Goombas have movement and collision properties
   - Goombas can kill the player on touch
