@@ -55,8 +55,8 @@ Date: `07/11/2023`
 
 - Updated Mario's appearance to wear sunglasses (Because he's merciless!)
 - Added Enemy Type: `Goombas`
-  - Goombas have movement and collision properties
-  - Goombas can kill the player on touch
+  - Goombas have movement and collision properties.
+  - Goombas can kill the player on touch.
   - Goombas will display a death animation for a period of time when jumped on before being destroyed. 
   - Included the classic 'stomp' sound effect.
 
@@ -66,8 +66,8 @@ Date: `07/11/2023`
 
 Date: `07/11/2023`
 
-- Added Ammunition System, where the player must reload upon firing of all bullets in the current magazine .
-- Added gun fire and reload sfx
+- Added Ammunition System, where the player must reload upon firing of all bullets in the current magazine.
+- Added gun fire and reload sfx.
 - Added ammo text rendering into the UI (temporary) for resource visibility.
 
 ![Tue 07 Nov 2023 20:48:03 GMT](https://github.com/Ticketedmoon/merciless-mario/assets/21260839/56a5335d-fe5b-4360-a6af-7c3965c4edf9)
