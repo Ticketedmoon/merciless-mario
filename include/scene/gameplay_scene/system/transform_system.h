@@ -12,7 +12,7 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/RenderTexture.hpp>
 
-#include "c_cursor_follower.h"
+#include "c_weapon.h"
 #include "c_sprite_group.h"
 #include "entity/entity.h"
 #include "entity/entity_manager.h"

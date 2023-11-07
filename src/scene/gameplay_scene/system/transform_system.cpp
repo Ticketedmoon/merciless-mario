@@ -138,13 +138,13 @@ void TransformSystem::reduceVelocity(std::shared_ptr<CTransform>& cTransform, st
 
 void TransformSystem::updatePlayerArmPositionByMousePosition(std::shared_ptr<Entity>& player)
 {
-    std::shared_ptr<CCursorFollower> cursorFollower = std::static_pointer_cast<CCursorFollower>(
-            player->getComponentByType(Component::CURSOR_FOLLOWER));
+    std::shared_ptr<CWeapon> cWeapon = std::static_pointer_cast<CWeapon>(
+            player->getComponentByType(Component::WEAPON));
     const sf::Vector2i& mousePos = sf::Mouse::getPosition(m_window);
-    cursorFollower->armPointLocation = m_window.mapPixelToCoords(mousePos, m_renderTexture.getView());
+    cWeapon->weaponPointLocation = m_window.mapPixelToCoords(mousePos, m_renderTexture.getView());
 
     std::shared_ptr<CSpriteGroup> cSpriteGroup = std::static_pointer_cast<CSpriteGroup>(player->getComponentByType(Component::Type::SPRITE_GROUP));
     std::shared_ptr<sf::Sprite>& arm = cSpriteGroup->sprites.at(1);
-    float armRotationDegrees = cursorFollower->getArmPointAngleDegrees(arm->getPosition()) + SPRITE_TEXTURE_OFFSET_DEGREES;
+    float armRotationDegrees = cWeapon->getArmPointAngleDegrees(arm->getPosition()) + SPRITE_TEXTURE_OFFSET_DEGREES;
     arm->setRotation(armRotationDegrees);
 }

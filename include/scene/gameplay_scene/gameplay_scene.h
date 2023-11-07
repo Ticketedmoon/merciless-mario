@@ -17,6 +17,7 @@
 #include "view_system.h"
 #include "lifespan_system.h"
 #include "entity_spawn_system.h"
+#include "projectile_system.h"
 
 #include "c_sprite_group.h"
 #include "c_movement.h"

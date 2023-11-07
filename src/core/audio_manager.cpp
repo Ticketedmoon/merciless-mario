@@ -7,6 +7,8 @@ AudioManager::AudioManager()
     loadSfx(AudioType::BREAK_BRICK, BREAK_BRICK_SFX_PATH);
     loadSfx(AudioType::POWER_UP_APPEARS, POWER_UP_APPEARS_SFX_PATH);
     loadSfx(AudioType::STOMP_ON_ENEMY, STOMP_ON_ENEMY_SFX);
+    loadSfx(AudioType::SHOTGUN_FIRE, SHOTGUN_FIRE_APPEARS_SFX_PATH);
+    loadSfx(AudioType::SHOTGUN_RELOAD, SHOTGUN_RELOAD_APPEARS_SFX_PATH);
 }
 void AudioManager::loadSfx(const AudioType audioType, const std::string& sfxPath)
 {

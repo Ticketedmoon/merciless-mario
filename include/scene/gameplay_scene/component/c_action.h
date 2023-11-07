@@ -14,6 +14,7 @@ class CAction : public Component
         bool isCrouching;
         bool isJumping;
         bool isShooting;
+        bool isReloading;
 };
 
 #endif //MERCILESS_MARIO_C_ACTION_H

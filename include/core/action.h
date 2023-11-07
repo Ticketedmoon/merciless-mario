@@ -14,6 +14,7 @@ class Action
             CROUCH = 3,
             JUMP = 4,
             SHOOT = 5,
+            RELOAD = 6
         };
         enum class Mode
         {

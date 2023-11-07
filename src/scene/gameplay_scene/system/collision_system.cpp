@@ -56,7 +56,11 @@ void CollisionSystem::checkForEntityCollision(std::shared_ptr<Entity>& dynamicEn
         if (dynamicEntity->getType() == Entity::Type::BULLET)
         {
             dynamicEntity->destroy();
-            otherEntity->destroy();
+
+            if (otherEntity->getType() != Entity::Type::GROUND)
+            {
+                otherEntity->destroy();
+            }
         }
 
         auto collisionNormal = dynamicEntitySpriteGroup->sprites.at(0)->getPosition() -

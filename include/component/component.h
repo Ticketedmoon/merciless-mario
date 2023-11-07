@@ -19,7 +19,7 @@ class Component
             DYNAMIC_MOVEMENT = 4,
             STATIC_MOVEMENT = 5,
             LIFESPAN = 6,
-            CURSOR_FOLLOWER = 7,
+            WEAPON = 7,
             INTERACTABLE = 8,
             COUNT = 9
         };

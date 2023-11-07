@@ -19,37 +19,33 @@ void EntitySpawnSystem::execute()
     {
         std::shared_ptr<CAction> cAction = std::static_pointer_cast<CAction>(
                 player->getComponentByType(Component::Type::USER_INPUT));
-        if (cAction->isShooting)
+        std::shared_ptr<CWeapon> cWeapon = std::static_pointer_cast<CWeapon>(
+                player->getComponentByType(Component::Type::WEAPON));
+        if (cAction->isShooting && cWeapon->hasBulletsInRound())
         {
             std::shared_ptr<CTransform> cTransform = std::static_pointer_cast<CTransform>(
                     player->getComponentByType(Component::Type::TRANSFORM));
             std::shared_ptr<CSpriteGroup> cSpriteGroup = std::static_pointer_cast<CSpriteGroup>(
                     player->getComponentByType(Component::Type::SPRITE_GROUP));
-            std::shared_ptr<CCursorFollower> cCursorFollower = std::static_pointer_cast<CCursorFollower>(
-                    player->getComponentByType(Component::Type::CURSOR_FOLLOWER));
-
             // Spawn bullet at player location or slightly in-front of sprite
             // moving to mouse destination (use cos X, sin Y)
-            std::shared_ptr<sf::Sprite>& arm = cSpriteGroup->sprites.at(1);
-            float shotAngleRadians = cCursorFollower->getArmPointAngleRadians(arm->getPosition());
+            std::shared_ptr<sf::Sprite>& weaponSprite = cSpriteGroup->sprites.at(1);
+            float shotAngleRadians = cWeapon->getArmPointAngleRadians(weaponSprite->getPosition());
             float shotAngleX = std::cos(shotAngleRadians);
             float shotAngleY = std::sin(shotAngleRadians);
             float shotSpeed = PLAYER_BULLET_SPEED * DT;
 
-            // Spawn bullet at end of player's arm
-            float armLength = arm->getGlobalBounds().width > arm->getGlobalBounds().height
-                    ? arm->getGlobalBounds().width
-                    : arm->getGlobalBounds().height;
+            // Spawn bullet at end of player's weaponSprite
+            float armLength = weaponSprite->getGlobalBounds().width > weaponSprite->getGlobalBounds().height
+                    ? weaponSprite->getGlobalBounds().width
+                    : weaponSprite->getGlobalBounds().height;
             sf::Vector2f bulletPosition{cTransform->m_position.x + (shotAngleX * armLength),
                                         cTransform->m_position.y + (shotAngleY * armLength)};
 
             sf::Vector2f velocity = sf::Vector2f(shotAngleX * shotSpeed, shotAngleY * shotSpeed);
 
-            float shotAngleDegrees = cCursorFollower->getArmPointAngleDegrees(arm->getPosition());
+            float shotAngleDegrees = cWeapon->getArmPointAngleDegrees(weaponSprite->getPosition());
             createBullet(bulletPosition, velocity, shotAngleDegrees - 90);
-
-            // Reset shooting flag
-            cAction->isShooting = false;
         }
     }
 }
@@ -80,7 +76,10 @@ void EntitySpawnSystem::createPlayer(sf::Vector2f position)
             500.0f, 250.0f, 350.0f, // movement
             1500.0f, -300.0f, // jump velocity
             400.0f, 600.0f)); // gravity
-    player->addComponent(Component::Type::CURSOR_FOLLOWER, std::make_shared<CCursorFollower>());
+
+    uint16_t totalAmmoRounds = 3;
+    player->addComponent(Component::Type::WEAPON, std::make_shared<CWeapon>(WeaponType::SHOTGUN,
+            totalAmmoRounds));
     player->addComponent(Component::Type::COLLISION, std::make_shared<CCollision>());
 }
 
@@ -158,11 +157,11 @@ void EntitySpawnSystem::createQuestionBlock(sf::Vector2f position)
 
 void EntitySpawnSystem::createGroundBlock(sf::Vector2f position)
 {
-    std::shared_ptr<Entity> questionBlock = m_entityManager.addEntity(Entity::Type::QUESTION_BLOCK);
+    std::shared_ptr<Entity> ground = m_entityManager.addEntity(Entity::Type::GROUND);
 
     sf::Vector2f velocity = sf::Vector2f(0, 0);
-    questionBlock->addComponent(Component::Type::TRANSFORM, std::make_shared<CTransform>(position, velocity));
-    questionBlock->addComponent(Component::Type::STATIC_MOVEMENT, std::make_shared<CMovement>());
+    ground->addComponent(Component::Type::TRANSFORM, std::make_shared<CTransform>(position, velocity));
+    ground->addComponent(Component::Type::STATIC_MOVEMENT, std::make_shared<CMovement>());
 
     std::shared_ptr<CSpriteGroup> animationComponent = std::make_shared<CSpriteGroup>();
     const std::string animationTextureFilePath = "resources/assets/texture/blocks.png";
@@ -170,8 +169,8 @@ void EntitySpawnSystem::createGroundBlock(sf::Vector2f position)
 
     addAnimationTextureComponent(animationComponent, position, animationTextureFilePath, rectBounds,
             sf::Vector2f(rectBounds.width / 2, rectBounds.height / 2), 1, TILE_SIZE, 0, {1, 1}, 0);
-    questionBlock->addComponent(Component::Type::SPRITE_GROUP, animationComponent);
-    questionBlock->addComponent(Component::Type::COLLISION, std::make_shared<CCollision>());
+    ground->addComponent(Component::Type::SPRITE_GROUP, animationComponent);
+    ground->addComponent(Component::Type::COLLISION, std::make_shared<CCollision>());
 }
 
 void EntitySpawnSystem::createBullet(sf::Vector2f bulletPosition, sf::Vector2f velocity, float gunAngle)

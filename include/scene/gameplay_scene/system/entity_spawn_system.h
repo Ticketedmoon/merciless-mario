@@ -11,7 +11,7 @@
 #include <sstream>
 
 #include "entity.h"
-#include "c_cursor_follower.h"
+#include "c_weapon.h"
 #include "c_sprite_group.h"
 #include "c_transform.h"
 #include "c_interactable.h"
@@ -76,14 +76,14 @@ class EntitySpawnSystem : public System
 
         std::shared_ptr<sf::Texture> buildSpriteTexture(std::shared_ptr<CSpriteGroup>& spriteGroup,
                 const std::string& animationTextureFilePath);
+        void applySpriteGroupForEntity(const sf::Vector2f& position, const LevelSprite& levelSprite,
+                std::shared_ptr<Entity>& decoration);
 
     private:
         static constexpr float PLAYER_BULLET_SPEED = 75000.0f;
 
         EntityManager& m_entityManager;
         TextureManager m_textureManager;
-        void applySpriteGroupForEntity(const sf::Vector2f& position, const LevelSprite& levelSprite,
-                std::shared_ptr<Entity>& decoration);
 };
 
 

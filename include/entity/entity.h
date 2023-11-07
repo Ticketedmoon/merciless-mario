@@ -31,6 +31,7 @@ class Entity
             PLAYER,
             ENEMY_GOOMBA,
             BULLET,
+            GROUND,
             BRICK,
             BUSH,
             CLOUD,

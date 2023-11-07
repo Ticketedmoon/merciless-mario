@@ -70,6 +70,10 @@ void GameplayScene::performAction(Action& action)
     {
         actionComponent->isShooting = action.getMode() == Action::Mode::PRESS;
     }
+    if (action.getType() == Action::Type::RELOAD)
+    {
+        actionComponent->isReloading = action.getMode() == Action::Mode::PRESS;
+    }
 }
 
 void GameplayScene::registerActions()
@@ -88,12 +92,15 @@ void GameplayScene::registerActions()
 
     // Mouse
     registerActionType(CursorButton::CURSOR_LEFT, Action::Type::SHOOT);
+    registerActionType(CursorButton::CURSOR_RIGHT, Action::Type::RELOAD);
 }
 
 void GameplayScene::registerSystems()
 {
     m_systemManager.registerSystem(
             std::make_shared<EntitySpawnSystem>(m_entityManager), SystemManager::SystemType::UPDATE);
+    m_systemManager.registerSystem(
+            std::make_shared<ProjectileSystem>(m_entityManager), SystemManager::SystemType::UPDATE);
     m_systemManager.registerSystem(
             std::make_shared<TransformSystem>(m_entityManager, gameEngine.window, m_renderTexture), SystemManager::SystemType::UPDATE);
     m_systemManager.registerSystem(
