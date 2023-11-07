@@ -62,7 +62,7 @@ void EntitySpawnSystem::createPlayer(sf::Vector2f position)
 
     std::shared_ptr<CSpriteGroup> spriteGroup = std::make_shared<CSpriteGroup>();
 
-    const std::string bodyTextureFilePath = "resources/assets/texture/small_mario.png";
+    const std::string bodyTextureFilePath = "resources/assets/texture/small_mario_sunglasses.png";
     sf::IntRect body = sf::IntRect(0, 0, TILE_SIZE, TILE_SIZE);
     const sf::Vector2<float>& bodyOrigin = sf::Vector2f(body.width / 2, body.height / 2);
     addAnimationTextureComponent(spriteGroup, position, bodyTextureFilePath, body, bodyOrigin, 4, TILE_SIZE, 1.0f/10.0f, {1, 1}, 0);

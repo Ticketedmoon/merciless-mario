@@ -16,7 +16,7 @@ static constexpr uint32_t LEVEL_DEPTH_KILL_ZONE = 768;
 static constexpr uint32_t MAX_LEVEL_HEIGHT = 2048;
 static inline constexpr uint8_t TILE_SIZE = 32;
 
-static const inline float DEFAULT_SFX_VOLUME = 90.0f;
-static const inline float JUMP_SFX_VOLUME = 30.0f;
+static const inline float DEFAULT_SFX_VOLUME = 50d.0f;
+static const inline float JUMP_SFX_VOLUME = 5.0f;
 
 #endif //MERCILESS_MARIO_COMMON_CONSTANTS_H
