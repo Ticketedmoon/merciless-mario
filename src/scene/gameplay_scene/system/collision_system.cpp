@@ -1,4 +1,5 @@
 #include "scene/gameplay_scene/system/collision_system.h"
+#include "c_lifespan.h"
 
 CollisionSystem::CollisionSystem(EntityManager& entityManager) : m_entityManager(entityManager)
 {
@@ -22,7 +23,7 @@ void CollisionSystem::execute()
         checkForWindowCollision(dynamicEntity, cMovement);
 
         std::shared_ptr<CTransform> cTransform = std::static_pointer_cast<CTransform>(dynamicEntity->getComponentByType(Component::Type::TRANSFORM));
-        if (cTransform->m_position.y > LEVEL_DEPTH_KILL_ZONE)
+        if (cTransform != nullptr && cTransform->m_position.y > LEVEL_DEPTH_KILL_ZONE)
         {
             dynamicEntity->destroy();
         }
@@ -127,77 +128,108 @@ void CollisionSystem::resolve(std::shared_ptr<Entity>& entity, std::shared_ptr<E
     }
 
     std::shared_ptr<CTransform> cTransform = std::static_pointer_cast<CTransform>(entity->getComponentByType(Component::Type::TRANSFORM));
-    std::shared_ptr<CMovement> cMovement = std::static_pointer_cast<CMovement>(entity->getComponentByType(Component::Type::DYNAMIC_MOVEMENT));
+    std::shared_ptr<CMovement> cMovement = std::static_pointer_cast<CMovement>(
+            entity->getComponentByType(Component::Type::DYNAMIC_MOVEMENT));
 
-    if (entity->hasComponent(Component::Type::USER_INPUT))
+    // Ground
+    if (manifold.y == 1)
     {
-        // Ground
-        if (manifold.y == 1)
+        if (entity->getType() == Entity::Type::PLAYER && otherEntity->getType()== Entity::Type::ENEMY_GOOMBA)
         {
-            std::shared_ptr<CAction> cAction = std::static_pointer_cast<CAction>(
-                    entity->getComponentByType(Component::Type::USER_INPUT));
-            cMovement->isAirborne = false;
-            cMovement->hasTouchedCeiling = false;
-            cTransform->m_velocity.y = 0;
+            std::shared_ptr<CSpriteGroup> otherEntitySpriteGroup = std::static_pointer_cast<CSpriteGroup>(
+                    otherEntity->getComponentByType(Component::Type::SPRITE_GROUP));
+            otherEntitySpriteGroup->animations.at(0)->animationRectStartBounds = sf::IntRect(64, 0, TILE_SIZE,
+                    TILE_SIZE);
+            otherEntitySpriteGroup->animations.at(0)->animationRectBounds = sf::IntRect(64, 0, TILE_SIZE,
+                    TILE_SIZE);
+            otherEntitySpriteGroup->animations.at(0)->currentFrame = 0;
+            otherEntitySpriteGroup->animations.at(0)->totalAnimationFrames = 1;
+            cMovement->isRising = true;
+            m_audioManager->playSound(AudioManager::AudioType::STOMP_ON_ENEMY, DEFAULT_SFX_VOLUME);
+
+            otherEntity->removeComponent(Component::COLLISION);
+            otherEntity->removeComponent(Component::TRANSFORM);
+            otherEntity->addComponent(Component::Type::LIFESPAN, std::make_shared<CLifespan>(100));
+        }
+        cMovement->isAirborne = false;
+        cMovement->hasTouchedCeiling = false;
+        cTransform->m_velocity.y = 0;
+    }
+
+    // Ceiling
+    if (manifold.y == -1 && !cMovement->hasTouchedCeiling)
+    {
+        cTransform->m_velocity.y = 0;
+        cMovement->hasTouchedCeiling = true;
+
+
+        if (otherEntity->getType() == Entity::Type::BRICK)
+        {
+            m_audioManager->playSound(AudioManager::AudioType::BREAK_BRICK, DEFAULT_SFX_VOLUME);
+            otherEntity->destroy();
         }
 
-        // Ceiling
-        if (manifold.y == -1 && !cMovement->hasTouchedCeiling)
+        // If question-block, turn off and get coin
+        if (otherEntity->getType() == Entity::Type::QUESTION_BLOCK)
         {
-            cTransform->m_velocity.y = 0;
-            cMovement->hasTouchedCeiling = true;
-
-
-            if (otherEntity->getType() == Entity::Type::BRICK)
+            if (!otherEntity->hasComponent(Component::INTERACTABLE))
             {
-                m_audioManager->playSound(AudioManager::AudioType::BREAK_BRICK, DEFAULT_SFX_VOLUME);
+                return;
+            }
+            std::shared_ptr<CInteractable> otherEntityInteractableState = std::static_pointer_cast<CInteractable>(
+                    otherEntity->getComponentByType(Component::Type::INTERACTABLE));
+            if (otherEntityInteractableState->isInteractable())
+            {
+                m_audioManager->playSound(AudioManager::AudioType::POWER_UP_APPEARS, DEFAULT_SFX_VOLUME);
+
+                std::shared_ptr<CSpriteGroup> otherEntitySpriteGroup = std::static_pointer_cast<CSpriteGroup>(
+                        otherEntity->getComponentByType(Component::Type::SPRITE_GROUP));
+                otherEntitySpriteGroup->animations.at(0)->animationRectStartBounds = sf::IntRect(96, 0, TILE_SIZE,
+                        TILE_SIZE);
+                otherEntitySpriteGroup->animations.at(0)->animationRectBounds = sf::IntRect(96, 0, TILE_SIZE,
+                        TILE_SIZE);
+                otherEntitySpriteGroup->animations.at(0)->currentFrame = 0;
+                otherEntitySpriteGroup->animations.at(0)->totalAnimationFrames = 1;
+
+                otherEntityInteractableState->deactivate();
+            }
+            else
+            {
+                m_audioManager->playSound(AudioManager::AudioType::BUMP, DEFAULT_SFX_VOLUME);
+            }
+        }
+    }
+
+    // Left/Right Wall
+    if (manifold.x == 1 || manifold.x == -1)
+    {
+        if (entity->getType() == Entity::Type::ENEMY_GOOMBA)
+        {
+            if (otherEntity->getType() == Entity::Type::PLAYER)
+            {
                 otherEntity->destroy();
             }
-
-            // If question-block, turn off and get coin
-            if (otherEntity->getType() == Entity::Type::QUESTION_BLOCK)
-            {
-                std::shared_ptr<CInteractable> otherEntityInteractableState = std::static_pointer_cast<CInteractable>(
-                        otherEntity->getComponentByType(Component::Type::INTERACTABLE));
-                if (otherEntityInteractableState->isInteractable())
-                {
-                    m_audioManager->playSound(AudioManager::AudioType::POWER_UP_APPEARS, DEFAULT_SFX_VOLUME);
-
-                    std::shared_ptr<CSpriteGroup> otherEntitySpriteGroup = std::static_pointer_cast<CSpriteGroup>(
-                            otherEntity->getComponentByType(Component::Type::SPRITE_GROUP));
-                    otherEntitySpriteGroup->animations.at(0)->animationRectStartBounds = sf::IntRect(96, 0, TILE_SIZE, TILE_SIZE);
-                    otherEntitySpriteGroup->animations.at(0)->animationRectBounds = sf::IntRect(96, 0, TILE_SIZE, TILE_SIZE);
-                    otherEntitySpriteGroup->animations.at(0)->currentFrame = 0;
-                    otherEntitySpriteGroup->animations.at(0)->totalAnimationFrames = 1;
-
-                    otherEntityInteractableState->deactivate();
-                }
-                else
-                {
-                    m_audioManager->playSound(AudioManager::AudioType::BUMP, DEFAULT_SFX_VOLUME);
-                }
-            }
+            // Flip direction
+            cTransform->m_velocity.x *= -1;
         }
-
-        // Left/Right Wall
-        if (manifold.x == 1 || manifold.x == -1)
+        else if (!cMovement->hasTouchedWall)
         {
-            if (!cMovement->hasTouchedWall)
+            if (cMovement->isAirborne)
             {
-                if (cMovement->isAirborne)
-                {
-                    cTransform->m_velocity.x = 0;
-                }
-                cMovement->hasTouchedWall = true;
+                cTransform->m_velocity.x = 0;
             }
+            cMovement->hasTouchedWall = true;
+        }
+        else
+        {
             cTransform->m_velocity.x += (cTransform->m_velocity.x > 0.0f
                     ? cTransform->m_velocity.x * -0.1f
                     : cTransform->m_velocity.x * 0.1f) * DT;
         }
-        else
-        {
-            cMovement->hasTouchedWall = false;
-        }
+    }
+    else
+    {
+        cMovement->hasTouchedWall = false;
     }
 
     // move the shape out of the solid object by the penetration amount

@@ -12,6 +12,10 @@ DECORATION      BUSH_MID                 49             2
 DECORATION      HILL_LARGE               58             3
 
 PLAYER          _                        3              3
+ENEMY          GOOMBA                    10             3
+ENEMY          GOOMBA                    15             3
+ENEMY          GOOMBA                    28             7
+ENEMY          GOOMBA                    38             3
 
 TILE            QUESTION_BLOCK           22             5
 TILE            BRICK                    26             5

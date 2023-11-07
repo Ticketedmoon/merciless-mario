@@ -23,6 +23,10 @@ void TransformSystem::execute()
         std::shared_ptr<CMovement> cMovement = std::static_pointer_cast<CMovement>(player->getComponentByType(Component::Type::DYNAMIC_MOVEMENT));
         updatePlayerVelocityOnAction(cTransform, cAction, cMovement);
         updatePlayerArmPositionByMousePosition(player);
+        if (player->hasComponent(Component::Type::DYNAMIC_MOVEMENT))
+        {
+            reduceVelocity(cTransform, cMovement);
+        }
     }
 
     std::vector<std::shared_ptr<Entity>> collisionEntities = m_entityManager
@@ -42,12 +46,8 @@ void TransformSystem::execute()
         std::shared_ptr<CMovement> cMovement = std::static_pointer_cast<CMovement>(entity->getComponentByType(Component::Type::DYNAMIC_MOVEMENT));
         std::shared_ptr<CSpriteGroup> spriteGroup = std::static_pointer_cast<CSpriteGroup>(
                 entity->getComponentByType(Component::Type::SPRITE_GROUP));
-        applyGravity(cTransform, cMovement, spriteGroup);
+        applyGravity(cTransform, cMovement);
         updatePosition(cTransform);
-        if (entity->hasComponent(Component::Type::DYNAMIC_MOVEMENT))
-        {
-            reduceVelocity(cTransform, cMovement);
-        }
     }
 }
 
@@ -73,8 +73,7 @@ void TransformSystem::updatePosition(std::shared_ptr<CTransform>& cTransform)
     cTransform->m_position.y += cTransform->m_velocity.y * DT;
 }
 
-void TransformSystem::applyGravity(std::shared_ptr<CTransform>& cTransform, const std::shared_ptr<CMovement>& cMovement,
-        std::shared_ptr<CSpriteGroup>& spriteGroup)
+void TransformSystem::applyGravity(std::shared_ptr<CTransform>& cTransform, const std::shared_ptr<CMovement>& cMovement)
 {
     if (cTransform->m_velocity.y >= 20)
     {
@@ -83,7 +82,6 @@ void TransformSystem::applyGravity(std::shared_ptr<CTransform>& cTransform, cons
 
     if (cMovement->isRising && !cMovement->hasTouchedCeiling && cTransform->m_velocity.y > cMovement->maxJumpVelocity)
     {
-        m_audioManger->playSound(AudioManager::AudioType::JUMP, JUMP_SFX_VOLUME);
         cTransform->m_velocity.y -= cMovement->jumpAcceleration * DT;
         cMovement->isAirborne = true;
     }
@@ -111,6 +109,10 @@ void TransformSystem::updatePlayerVelocityOnAction(std::shared_ptr<CTransform>& 
     }
     if (cAction->isJumping)
     {
+        if (!cMovement->isAirborne)
+        {
+            m_audioManger->playSound(AudioManager::AudioType::JUMP, JUMP_SFX_VOLUME);
+        }
         cAction->isJumping = false;
         cMovement->isRising = !cMovement->isAirborne;
     }

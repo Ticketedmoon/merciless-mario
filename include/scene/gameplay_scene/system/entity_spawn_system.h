@@ -55,6 +55,8 @@ class EntitySpawnSystem : public System
         };
 
         void createPlayer(sf::Vector2f position);
+        void createEnemy(sf::Vector2f position, Entity::Type entityType, const std::string& animationTextureFilePath);
+
         void createBricks(sf::Vector2f position);
         void createQuestionBlock(sf::Vector2f position);
         void createGroundBlock(sf::Vector2f position);

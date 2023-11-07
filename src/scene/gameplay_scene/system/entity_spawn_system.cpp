@@ -84,6 +84,27 @@ void EntitySpawnSystem::createPlayer(sf::Vector2f position)
     player->addComponent(Component::Type::COLLISION, std::make_shared<CCollision>());
 }
 
+void EntitySpawnSystem::createEnemy(sf::Vector2f position, Entity::Type entityType, const std::string& animationTextureFilePath)
+{
+    std::shared_ptr<Entity>& player = m_entityManager.addEntity(entityType);
+
+    sf::Vector2f velocity = sf::Vector2f(60.0f, 0);
+
+    std::shared_ptr<CSpriteGroup> spriteGroup = std::make_shared<CSpriteGroup>();
+
+    sf::IntRect boundingRect = sf::IntRect(0, 0, TILE_SIZE, TILE_SIZE);
+    const sf::Vector2<float>& origin = sf::Vector2f(boundingRect.width / 2, boundingRect.height / 2);
+    addAnimationTextureComponent(spriteGroup, position, animationTextureFilePath, boundingRect, origin, 2, TILE_SIZE, 1.0f/3.0f, {1, 1}, 0);
+
+    player->addComponent(Component::Type::SPRITE_GROUP, spriteGroup);
+    player->addComponent(Component::Type::TRANSFORM, std::make_shared<CTransform>(position, velocity));
+    player->addComponent(Component::Type::DYNAMIC_MOVEMENT, std::make_shared<CMovement>(
+            500.0f, 250.0f, 350.0f, // movement
+            0.0f, 0.0f, // jump velocity
+            400.0f, 600.0f)); // gravity
+    player->addComponent(Component::Type::COLLISION, std::make_shared<CCollision>());
+}
+
 void EntitySpawnSystem::createBricks(sf::Vector2f position)
 {
     std::shared_ptr<Entity> brick = m_entityManager.addEntity(Entity::Type::BRICK);
@@ -243,6 +264,14 @@ void EntitySpawnSystem::createLevel()
         {
             createPlayer(position);
         }
+        else if (row.entityType == "ENEMY")
+        {
+            if (row.animation == "GOOMBA")
+            {
+                const std::string animationTextureFilePath = "resources/assets/texture/goomba_spritesheet.png";
+                createEnemy(position, Entity::Type::ENEMY_GOOMBA, animationTextureFilePath);
+            }
+        }
         else if (row.entityType == "TILE")
         {
             if (row.animation == "GROUND")
@@ -259,15 +288,15 @@ void EntitySpawnSystem::createLevel()
             }
             if (row.animation == "PIPE_SMALL")
             {
-                createLevelCollidableSprite(position, Entity::Type::BUSH, {"pipe", LevelSpriteSizeType::SMALL, 2, 3});
+                createLevelCollidableSprite(position, Entity::Type::PIPE, {"pipe", LevelSpriteSizeType::SMALL, 2, 3});
             }
             if (row.animation == "PIPE_MEDIUM")
             {
-                createLevelCollidableSprite(position, Entity::Type::BUSH, {"pipe", LevelSpriteSizeType::MEDIUM, 2, 5});
+                createLevelCollidableSprite(position, Entity::Type::PIPE, {"pipe", LevelSpriteSizeType::MEDIUM, 2, 5});
             }
             if (row.animation == "PIPE_LARGE")
             {
-                createLevelCollidableSprite(position, Entity::Type::BUSH, {"pipe", LevelSpriteSizeType::LARGE, 2, 7});
+                createLevelCollidableSprite(position, Entity::Type::PIPE, {"pipe", LevelSpriteSizeType::LARGE, 2, 7});
             }
         }
         else if (row.entityType == "DECORATION")

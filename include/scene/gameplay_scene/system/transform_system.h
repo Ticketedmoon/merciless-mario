@@ -31,14 +31,13 @@ class TransformSystem : public System
         void execute() override;
 
     private:
-        static void reduceVelocity(std::shared_ptr<CTransform>& cTransform, std::shared_ptr<CMovement>& cMovement);
-        static void updatePlayerVelocityOnAction(std::shared_ptr<CTransform>& cTransform, const std::shared_ptr<CAction>& cAction,
+        void reduceVelocity(std::shared_ptr<CTransform>& cTransform, std::shared_ptr<CMovement>& cMovement);
+        void updatePlayerVelocityOnAction(std::shared_ptr<CTransform>& cTransform, const std::shared_ptr<CAction>& cAction,
                 std::shared_ptr<CMovement>& cMovement);
-        static void updatePosition(std::shared_ptr<CTransform>& cTransform);
-        static void checkForWindowCollision(std::shared_ptr<CTransform>& cTransform,
+        void updatePosition(std::shared_ptr<CTransform>& cTransform);
+        void checkForWindowCollision(std::shared_ptr<CTransform>& cTransform,
                 const std::shared_ptr<CCollision>& cCollision);
-        void applyGravity(std::shared_ptr<CTransform>& cTransform, const std::shared_ptr<CMovement>& cMovement,
-                std::shared_ptr<CSpriteGroup>& spriteGroup);
+        void applyGravity(std::shared_ptr<CTransform>& cTransform, const std::shared_ptr<CMovement>& cMovement);
         void updatePlayerArmPositionByMousePosition(std::shared_ptr<Entity>& player);
 
     private:

@@ -20,6 +20,7 @@ class Entity
         friend class EntityManager;
 
         void addComponent(Component::Type type, const std::shared_ptr<Component>& component);
+        void removeComponent(const Component::Type componentType);
         [[nodiscard]] bool hasComponent(Component::Type componentType) const;
         [[nodiscard]] bool hasComponents(const std::vector<Component::Type>& componentTypes) const;
         std::shared_ptr<Component> getComponentByType(Component::Type componentType);
@@ -28,15 +29,14 @@ class Entity
         enum class Type
         {
             PLAYER,
-            ENEMY,
+            ENEMY_GOOMBA,
             BULLET,
             BRICK,
             BUSH,
             CLOUD,
             HILL,
             PIPE,
-            QUESTION_BLOCK,
-            NONE
+            QUESTION_BLOCK
         };
 
         size_t getId() const;

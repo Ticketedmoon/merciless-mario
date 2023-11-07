@@ -6,6 +6,7 @@ AudioManager::AudioManager()
     loadSfx(AudioType::BUMP, BUMP_SFX_PATH);
     loadSfx(AudioType::BREAK_BRICK, BREAK_BRICK_SFX_PATH);
     loadSfx(AudioType::POWER_UP_APPEARS, POWER_UP_APPEARS_SFX_PATH);
+    loadSfx(AudioType::STOMP_ON_ENEMY, STOMP_ON_ENEMY_SFX);
 }
 void AudioManager::loadSfx(const AudioType audioType, const std::string& sfxPath)
 {

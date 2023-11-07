@@ -15,11 +15,18 @@ bool Entity::hasComponent(const Component::Type componentType) const
     return m_components[index] != nullptr;
 }
 
+void Entity::removeComponent(const Component::Type componentType)
+{
+    auto index = static_cast<uint8_t>(componentType);
+    m_components[index] = nullptr;
+}
+
 bool Entity::hasComponents(const std::vector<Component::Type>& componentTypes) const
 {
     return std::ranges::all_of(componentTypes.cbegin(), componentTypes.cend(),
             [this](const Component::Type componentType) {
-                return m_components[componentType] != nullptr;
+                int index = static_cast<int>(componentType);
+                return m_components[index] != nullptr;
             });
 }
 

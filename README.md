@@ -50,3 +50,15 @@ Date: `04/11/2023`
 ![Sat 04 Nov 2023 17:11:53 GMT](https://github.com/Ticketedmoon/merciless-mario/assets/21260839/d1c5dc3d-4a1a-4ad1-bdb3-5971ac6fdfee)
 
 ---
+
+Date: `07/11/2023`
+
+- Added Enemy Type: `Goombas`
+  - Goombas have movement and collision properties
+  - Goombas can kill the player on touch
+  - Goombas will display a death animation for a period of time when jumped on before being destroyed. 
+  - Included the classic 'stomp' sound effect.
+
+![Tue 07 Nov 2023 17:35:22 GMT](https://github.com/Ticketedmoon/merciless-mario/assets/21260839/4683d621-bdf1-4f57-bf29-cba4d7514a1a)
+
+---
