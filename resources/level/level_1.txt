@@ -16,6 +16,17 @@ ENEMY          GOOMBA                    10             3
 ENEMY          GOOMBA                    15             3
 ENEMY          GOOMBA                    28             7
 ENEMY          GOOMBA                    38             3
+ENEMY          GOOMBA                    38             3
+ENEMY          GOOMBA                    40             3
+ENEMY          GOOMBA                    42             3
+ENEMY          GOOMBA                    45             3
+ENEMY          GOOMBA                    50             3
+ENEMY          GOOMBA                    52             3
+ENEMY          GOOMBA                    55             3
+ENEMY          GOOMBA                    60             3
+ENEMY          GOOMBA                    6             3
+ENEMY          GOOMBA                    9             3
+ENEMY          GOOMBA                    11             3
 
 TILE            QUESTION_BLOCK           22             5
 TILE            BRICK                    26             5
