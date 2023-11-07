@@ -63,3 +63,13 @@ Date: `07/11/2023`
 ![Tue 07 Nov 2023 17:35:22 GMT](https://github.com/Ticketedmoon/merciless-mario/assets/21260839/4683d621-bdf1-4f57-bf29-cba4d7514a1a)
 
 ---
+
+Date: `07/11/2023`
+
+- Added Ammunition System, where the player must reload upon firing of all bullets in the current magazine .
+- Added gun fire and reload sfx
+- Added ammo text rendering into the UI (temporary) for resource visibility.
+
+![Tue 07 Nov 2023 20:48:03 GMT](https://github.com/Ticketedmoon/merciless-mario/assets/21260839/56a5335d-fe5b-4360-a6af-7c3965c4edf9)
+
+---
