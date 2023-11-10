@@ -1,5 +1,6 @@
 #include "scene/gameplay_scene/system/collision_system.h"
 #include "c_lifespan.h"
+#include "c_weapon.h"
 
 CollisionSystem::CollisionSystem(EntityManager& entityManager) : m_entityManager(entityManager)
 {
@@ -61,6 +62,25 @@ void CollisionSystem::checkForEntityCollision(std::shared_ptr<Entity>& dynamicEn
             {
                 otherEntity->destroy();
             }
+        }
+        if (dynamicEntity->getType() == Entity::Type::PLAYER && otherEntity->getType() == Entity::Type::WEAPON_PISTOL)
+        {
+            // Add new weapon to player sprite
+            dynamicEntity->addComponent(Component::WEAPON, std::make_shared<CWeapon>(WeaponType::PISTOL, 6));
+
+            // Remove weapon from map
+            otherEntity->destroy();
+        }
+        if (dynamicEntity->getType() == Entity::Type::PLAYER && otherEntity->getType() == Entity::Type::WEAPON_SHOTGUN)
+        {
+            // Remove existing weapon
+            dynamicEntity->removeComponent(Component::WEAPON);
+
+            // Add new weapon to player sprite
+            dynamicEntity->addComponent(Component::WEAPON, std::make_shared<CWeapon>(WeaponType::SHOTGUN, 3));
+
+            // Remove weapon from map
+            otherEntity->destroy();
         }
 
         auto collisionNormal = dynamicEntitySpriteGroup->sprites.at(0)->getPosition() -
@@ -138,6 +158,10 @@ void CollisionSystem::resolve(std::shared_ptr<Entity>& entity, std::shared_ptr<E
     // Ground
     if (manifold.y == 1)
     {
+        cMovement->isAirborne = false;
+        cMovement->hasTouchedCeiling = false;
+        cTransform->m_velocity.y = 0;
+
         if (entity->getType() == Entity::Type::PLAYER && otherEntity->getType()== Entity::Type::ENEMY_GOOMBA)
         {
             std::shared_ptr<CSpriteGroup> otherEntitySpriteGroup = std::static_pointer_cast<CSpriteGroup>(
@@ -154,10 +178,8 @@ void CollisionSystem::resolve(std::shared_ptr<Entity>& entity, std::shared_ptr<E
             otherEntity->removeComponent(Component::COLLISION);
             otherEntity->removeComponent(Component::TRANSFORM);
             otherEntity->addComponent(Component::Type::LIFESPAN, std::make_shared<CLifespan>(100));
+            return;
         }
-        cMovement->isAirborne = false;
-        cMovement->hasTouchedCeiling = false;
-        cTransform->m_velocity.y = 0;
     }
 
     // Ceiling

@@ -8,6 +8,7 @@
 #include <memory>
 #include <SFML/System/Time.hpp>
 #include "component.h"
+#include "common_constants.h"
 
 class CSpriteGroup : public Component
 {
@@ -18,13 +19,18 @@ class CSpriteGroup : public Component
             float animationUpdateTime;
         };
         struct SpriteAnimation {
+            const std::string textureSheetFilePath;
+            // TODO make me const
             sf::IntRect animationRectStartBounds;
             sf::IntRect animationRectBounds;
-            uint32_t animationIncrement{};
+            const uint16_t animationIncrement;
 
-            uint32_t totalAnimationFrames{};
-            uint32_t currentFrame{};
+            uint16_t  currentFrame;
+            uint16_t totalAnimationFrames;
+
             SpriteAnimationTicker animationTicker{};
+            const sf::Vector2f origin;
+            float rotation{};
         };
 
         CSpriteGroup() = default;

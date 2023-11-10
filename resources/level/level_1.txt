@@ -24,9 +24,12 @@ ENEMY          GOOMBA                    50             3
 ENEMY          GOOMBA                    52             3
 ENEMY          GOOMBA                    55             3
 ENEMY          GOOMBA                    60             3
-ENEMY          GOOMBA                    6             3
-ENEMY          GOOMBA                    9             3
+ENEMY          GOOMBA                    6              3
+ENEMY          GOOMBA                    9              3
 ENEMY          GOOMBA                    11             3
+
+WEAPON         PISTOL                    28             6
+WEAPON         SHOTGUN                   65             3
 
 TILE            QUESTION_BLOCK           22             5
 TILE            BRICK                    26             5

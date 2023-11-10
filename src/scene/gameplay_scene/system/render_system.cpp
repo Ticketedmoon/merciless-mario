@@ -45,6 +45,10 @@ void RenderSystem::drawGuiData()
     for (std::shared_ptr<Entity>& player : players)
     {
         std::shared_ptr<CWeapon> cWeapon = std::static_pointer_cast<CWeapon>(player->getComponentByType(Component::WEAPON));
+        if (cWeapon == nullptr)
+        {
+            return;
+        }
 
         m_ammoText.setString("Round: " + std::to_string(cWeapon->currentRoundBullets) + "\nMag: " +
                 std::to_string(cWeapon->totalMagazinesAvailable));

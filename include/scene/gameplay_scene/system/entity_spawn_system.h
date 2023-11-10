@@ -23,6 +23,7 @@
 #include "common_constants.h"
 #include "system.h"
 #include "texture_manager.h"
+#include "audio_manager.h"
 
 class EntitySpawnSystem : public System
 {
@@ -37,6 +38,14 @@ class EntitySpawnSystem : public System
             std::string animation;
             uint16_t locationX;
             uint16_t locationY;
+        };
+
+        struct EntityProperties
+        {
+            Entity::Type entityType;
+            sf::Vector2f position;
+            sf::Vector2f velocity;
+            std::vector<CSpriteGroup::SpriteAnimation> animationProperties;
         };
 
         enum class LevelSpriteSizeType
@@ -54,25 +63,22 @@ class EntitySpawnSystem : public System
             uint8_t sizeValueY;
         };
 
-        void createPlayer(sf::Vector2f position);
-        void createEnemy(sf::Vector2f position, Entity::Type entityType, const std::string& animationTextureFilePath);
-
-        void createBricks(sf::Vector2f position);
-        void createQuestionBlock(sf::Vector2f position);
-        void createGroundBlock(sf::Vector2f position);
-        void createBullet(sf::Vector2f bulletPosition, sf::Vector2f velocity, float gunAngle);
-        void createLevelDecoration(sf::Vector2f position, Entity::Type entityType, const LevelSprite& levelSprite);
-        void createLevelCollidableSprite(sf::Vector2f position, Entity::Type entityType, const LevelSprite& levelSprite);
-
+    private:
         void createLevel();
+        void createEntity(const EntityProperties& entityProperties,
+                std::unordered_map<Component::Type, std::shared_ptr<Component>>& componentGroup);
+        void createLevelDecoration(const EntityProperties& entityProperties, const LevelSprite& levelSprite);
+        void createLevelCollidableSprite(const EntityProperties& entityProperties, const LevelSprite& levelSprite);
 
         [[nodiscard]] static std::vector<Row> LoadLevelData(uint8_t levelNumber);
 
         // TODO Refactor this method
         void addAnimationTextureComponent(std::shared_ptr<CSpriteGroup>& spriteGroup,
-                const sf::Vector2f& position, const std::string& animationTextureFilePath, sf::IntRect& rectBounds,
-                sf::Vector2f origin, uint32_t totalAnimationFrames, uint32_t animationIncrement,
-                float spriteAnimationCompletionTime, sf::Vector2f scale, float rotation);
+                const std::string& animationTextureFilePath,
+                const sf::Vector2f& position, sf::IntRect& rectBounds,
+                sf::Vector2f origin, uint16_t totalAnimationFrames, uint16_t animationIncrement,
+                float spriteAnimationCompletionTime, float rotation);
+        static void removeLastAnimationTexture(std::shared_ptr<CSpriteGroup>& spriteGroup);
 
         std::shared_ptr<sf::Texture> buildSpriteTexture(std::shared_ptr<CSpriteGroup>& spriteGroup,
                 const std::string& animationTextureFilePath);
@@ -84,6 +90,8 @@ class EntitySpawnSystem : public System
 
         EntityManager& m_entityManager;
         TextureManager m_textureManager;
+
+        AudioManager* m_audioManager = AudioManager::getInstance();
 };
 
 

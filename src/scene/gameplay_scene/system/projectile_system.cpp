@@ -15,10 +15,16 @@ void ProjectileSystem::execute()
 
     for (std::shared_ptr<Entity>& player: players)
     {
-        std::shared_ptr<CAction> cAction = std::static_pointer_cast<CAction>(
-                player->getComponentByType(Component::Type::USER_INPUT));
         std::shared_ptr<CWeapon> cWeapon = std::static_pointer_cast<CWeapon>(
                 player->getComponentByType(Component::Type::WEAPON));
+        if (cWeapon == nullptr)
+        {
+            return;
+        }
+
+        std::shared_ptr<CAction> cAction = std::static_pointer_cast<CAction>(
+                player->getComponentByType(Component::Type::USER_INPUT));
+
         if (cAction->isShooting)
         {
             cAction->isShooting = false;

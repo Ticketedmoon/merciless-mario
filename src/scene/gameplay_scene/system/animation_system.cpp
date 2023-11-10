@@ -21,6 +21,7 @@ void AnimationSystem::execute()
         tryUpdateSpriteAnimation(spriteGroup);
     }
 }
+
 void AnimationSystem::handlePlayerAnimation(std::shared_ptr<Entity>& entity, std::shared_ptr<CSpriteGroup>& spriteGroup)
 {
     std::shared_ptr<CAction> cAction = std::static_pointer_cast<CAction>(

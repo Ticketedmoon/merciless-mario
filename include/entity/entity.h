@@ -30,6 +30,9 @@ class Entity
         {
             PLAYER,
             ENEMY_GOOMBA,
+            WEAPON_PISTOL,
+            WEAPON_SHOTGUN,
+            WEAPON_SNIPER,
             BULLET,
             GROUND,
             BRICK,

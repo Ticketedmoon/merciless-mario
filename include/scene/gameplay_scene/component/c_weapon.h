@@ -31,6 +31,7 @@ class CWeapon : public Component
         uint8_t currentRoundBullets;
         uint8_t totalMagazinesAvailable;
         sf::Vector2f weaponPointLocation;
+        bool hasWeaponBeenCollidedWith;
 };
 
 #endif //MERCILESS_MARIO_C_WEAPON_H

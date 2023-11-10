@@ -17,16 +17,48 @@ void EntitySpawnSystem::execute()
 
     for (std::shared_ptr<Entity>& player: players)
     {
-        std::shared_ptr<CAction> cAction = std::static_pointer_cast<CAction>(
-                player->getComponentByType(Component::Type::USER_INPUT));
         std::shared_ptr<CWeapon> cWeapon = std::static_pointer_cast<CWeapon>(
                 player->getComponentByType(Component::Type::WEAPON));
-        if (cAction->isShooting && cWeapon->hasBulletsInRound())
+        std::shared_ptr<CSpriteGroup> cSpriteGroup = std::static_pointer_cast<CSpriteGroup>(
+                player->getComponentByType(Component::Type::SPRITE_GROUP));
+        std::shared_ptr<CTransform> cTransform = std::static_pointer_cast<CTransform>(
+                player->getComponentByType(Component::Type::TRANSFORM));
+        if (cWeapon != nullptr && cWeapon->hasWeaponBeenCollidedWith)
         {
-            std::shared_ptr<CTransform> cTransform = std::static_pointer_cast<CTransform>(
-                    player->getComponentByType(Component::Type::TRANSFORM));
-            std::shared_ptr<CSpriteGroup> cSpriteGroup = std::static_pointer_cast<CSpriteGroup>(
-                    player->getComponentByType(Component::Type::SPRITE_GROUP));
+            if (cSpriteGroup->animations.size() > 1)
+            {
+                removeLastAnimationTexture(cSpriteGroup);
+            }
+
+            m_audioManager->playSound(AudioManager::AudioType::POWER_UP_APPEARS, DEFAULT_SFX_VOLUME);
+
+            if (cWeapon->weaponType == WeaponType::PISTOL)
+            {
+                // Pick up weapon.
+                sf::IntRect entityGunRect{0, 0, TILE_SIZE, TILE_SIZE};
+                sf::Vector2f gunOrigin{0, TILE_SIZE/2};
+                const std::string weaponTexturePath = "resources/assets/texture/pistol_32x32.png";
+                addAnimationTextureComponent(cSpriteGroup,weaponTexturePath, cTransform->m_position, entityGunRect, gunOrigin, 1, TILE_SIZE, 0, 0);
+            }
+            else if (cWeapon->weaponType == WeaponType::SHOTGUN)
+            {
+                // Pick up weapon.
+                sf::IntRect entityGunRect{0, 0, 81, TILE_SIZE * 2};
+                sf::Vector2f gunOrigin{0, TILE_SIZE};
+                const std::string weaponTexturePath = "resources/assets/texture/shotgun.png";
+                addAnimationTextureComponent(cSpriteGroup, weaponTexturePath, cTransform->m_position, entityGunRect, gunOrigin, 1, TILE_SIZE, 0, 0);
+            }
+            else if (cWeapon->weaponType == WeaponType::SNIPER_RIFLE)
+            {
+
+            }
+            cWeapon->hasWeaponBeenCollidedWith = false;
+        }
+
+        std::shared_ptr<CAction> cAction = std::static_pointer_cast<CAction>(
+                player->getComponentByType(Component::Type::USER_INPUT));
+        if (cAction->isShooting && cWeapon != nullptr && cWeapon->hasBulletsInRound())
+        {
             // Spawn bullet at player location or slightly in-front of sprite
             // moving to mouse destination (use cos X, sin Y)
             std::shared_ptr<sf::Sprite>& weaponSprite = cSpriteGroup->sprites.at(1);
@@ -39,156 +71,275 @@ void EntitySpawnSystem::execute()
             float armLength = weaponSprite->getGlobalBounds().width > weaponSprite->getGlobalBounds().height
                     ? weaponSprite->getGlobalBounds().width
                     : weaponSprite->getGlobalBounds().height;
+
             sf::Vector2f bulletPosition{cTransform->m_position.x + (shotAngleX * armLength),
                                         cTransform->m_position.y + (shotAngleY * armLength)};
 
             sf::Vector2f velocity = sf::Vector2f(shotAngleX * shotSpeed, shotAngleY * shotSpeed);
-
             float shotAngleDegrees = cWeapon->getArmPointAngleDegrees(weaponSprite->getPosition());
-            createBullet(bulletPosition, velocity, shotAngleDegrees - 90);
+            float gunAngle = shotAngleDegrees - 90;
+
+            sf::IntRect entityRect{0, 0, TILE_SIZE/2, TILE_SIZE/2};
+            sf::Vector2f origin{entityRect.width/2.0f, entityRect.height/2.0f};
+            EntityProperties properties{Entity::Type::BULLET, bulletPosition, velocity, {
+                    {"resources/assets/texture/bullet_16x16.png", entityRect, entityRect, TILE_SIZE, 0, 1, {0, 1.0f/3.5f}, origin, gunAngle},
+            }};
+
+            std::unordered_map<Component::Type, std::shared_ptr<Component>> components{
+                    {Component::Type::TRANSFORM, std::make_shared<CTransform>(properties.position, properties.velocity)},
+                    {Component::Type::DYNAMIC_MOVEMENT, std::make_shared<CMovement>()},
+                    {Component::Type::COLLISION, std::make_shared<CCollision>()},
+                    {Component::Type::LIFESPAN, std::make_shared<CLifespan>(255)}
+            };
+
+            createEntity(properties, components);
         }
     }
 }
 
-void EntitySpawnSystem::createPlayer(sf::Vector2f position)
+void EntitySpawnSystem::createLevel()
 {
-    std::shared_ptr<Entity>& player = m_entityManager.addEntity(Entity::Type::PLAYER);
+    std::vector<Row> levelRows = LoadLevelData(1);
+    for (const auto& row: levelRows)
+    {
+        sf::Vector2f position = sf::Vector2f(row.locationX * TILE_SIZE, WINDOW_HEIGHT - (row.locationY * TILE_SIZE));
+        if (row.entityType == "PLAYER")
+        {
+            // TODO could be issue here we are not passing by value.
+            sf::IntRect entityBodyRect{0, 0, TILE_SIZE, TILE_SIZE};
+            sf::Vector2f bodyOrigin{entityBodyRect.width/2.0f, entityBodyRect.height/2.0f};
 
-    sf::Vector2f velocity = sf::Vector2f(0, 0);
+            sf::IntRect entityGunRect{0, 0, 81, TILE_SIZE * 2};
+            sf::Vector2f gunOrigin{0, TILE_SIZE};
 
-    std::shared_ptr<CSpriteGroup> spriteGroup = std::make_shared<CSpriteGroup>();
+            const EntityProperties& properties{Entity::Type::PLAYER, position, {0, 0}, {
+                    {"resources/assets/texture/small_mario_sunglasses.png", entityBodyRect, entityBodyRect, TILE_SIZE, 0, 4, {0, 1.0f/10.0f}, bodyOrigin, 0}
+            }};
 
-    const std::string bodyTextureFilePath = "resources/assets/texture/small_mario_sunglasses.png";
-    sf::IntRect body = sf::IntRect(0, 0, TILE_SIZE, TILE_SIZE);
-    const sf::Vector2<float>& bodyOrigin = sf::Vector2f(body.width / 2, body.height / 2);
-    addAnimationTextureComponent(spriteGroup, position, bodyTextureFilePath, body, bodyOrigin, 4, TILE_SIZE, 1.0f/10.0f, {1, 1}, 0);
+            std::unordered_map<Component::Type, std::shared_ptr<Component>> components{
+                    {Component::Type::TRANSFORM, std::make_shared<CTransform>(properties.position, properties.velocity)},
+                    {Component::Type::USER_INPUT, std::make_shared<CAction>()},
+                    {Component::Type::DYNAMIC_MOVEMENT, std::make_shared<CMovement>(
+                            500.0f, 250.0f, 350.0f, // movement
+                            1500.0f, -300.0f, // jump velocity
+                            400.0f, 600.0f) // gravity
+                    },
+                    {Component::Type::COLLISION, std::make_shared<CCollision>()}
+            };
 
-    // Weapon
-    const std::string shotgunTextureFilePath = "resources/assets/texture/shotgun.png";
-    sf::IntRect armRectBounds = sf::IntRect(0, 0, 81, TILE_SIZE * 2);
-    const sf::Vector2<float>& gunOrigin = sf::Vector2f(0, TILE_SIZE);
-    addAnimationTextureComponent(spriteGroup, position, shotgunTextureFilePath, armRectBounds, gunOrigin, TILE_SIZE, 0, 0, {1, 1}, 0);
+            createEntity(properties, components);
+        }
+        else if (row.entityType == "ENEMY")
+        {
+            if (row.animation == "GOOMBA")
+            {
+                sf::IntRect entityRect{0, 0, TILE_SIZE, TILE_SIZE};
+                sf::Vector2f origin{entityRect.width/2.0f, entityRect.height/2.0f};
+                sf::Vector2f velocity{60.0f, 0};
+                const EntityProperties& properties{Entity::Type::ENEMY_GOOMBA, position, velocity, {
+                        {"resources/assets/texture/goomba_spritesheet.png", entityRect, entityRect, TILE_SIZE, 0, 2, {0, 1.0f/3.0f}, origin, 0},
+                }};
 
-    player->addComponent(Component::Type::SPRITE_GROUP, spriteGroup);
-    player->addComponent(Component::Type::TRANSFORM, std::make_shared<CTransform>(position, velocity));
-    player->addComponent(Component::Type::USER_INPUT, std::make_shared<CAction>());
-    player->addComponent(Component::Type::DYNAMIC_MOVEMENT, std::make_shared<CMovement>(
-            500.0f, 250.0f, 350.0f, // movement
-            1500.0f, -300.0f, // jump velocity
-            400.0f, 600.0f)); // gravity
+                std::unordered_map<Component::Type, std::shared_ptr<Component>> components{
+                        {Component::Type::TRANSFORM, std::make_shared<CTransform>(properties.position, properties.velocity)},
+                        {Component::Type::DYNAMIC_MOVEMENT, std::make_shared<CMovement>(
+                                500.0f, 250.0f, 350.0f, // movement
+                                0.0f, 0.0f, // jump velocity
+                                400.0f, 600.0f) // gravity
+                        },
+                        {Component::Type::COLLISION, std::make_shared<CCollision>()}
+                };
 
-    uint16_t totalAmmoRounds = 3;
-    player->addComponent(Component::Type::WEAPON, std::make_shared<CWeapon>(WeaponType::SHOTGUN,
-            totalAmmoRounds));
-    player->addComponent(Component::Type::COLLISION, std::make_shared<CCollision>());
+                createEntity(properties, components);
+            }
+        }
+        else if (row.entityType == "WEAPON")
+        {
+            if (row.animation == "PISTOL")
+            {
+                sf::IntRect entityRect{0, 0, TILE_SIZE, TILE_SIZE};
+                sf::Vector2f origin{entityRect.width/2.0f, entityRect.height/2.0f};
+                sf::Vector2f velocity{0.0f, 0};
+                const EntityProperties& properties{Entity::Type::WEAPON_PISTOL, position, velocity, {
+                        {"resources/assets/texture/pistol_32x32.png", entityRect, entityRect, TILE_SIZE, 0, 0, {0, 0}, origin, 0},
+                }};
+
+                std::unordered_map<Component::Type, std::shared_ptr<Component>> components{
+                        {Component::Type::TRANSFORM, std::make_shared<CTransform>(properties.position, properties.velocity)},
+                        {Component::Type::STATIC_MOVEMENT, std::make_shared<CMovement>()},
+                        {Component::Type::COLLISION, std::make_shared<CCollision>()}
+                };
+
+                createEntity(properties, components);
+            }
+            if (row.animation == "SHOTGUN")
+            {
+                sf::IntRect entityRect{0, 0, 81, TILE_SIZE*2};
+                sf::Vector2f origin{entityRect.width/2.0f, entityRect.height/2.0f};
+                sf::Vector2f velocity{0.0f, 0};
+                const EntityProperties& properties{Entity::Type::WEAPON_SHOTGUN, position, velocity, {
+                        {"resources/assets/texture/shotgun.png", entityRect, entityRect, TILE_SIZE, 0, 0, {0, 0}, origin, 0},
+                }};
+
+                std::unordered_map<Component::Type, std::shared_ptr<Component>> components{
+                        {Component::Type::TRANSFORM, std::make_shared<CTransform>(properties.position, properties.velocity)},
+                        {Component::Type::STATIC_MOVEMENT, std::make_shared<CMovement>()},
+                        {Component::Type::COLLISION, std::make_shared<CCollision>()}
+                };
+
+                createEntity(properties, components);
+            }
+        }
+        else if (row.entityType == "TILE")
+        {
+            if (row.animation == "GROUND")
+            {
+                sf::IntRect entityRect{0, TILE_SIZE, TILE_SIZE, TILE_SIZE};
+                sf::Vector2f origin{entityRect.width/2.0f, entityRect.height/2.0f};
+                sf::Vector2f velocity{0.0f, 0};
+                const EntityProperties& properties{Entity::Type::GROUND, position, velocity, {
+                        {"resources/assets/texture/blocks.png", entityRect, entityRect, TILE_SIZE, 0, 1, {0, 0}, origin, 0},
+                }};
+
+                std::unordered_map<Component::Type, std::shared_ptr<Component>> components{
+                        {Component::Type::TRANSFORM, std::make_shared<CTransform>(properties.position, properties.velocity)},
+                        {Component::Type::STATIC_MOVEMENT, std::make_shared<CMovement>()},
+                        {Component::Type::COLLISION, std::make_shared<CCollision>()}
+                };
+
+                createEntity(properties, components);
+            }
+            if (row.animation == "BRICK")
+            {
+                sf::IntRect entityRect{TILE_SIZE, TILE_SIZE, TILE_SIZE, TILE_SIZE};
+                sf::Vector2f origin{entityRect.width/2.0f, entityRect.height/2.0f};
+                sf::Vector2f velocity{0.0f, 0};
+                const EntityProperties& properties{Entity::Type::BRICK, position, velocity, {
+                        {"resources/assets/texture/blocks.png", entityRect, entityRect, TILE_SIZE, 0, 1, {0, 0}, origin, 0},
+                }};
+
+                std::unordered_map<Component::Type, std::shared_ptr<Component>> components{
+                        {Component::Type::TRANSFORM, std::make_shared<CTransform>(properties.position, properties.velocity)},
+                        {Component::Type::STATIC_MOVEMENT, std::make_shared<CMovement>()},
+                        {Component::Type::COLLISION, std::make_shared<CCollision>()}
+                };
+
+                createEntity(properties, components);
+            }
+            if (row.animation == "QUESTION_BLOCK")
+            {
+                sf::IntRect entityRect{0, 0, TILE_SIZE, TILE_SIZE};
+                sf::Vector2f origin{entityRect.width/2.0f, entityRect.height/2.0f};
+                sf::Vector2f velocity{0.0f, 0};
+                const EntityProperties& properties{Entity::Type::QUESTION_BLOCK, position, velocity, {
+                        {"resources/assets/texture/blocks.png", entityRect, entityRect, TILE_SIZE, 0, 3, {0, 1.0f/3.5f}, origin, 0},
+                }};
+
+                std::unordered_map<Component::Type, std::shared_ptr<Component>> components{
+                        {Component::Type::TRANSFORM, std::make_shared<CTransform>(properties.position, properties.velocity)},
+                        {Component::Type::STATIC_MOVEMENT, std::make_shared<CMovement>()},
+                        {Component::Type::COLLISION, std::make_shared<CCollision>()},
+                        {Component::Type::INTERACTABLE, std::make_shared<CInteractable>()}
+                };
+
+                createEntity(properties, components);
+            }
+            if (row.animation == "PIPE_SMALL")
+            {
+                createLevelCollidableSprite({Entity::Type::PIPE, position}, {"pipe", LevelSpriteSizeType::SMALL, 2, 3});
+            }
+            if (row.animation == "PIPE_MEDIUM")
+            {
+                createLevelCollidableSprite({Entity::Type::PIPE, position}, {"pipe", LevelSpriteSizeType::MEDIUM, 2, 5});
+            }
+            if (row.animation == "PIPE_LARGE")
+            {
+                createLevelCollidableSprite({Entity::Type::PIPE, position}, {"pipe", LevelSpriteSizeType::LARGE, 2, 7});
+            }
+        }
+        else if (row.entityType == "DECORATION")
+        {
+            // Bush
+            if (row.animation == "BUSH_SMALL")
+            {
+                createLevelDecoration({Entity::Type::BUSH, position}, {"bush", LevelSpriteSizeType::SMALL, 3, 1});
+            }
+            if (row.animation == "BUSH_MID")
+            {
+                createLevelDecoration({Entity::Type::BUSH, position}, {"bush", LevelSpriteSizeType::MEDIUM, 4, 1});
+            }
+            if (row.animation == "BUSH_BIG")
+            {
+                createLevelDecoration({Entity::Type::BUSH, position}, {"bush", LevelSpriteSizeType::LARGE, 5, 1});
+            }
+
+            // Hill
+            if (row.animation == "HILL_SMALL")
+            {
+                createLevelDecoration({Entity::Type::HILL, position}, {"hill", LevelSpriteSizeType::SMALL, 5, 3});
+            }
+            if (row.animation == "HILL_LARGE")
+            {
+                createLevelDecoration({Entity::Type::HILL, position}, {"hill", LevelSpriteSizeType::LARGE, 5, 3});
+            }
+
+            // Cloud
+            if (row.animation == "CLOUD_SMALL")
+            {
+                createLevelDecoration({Entity::Type::CLOUD, position}, {"cloud", LevelSpriteSizeType::SMALL, 3, 2});
+            }
+            if (row.animation == "CLOUD_MID")
+            {
+                createLevelDecoration({Entity::Type::CLOUD, position}, {"cloud", LevelSpriteSizeType::MEDIUM, 4, 2});
+            }
+            if (row.animation == "CLOUD_LARGE")
+            {
+                createLevelDecoration({Entity::Type::CLOUD, position}, {"cloud", LevelSpriteSizeType::LARGE, 5, 2});
+            }
+        }
+    }
 }
 
-void EntitySpawnSystem::createEnemy(sf::Vector2f position, Entity::Type entityType, const std::string& animationTextureFilePath)
+void EntitySpawnSystem::createEntity(const EntityProperties& entityProperties,
+        std::unordered_map<Component::Type, std::shared_ptr<Component>>& componentGroup)
 {
-    std::shared_ptr<Entity>& player = m_entityManager.addEntity(entityType);
+    std::shared_ptr<Entity>& entity = m_entityManager.addEntity(entityProperties.entityType);
 
-    sf::Vector2f velocity = sf::Vector2f(60.0f, 0);
+    std::shared_ptr<CSpriteGroup> spriteGroup = componentGroup.contains(Component::Type::SPRITE_GROUP)
+            ? std::static_pointer_cast<CSpriteGroup>(componentGroup.at(Component::Type::SPRITE_GROUP))
+            : std::make_shared<CSpriteGroup>();
 
-    std::shared_ptr<CSpriteGroup> spriteGroup = std::make_shared<CSpriteGroup>();
+    if (!componentGroup.contains(Component::Type::SPRITE_GROUP))
+    {
+        for (CSpriteGroup::SpriteAnimation properties: entityProperties.animationProperties)
+        {
+            addAnimationTextureComponent(spriteGroup, properties.textureSheetFilePath, entityProperties.position,
+                    properties.animationRectBounds, properties.origin,
+                    properties.totalAnimationFrames, TILE_SIZE, properties.animationTicker.animationUpdateTime,
+                    properties.rotation);
+        }
 
-    sf::IntRect boundingRect = sf::IntRect(0, 0, TILE_SIZE, TILE_SIZE);
-    const sf::Vector2<float>& origin = sf::Vector2f(boundingRect.width / 2, boundingRect.height / 2);
-    addAnimationTextureComponent(spriteGroup, position, animationTextureFilePath, boundingRect, origin, 2, TILE_SIZE, 1.0f/3.0f, {1, 1}, 0);
+        componentGroup[Component::Type::SPRITE_GROUP] = spriteGroup;
+    }
 
-    player->addComponent(Component::Type::SPRITE_GROUP, spriteGroup);
-    player->addComponent(Component::Type::TRANSFORM, std::make_shared<CTransform>(position, velocity));
-    player->addComponent(Component::Type::DYNAMIC_MOVEMENT, std::make_shared<CMovement>(
-            500.0f, 250.0f, 350.0f, // movement
-            0.0f, 0.0f, // jump velocity
-            400.0f, 600.0f)); // gravity
-    player->addComponent(Component::Type::COLLISION, std::make_shared<CCollision>());
+    for (const auto& entry : componentGroup)
+    {
+        entity->addComponent(entry.first, entry.second);
+    }
 }
 
-void EntitySpawnSystem::createBricks(sf::Vector2f position)
+void EntitySpawnSystem::createLevelDecoration(const EntityProperties& entityProperties, const LevelSprite& levelSprite)
 {
-    std::shared_ptr<Entity> brick = m_entityManager.addEntity(Entity::Type::BRICK);
-
-    sf::Vector2f velocity = sf::Vector2f(0, 0);
-    brick->addComponent(Component::Type::TRANSFORM, std::make_shared<CTransform>(position, velocity));
-    brick->addComponent(Component::Type::STATIC_MOVEMENT, std::make_shared<CMovement>());
-
-    std::shared_ptr<CSpriteGroup> animationComponent = std::make_shared<CSpriteGroup>();
-    const std::string animationTextureFilePath = "resources/assets/texture/blocks.png";
-    sf::Rect<int> rectBounds = sf::IntRect(TILE_SIZE, TILE_SIZE, TILE_SIZE, TILE_SIZE);
-
-    addAnimationTextureComponent(animationComponent, position, animationTextureFilePath, rectBounds,
-            sf::Vector2f(rectBounds.width / 2, rectBounds.height / 2), 1, TILE_SIZE, 0, {1, 1}, 0);
-    brick->addComponent(Component::Type::SPRITE_GROUP, animationComponent);
-    brick->addComponent(Component::Type::COLLISION, std::make_shared<CCollision>());
+    std::shared_ptr<Entity> decoration = m_entityManager.addEntity(entityProperties.entityType);
+    applySpriteGroupForEntity(entityProperties.position, levelSprite, decoration);
 }
 
-void EntitySpawnSystem::createLevelDecoration(sf::Vector2f position, Entity::Type entityType, const LevelSprite& levelSprite)
+void EntitySpawnSystem::createLevelCollidableSprite(const EntityProperties& entityProperties, const LevelSprite& levelSprite)
 {
-    std::shared_ptr<Entity> decoration = m_entityManager.addEntity(entityType);
-    applySpriteGroupForEntity(position, levelSprite, decoration);
-}
-
-void EntitySpawnSystem::createLevelCollidableSprite(sf::Vector2f position, Entity::Type entityType, const LevelSprite& levelSprite)
-{
-    std::shared_ptr<Entity> collidableEntity = m_entityManager.addEntity(entityType);
-    applySpriteGroupForEntity(position, levelSprite, collidableEntity);
+    std::shared_ptr<Entity> collidableEntity = m_entityManager.addEntity(entityProperties.entityType);
+    applySpriteGroupForEntity(entityProperties.position, levelSprite, collidableEntity);
     collidableEntity->addComponent(Component::Type::COLLISION, std::make_shared<CCollision>());
     collidableEntity->addComponent(Component::Type::STATIC_MOVEMENT, std::make_shared<CMovement>());
-}
-
-void EntitySpawnSystem::createQuestionBlock(sf::Vector2f position)
-{
-    std::shared_ptr<Entity> questionBlock = m_entityManager.addEntity(Entity::Type::QUESTION_BLOCK);
-
-    sf::Vector2f velocity = sf::Vector2f(0, 0);
-    questionBlock->addComponent(Component::Type::TRANSFORM, std::make_shared<CTransform>(position, velocity));
-    questionBlock->addComponent(Component::Type::STATIC_MOVEMENT, std::make_shared<CMovement>());
-
-    std::shared_ptr<CSpriteGroup> animationComponent = std::make_shared<CSpriteGroup>();
-    const std::string animationTextureFilePath = "resources/assets/texture/blocks.png";
-    sf::Rect<int> rectBounds = sf::IntRect(0, 0, TILE_SIZE, TILE_SIZE);
-
-    addAnimationTextureComponent(animationComponent, position, animationTextureFilePath, rectBounds,
-            sf::Vector2f(rectBounds.width / 2, rectBounds.height / 2), 3, TILE_SIZE, 1.0f/3.5f, {1, 1}, 0);
-    questionBlock->addComponent(Component::Type::SPRITE_GROUP, animationComponent);
-    questionBlock->addComponent(Component::Type::COLLISION, std::make_shared<CCollision>());
-    questionBlock->addComponent(Component::Type::INTERACTABLE, std::make_shared<CInteractable>());
-}
-
-void EntitySpawnSystem::createGroundBlock(sf::Vector2f position)
-{
-    std::shared_ptr<Entity> ground = m_entityManager.addEntity(Entity::Type::GROUND);
-
-    sf::Vector2f velocity = sf::Vector2f(0, 0);
-    ground->addComponent(Component::Type::TRANSFORM, std::make_shared<CTransform>(position, velocity));
-    ground->addComponent(Component::Type::STATIC_MOVEMENT, std::make_shared<CMovement>());
-
-    std::shared_ptr<CSpriteGroup> animationComponent = std::make_shared<CSpriteGroup>();
-    const std::string animationTextureFilePath = "resources/assets/texture/blocks.png";
-    sf::Rect<int> rectBounds = sf::IntRect(0, 32, TILE_SIZE, TILE_SIZE);
-
-    addAnimationTextureComponent(animationComponent, position, animationTextureFilePath, rectBounds,
-            sf::Vector2f(rectBounds.width / 2, rectBounds.height / 2), 1, TILE_SIZE, 0, {1, 1}, 0);
-    ground->addComponent(Component::Type::SPRITE_GROUP, animationComponent);
-    ground->addComponent(Component::Type::COLLISION, std::make_shared<CCollision>());
-}
-
-void EntitySpawnSystem::createBullet(sf::Vector2f bulletPosition, sf::Vector2f velocity, float gunAngle)
-{
-    std::shared_ptr<Entity>& bullet = m_entityManager.addEntity(Entity::Type::BULLET);
-
-    std::shared_ptr<CSpriteGroup> animationComponent = std::make_shared<CSpriteGroup>();
-    const std::string animationTextureFilePath = "resources/assets/texture/bullet_32x32.png";
-    sf::Rect<int> rectBounds = sf::IntRect(0, 0, TILE_SIZE, TILE_SIZE);
-
-    addAnimationTextureComponent(animationComponent, bulletPosition, animationTextureFilePath, rectBounds,
-            sf::Vector2f(rectBounds.width / 2, rectBounds.height / 2), 1, TILE_SIZE, 0, {0.5, 0.5}, gunAngle);
-    bullet->addComponent(Component::Type::SPRITE_GROUP, animationComponent);
-
-    bullet->addComponent(Component::Type::TRANSFORM, std::make_shared<CTransform>(bulletPosition, velocity));
-    bullet->addComponent(Component::Type::COLLISION, std::make_shared<CCollision>());
-    bullet->addComponent(Component::Type::DYNAMIC_MOVEMENT, std::make_shared<CMovement>());
-    bullet->addComponent(Component::Type::LIFESPAN, std::make_shared<CLifespan>(255));
 }
 
 void EntitySpawnSystem::applySpriteGroupForEntity(const sf::Vector2f& position,
@@ -205,17 +356,23 @@ void EntitySpawnSystem::applySpriteGroupForEntity(const sf::Vector2f& position,
 
     sf::Rect<int> rectBounds = sf::IntRect(0, 0, levelSprite.sizeValueX * TILE_SIZE, levelSprite.sizeValueY * TILE_SIZE);
 
-    addAnimationTextureComponent(animationComponent, position, animationTextureFilePath, rectBounds,
-            sf::Vector2f(rectBounds.width / 2, rectBounds.height / 2), 1, 0, 0, {1, 1}, 0);
+    addAnimationTextureComponent(animationComponent, animationTextureFilePath, position, rectBounds,
+            sf::Vector2f(rectBounds.width / 2, rectBounds.height / 2), 1, 0, 0, 0);
     decoration->addComponent(Component::SPRITE_GROUP, animationComponent);
 }
 
+// TODO Refactor to not take so many params, but an aggregation dto
 void EntitySpawnSystem::addAnimationTextureComponent(std::shared_ptr<CSpriteGroup>& spriteGroup,
-        const sf::Vector2f& position, const std::string& animationTextureFilePath, sf::IntRect& rectBounds,
-        const sf::Vector2f origin, const uint32_t totalAnimationFrames, const uint32_t animationIncrement,
-        float spriteAnimationCompletionTime, sf::Vector2f scale, float rotation)
+        const std::string& animationTextureFilePath,
+        const sf::Vector2f& position, sf::IntRect& rectBounds,
+        const sf::Vector2f origin, const uint16_t totalAnimationFrames, const uint16_t animationIncrement,
+        float spriteAnimationCompletionTime, float rotation)
 {
-    CSpriteGroup::SpriteAnimation spriteAnimation{rectBounds, rectBounds, animationIncrement, totalAnimationFrames, 0, {0, spriteAnimationCompletionTime}};
+    CSpriteGroup::SpriteAnimation spriteAnimation{animationTextureFilePath,
+                                                  rectBounds, rectBounds, animationIncrement,
+                                                  0, totalAnimationFrames,
+                                                  {0, spriteAnimationCompletionTime}};
+
     spriteGroup->animations.emplace_back(std::make_shared<CSpriteGroup::SpriteAnimation>(spriteAnimation));
 
     std::shared_ptr<sf::Texture> spriteTexture = buildSpriteTexture(spriteGroup, animationTextureFilePath);
@@ -228,9 +385,15 @@ void EntitySpawnSystem::addAnimationTextureComponent(std::shared_ptr<CSpriteGrou
     sprite.setPosition(position);
     sprite.setOrigin(origin);
     sprite.rotate(rotation);
-    sprite.setScale(scale);
 
     spriteGroup->sprites.emplace_back(std::make_shared<sf::Sprite>(sprite));
+}
+
+void EntitySpawnSystem::removeLastAnimationTexture(std::shared_ptr<CSpriteGroup>& spriteGroup)
+{
+    spriteGroup->animations.pop_back();
+    spriteGroup->textures.pop_back();
+    spriteGroup->sprites.pop_back();
 }
 
 std::shared_ptr<sf::Texture> EntitySpawnSystem::buildSpriteTexture(std::shared_ptr<CSpriteGroup>& spriteGroup,
@@ -251,94 +414,6 @@ std::shared_ptr<sf::Texture> EntitySpawnSystem::buildSpriteTexture(std::shared_p
 
     animationTexture->setSmooth(true); // TODO Experiment with this
     return animationTexture;
-}
-
-void EntitySpawnSystem::createLevel()
-{
-    std::vector<Row> levelRows = LoadLevelData(1);
-    for (const auto& row: levelRows)
-    {
-        sf::Vector2f position = sf::Vector2f(row.locationX * TILE_SIZE, WINDOW_HEIGHT - (row.locationY * TILE_SIZE));
-        if (row.entityType == "PLAYER")
-        {
-            createPlayer(position);
-        }
-        else if (row.entityType == "ENEMY")
-        {
-            if (row.animation == "GOOMBA")
-            {
-                const std::string animationTextureFilePath = "resources/assets/texture/goomba_spritesheet.png";
-                createEnemy(position, Entity::Type::ENEMY_GOOMBA, animationTextureFilePath);
-            }
-        }
-        else if (row.entityType == "TILE")
-        {
-            if (row.animation == "GROUND")
-            {
-                createGroundBlock(position);
-            }
-            if (row.animation == "BRICK")
-            {
-                createBricks(position);
-            }
-            if (row.animation == "QUESTION_BLOCK")
-            {
-                createQuestionBlock(position);
-            }
-            if (row.animation == "PIPE_SMALL")
-            {
-                createLevelCollidableSprite(position, Entity::Type::PIPE, {"pipe", LevelSpriteSizeType::SMALL, 2, 3});
-            }
-            if (row.animation == "PIPE_MEDIUM")
-            {
-                createLevelCollidableSprite(position, Entity::Type::PIPE, {"pipe", LevelSpriteSizeType::MEDIUM, 2, 5});
-            }
-            if (row.animation == "PIPE_LARGE")
-            {
-                createLevelCollidableSprite(position, Entity::Type::PIPE, {"pipe", LevelSpriteSizeType::LARGE, 2, 7});
-            }
-        }
-        else if (row.entityType == "DECORATION")
-        {
-            // Bush
-            if (row.animation == "BUSH_SMALL")
-            {
-                createLevelDecoration(position, Entity::Type::BUSH, {"bush", LevelSpriteSizeType::SMALL, 3, 1});
-            }
-            if (row.animation == "BUSH_MID")
-            {
-                createLevelDecoration(position, Entity::Type::BUSH, {"bush", LevelSpriteSizeType::MEDIUM, 4, 1});
-            }
-            if (row.animation == "BUSH_BIG")
-            {
-                createLevelDecoration(position, Entity::Type::BUSH, {"bush", LevelSpriteSizeType::LARGE, 5, 1});
-            }
-
-            // Hill
-            if (row.animation == "HILL_SMALL")
-            {
-                createLevelDecoration(position, Entity::Type::HILL, {"hill", LevelSpriteSizeType::SMALL, 5, 3});
-            }
-            if (row.animation == "HILL_LARGE")
-            {
-                createLevelDecoration(position, Entity::Type::HILL, {"hill", LevelSpriteSizeType::LARGE, 5, 3});
-            }
-
-            // Cloud
-            if (row.animation == "CLOUD_SMALL")
-            {
-                createLevelDecoration(position, Entity::Type::CLOUD, {"cloud", LevelSpriteSizeType::SMALL, 3, 2});
-            }
-            if (row.animation == "CLOUD_MID")
-            {
-                createLevelDecoration(position, Entity::Type::CLOUD, {"cloud", LevelSpriteSizeType::MEDIUM, 4, 2});
-            }
-            if (row.animation == "CLOUD_LARGE")
-            {
-                createLevelDecoration(position, Entity::Type::CLOUD, {"cloud", LevelSpriteSizeType::LARGE, 5, 2});
-            }
-        }
-    }
 }
 
 std::vector<EntitySpawnSystem::Row> EntitySpawnSystem::LoadLevelData(uint8_t levelNumber)

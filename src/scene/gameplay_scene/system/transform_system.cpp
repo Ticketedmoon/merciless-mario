@@ -140,6 +140,11 @@ void TransformSystem::updatePlayerArmPositionByMousePosition(std::shared_ptr<Ent
 {
     std::shared_ptr<CWeapon> cWeapon = std::static_pointer_cast<CWeapon>(
             player->getComponentByType(Component::WEAPON));
+    if (cWeapon == nullptr)
+    {
+        return;
+    }
+
     const sf::Vector2i& mousePos = sf::Mouse::getPosition(m_window);
     cWeapon->weaponPointLocation = m_window.mapPixelToCoords(mousePos, m_renderTexture.getView());
 

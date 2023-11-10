@@ -4,7 +4,8 @@
 CWeapon::CWeapon(WeaponType weaponType, uint16_t totalRoundsOfAmmo)
         : weaponType(weaponType),
           currentRoundBullets(static_cast<int>(weaponType)),
-          totalMagazinesAvailable(totalRoundsOfAmmo - 1)
+          totalMagazinesAvailable(totalRoundsOfAmmo - 1),
+          hasWeaponBeenCollidedWith(true)
 {
 
 }
