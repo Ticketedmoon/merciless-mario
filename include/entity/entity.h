@@ -43,7 +43,7 @@ class Entity
             QUESTION_BLOCK
         };
 
-        size_t getId() const;
+        [[nodiscard]] size_t getId() const;
         Type getType();
         [[nodiscard]] bool isAlive() const;
         void destroy();

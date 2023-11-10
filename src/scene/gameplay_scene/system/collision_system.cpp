@@ -58,7 +58,7 @@ void CollisionSystem::checkForEntityCollision(std::shared_ptr<Entity>& dynamicEn
         {
             dynamicEntity->destroy();
 
-            if (otherEntity->getType() != Entity::Type::GROUND)
+            if (otherEntity->getType() == Entity::Type::ENEMY_GOOMBA)
             {
                 otherEntity->destroy();
             }
