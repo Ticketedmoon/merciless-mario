@@ -9,6 +9,10 @@ AudioManager::AudioManager()
     loadSfx(AudioType::STOMP_ON_ENEMY, STOMP_ON_ENEMY_SFX);
     loadSfx(AudioType::SHOTGUN_FIRE, SHOTGUN_FIRE_APPEARS_SFX_PATH);
     loadSfx(AudioType::SHOTGUN_RELOAD, SHOTGUN_RELOAD_APPEARS_SFX_PATH);
+
+    auto* levelOneTheme = new sf::Music();
+    assert(levelOneTheme->openFromFile(LEVEL_ONE_MUSIC));
+    m_sceneMusic.emplace_back(levelOneTheme);
 }
 void AudioManager::loadSfx(const AudioType audioType, const std::string& sfxPath)
 {

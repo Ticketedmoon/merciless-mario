@@ -14,7 +14,8 @@ class Action
             CROUCH = 3,
             JUMP = 4,
             SHOOT = 5,
-            RELOAD = 6
+            RELOAD = 6,
+            START_OR_STOP_MUSIC = 7 // DEBUG
         };
         enum class Mode
         {

@@ -142,7 +142,7 @@ void EntitySpawnSystem::execute()
                     {"resources/assets/texture/bullet_16x16.png", entityRect, entityRect, TILE_SIZE, 0, 1, {0, 1.0f/3.5f}, origin, gunAngle},
             }};
 
-            if (cWeapon->weaponType == WeaponType::PISTOL || cWeapon->weaponType == WeaponType::SHOTGUN a)
+            if (cWeapon->weaponType == WeaponType::PISTOL || cWeapon->weaponType == WeaponType::SHOTGUN)
             {
                 std::unordered_map<Component::Type, std::shared_ptr<Component>> components{
                         {Component::Type::TRANSFORM, std::make_shared<CTransform>(properties.position, properties.velocity)},

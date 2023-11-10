@@ -6,6 +6,8 @@ GameplayScene::GameplayScene(GameEngine& engine) : Scene(engine)
     m_renderSprite.setTexture(m_renderTexture.getTexture());
     m_renderSprite.setTextureRect(sf::IntRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT));
 
+    m_audioManager->playMusic(static_cast<uint8_t>(Scene::Type::LEVEL_ONE_GAMEPLAY_SCENE), 30.0f, true);
+
     registerActions();
     registerSystems();
 }
@@ -74,6 +76,22 @@ void GameplayScene::performAction(Action& action)
     {
         actionComponent->isReloading = action.getMode() == Action::Mode::PRESS;
     }
+    if (action.getType() == Action::Type::START_OR_STOP_MUSIC)
+    {
+        if (action.getMode() == Action::Mode::RELEASE)
+        {
+            return;
+        }
+
+        if (m_audioManager->isMusicPlaying())
+        {
+            m_audioManager->stopActiveMusic();
+        }
+        else
+        {
+            m_audioManager->playMusic(static_cast<uint8_t>(Scene::Type::LEVEL_ONE_GAMEPLAY_SCENE), 30.0f, true);
+        }
+    }
 }
 
 void GameplayScene::registerActions()
@@ -89,6 +107,8 @@ void GameplayScene::registerActions()
     registerActionType(sf::Keyboard::D, Action::Type::MOVE_RIGHT);
     registerActionType(sf::Keyboard::W, Action::Type::LOOK_UP);
     registerActionType(sf::Keyboard::S, Action::Type::CROUCH);
+
+    registerActionType(sf::Keyboard::M, Action::Type::START_OR_STOP_MUSIC);
 
     // Mouse
     registerActionType(CursorButton::CURSOR_LEFT, Action::Type::SHOOT);
