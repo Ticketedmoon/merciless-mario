@@ -29,6 +29,7 @@ class EntitySpawnSystem : public System
 {
     public:
         explicit EntitySpawnSystem(EntityManager& entityManager);
+
         void execute() override;
 
     private:
@@ -38,6 +39,7 @@ class EntitySpawnSystem : public System
             std::string animation;
             uint16_t locationX;
             uint16_t locationY;
+            std::string item;
         };
 
         struct EntityProperties
@@ -66,7 +68,7 @@ class EntitySpawnSystem : public System
     private:
         void createLevel();
         void createEntity(const EntityProperties& entityProperties,
-                std::unordered_map<Component::Type, std::shared_ptr<Component>>& componentGroup);
+                std::unordered_map<Component::Type, std::shared_ptr<Component>> componentGroup);
         void createLevelDecoration(const EntityProperties& entityProperties, const LevelSprite& levelSprite);
         void createLevelCollidableSprite(const EntityProperties& entityProperties, const LevelSprite& levelSprite);
 
@@ -82,6 +84,7 @@ class EntitySpawnSystem : public System
 
         std::shared_ptr<sf::Texture> buildSpriteTexture(std::shared_ptr<CSpriteGroup>& spriteGroup,
                 const std::string& animationTextureFilePath);
+
         void applySpriteGroupForEntity(const sf::Vector2f& position, const LevelSprite& levelSprite,
                 std::shared_ptr<Entity>& decoration);
 

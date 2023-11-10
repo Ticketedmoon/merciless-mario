@@ -15,6 +15,55 @@ void EntitySpawnSystem::execute()
         return;
     }
 
+    std::vector<std::shared_ptr<Entity>>& questionBlocks = m_entityManager.getEntitiesByType(Entity::Type::QUESTION_BLOCK);
+    for (std::shared_ptr<Entity>& questionBlock: questionBlocks)
+    {
+        std::shared_ptr<CWeapon> cWeapon = std::static_pointer_cast<CWeapon>(
+                questionBlock->getComponentByType(Component::Type::WEAPON));
+
+        if (cWeapon != nullptr && cWeapon->shouldSpawnWeapon)
+        {
+            if (cWeapon->weaponType == WeaponType::PISTOL)
+            {
+                sf::IntRect entityRect{0, 0, TILE_SIZE, TILE_SIZE};
+                sf::Vector2f origin{entityRect.width/2.0f, entityRect.height/2.0f};
+                sf::Vector2f velocity{0.0f, 0.0f};
+                const EntityProperties& properties{Entity::Type::WEAPON_PISTOL, cWeapon->weaponSpawnLocation, velocity, {
+                        {"resources/assets/texture/pistol_32x32.png", entityRect, entityRect, TILE_SIZE, 0, 0, {0, 0}, origin, 0},
+                }};
+
+                std::unordered_map<Component::Type, std::shared_ptr<Component>> components{
+                        {Component::Type::TRANSFORM, std::make_shared<CTransform>(properties.position, properties.velocity)},
+                        {Component::Type::STATIC_MOVEMENT, std::make_shared<CMovement>()},
+                        {Component::Type::COLLISION, std::make_shared<CCollision>()}
+                };
+
+                createEntity(properties, components);
+
+            }
+            else if (cWeapon->weaponType == WeaponType::SHOTGUN)
+            {
+                sf::IntRect entityRect{0, 0, 81, TILE_SIZE*2};
+                sf::Vector2f origin{entityRect.width/2.0f, entityRect.height/2.0f};
+                sf::Vector2f velocity{0.0f, 0.0f};
+                const EntityProperties& properties{Entity::Type::WEAPON_SHOTGUN, cWeapon->weaponSpawnLocation, velocity, {
+                        {"resources/assets/texture/shotgun.png", entityRect, entityRect, TILE_SIZE, 0, 0, {0, 0}, origin, 0},
+                }};
+
+                std::unordered_map<Component::Type, std::shared_ptr<Component>> components{
+                        {Component::Type::TRANSFORM, std::make_shared<CTransform>(properties.position, properties.velocity)},
+                        {Component::Type::STATIC_MOVEMENT, std::make_shared<CMovement>()},
+                        {Component::Type::COLLISION, std::make_shared<CCollision>()}
+                };
+
+                createEntity(properties, components);
+            }
+
+            cWeapon->shouldSpawnWeapon = false;
+        }
+    }
+
+
     for (std::shared_ptr<Entity>& player: players)
     {
         std::shared_ptr<CWeapon> cWeapon = std::static_pointer_cast<CWeapon>(
@@ -23,38 +72,45 @@ void EntitySpawnSystem::execute()
                 player->getComponentByType(Component::Type::SPRITE_GROUP));
         std::shared_ptr<CTransform> cTransform = std::static_pointer_cast<CTransform>(
                 player->getComponentByType(Component::Type::TRANSFORM));
-        if (cWeapon != nullptr && cWeapon->hasWeaponBeenCollidedWith)
+        if (cWeapon != nullptr)
         {
-            if (cSpriteGroup->animations.size() > 1)
+            // Collided with
+            if (cWeapon->hasWeaponBeenCollidedWith)
             {
-                removeLastAnimationTexture(cSpriteGroup);
-            }
 
-            m_audioManager->playSound(AudioManager::AudioType::POWER_UP_APPEARS, DEFAULT_SFX_VOLUME);
+                if (cSpriteGroup->animations.size() > 1)
+                {
+                    removeLastAnimationTexture(cSpriteGroup);
+                }
 
-            if (cWeapon->weaponType == WeaponType::PISTOL)
-            {
+                m_audioManager->playSound(AudioManager::AudioType::POWER_UP_APPEARS, DEFAULT_SFX_VOLUME);
+
                 // Pick up weapon.
-                sf::IntRect entityGunRect{0, 0, TILE_SIZE, TILE_SIZE};
-                sf::Vector2f gunOrigin{0, TILE_SIZE/2};
-                const std::string weaponTexturePath = "resources/assets/texture/pistol_32x32.png";
-                addAnimationTextureComponent(cSpriteGroup,weaponTexturePath, cTransform->m_position, entityGunRect, gunOrigin, 1, TILE_SIZE, 0, 0);
+                if (cWeapon->weaponType == WeaponType::PISTOL)
+                {
+                    sf::IntRect entityGunRect{0, 0, TILE_SIZE, TILE_SIZE};
+                    sf::Vector2f gunOrigin{0, TILE_SIZE / 2};
+                    const std::string weaponTexturePath = "resources/assets/texture/pistol_32x32.png";
+                    addAnimationTextureComponent(cSpriteGroup, weaponTexturePath, cTransform->m_position, entityGunRect,
+                            gunOrigin, 1, TILE_SIZE, 0, 0);
+                }
+                else if (cWeapon->weaponType == WeaponType::SHOTGUN)
+                {
+                    sf::IntRect entityGunRect{0, 0, 81, TILE_SIZE * 2};
+                    sf::Vector2f gunOrigin{0, TILE_SIZE};
+                    const std::string weaponTexturePath = "resources/assets/texture/shotgun.png";
+                    addAnimationTextureComponent(cSpriteGroup, weaponTexturePath, cTransform->m_position, entityGunRect,
+                            gunOrigin, 1, TILE_SIZE, 0, 0);
+                }
+                else if (cWeapon->weaponType == WeaponType::SNIPER_RIFLE)
+                {
+                    // NOT IMPLEMENTED
+                }
+                cWeapon->hasWeaponBeenCollidedWith = false;
             }
-            else if (cWeapon->weaponType == WeaponType::SHOTGUN)
-            {
-                // Pick up weapon.
-                sf::IntRect entityGunRect{0, 0, 81, TILE_SIZE * 2};
-                sf::Vector2f gunOrigin{0, TILE_SIZE};
-                const std::string weaponTexturePath = "resources/assets/texture/shotgun.png";
-                addAnimationTextureComponent(cSpriteGroup, weaponTexturePath, cTransform->m_position, entityGunRect, gunOrigin, 1, TILE_SIZE, 0, 0);
-            }
-            else if (cWeapon->weaponType == WeaponType::SNIPER_RIFLE)
-            {
-
-            }
-            cWeapon->hasWeaponBeenCollidedWith = false;
         }
 
+        // Other Actions
         std::shared_ptr<CAction> cAction = std::static_pointer_cast<CAction>(
                 player->getComponentByType(Component::Type::USER_INPUT));
         if (cAction->isShooting && cWeapon != nullptr && cWeapon->hasBulletsInRound())
@@ -65,7 +121,6 @@ void EntitySpawnSystem::execute()
             float shotAngleRadians = cWeapon->getArmPointAngleRadians(weaponSprite->getPosition());
             float shotAngleX = std::cos(shotAngleRadians);
             float shotAngleY = std::sin(shotAngleRadians);
-            float shotSpeed = PLAYER_BULLET_SPEED * DT;
 
             // Spawn bullet at end of player's weaponSprite
             float armLength = weaponSprite->getGlobalBounds().width > weaponSprite->getGlobalBounds().height
@@ -75,24 +130,28 @@ void EntitySpawnSystem::execute()
             sf::Vector2f bulletPosition{cTransform->m_position.x + (shotAngleX * armLength),
                                         cTransform->m_position.y + (shotAngleY * armLength)};
 
-            sf::Vector2f velocity = sf::Vector2f(shotAngleX * shotSpeed, shotAngleY * shotSpeed);
             float shotAngleDegrees = cWeapon->getArmPointAngleDegrees(weaponSprite->getPosition());
             float gunAngle = shotAngleDegrees - 90;
 
             sf::IntRect entityRect{0, 0, TILE_SIZE/2, TILE_SIZE/2};
             sf::Vector2f origin{entityRect.width/2.0f, entityRect.height/2.0f};
+
+            float shotSpeed = PLAYER_BULLET_SPEED * DT;
+            sf::Vector2f velocity = sf::Vector2f(shotAngleX * shotSpeed, shotAngleY * shotSpeed);
             EntityProperties properties{Entity::Type::BULLET, bulletPosition, velocity, {
                     {"resources/assets/texture/bullet_16x16.png", entityRect, entityRect, TILE_SIZE, 0, 1, {0, 1.0f/3.5f}, origin, gunAngle},
             }};
 
-            std::unordered_map<Component::Type, std::shared_ptr<Component>> components{
-                    {Component::Type::TRANSFORM, std::make_shared<CTransform>(properties.position, properties.velocity)},
-                    {Component::Type::DYNAMIC_MOVEMENT, std::make_shared<CMovement>()},
-                    {Component::Type::COLLISION, std::make_shared<CCollision>()},
-                    {Component::Type::LIFESPAN, std::make_shared<CLifespan>(255)}
-            };
-
-            createEntity(properties, components);
+            if (cWeapon->weaponType == WeaponType::PISTOL || cWeapon->weaponType == WeaponType::SHOTGUN a)
+            {
+                std::unordered_map<Component::Type, std::shared_ptr<Component>> components{
+                        {Component::Type::TRANSFORM, std::make_shared<CTransform>(properties.position, properties.velocity)},
+                        {Component::Type::DYNAMIC_MOVEMENT, std::make_shared<CMovement>()},
+                        {Component::Type::COLLISION, std::make_shared<CCollision>()},
+                        {Component::Type::LIFESPAN, std::make_shared<CLifespan>(255)}
+                };
+                createEntity(properties, components);
+            }
         }
     }
 }
@@ -108,9 +167,6 @@ void EntitySpawnSystem::createLevel()
             // TODO could be issue here we are not passing by value.
             sf::IntRect entityBodyRect{0, 0, TILE_SIZE, TILE_SIZE};
             sf::Vector2f bodyOrigin{entityBodyRect.width/2.0f, entityBodyRect.height/2.0f};
-
-            sf::IntRect entityGunRect{0, 0, 81, TILE_SIZE * 2};
-            sf::Vector2f gunOrigin{0, TILE_SIZE};
 
             const EntityProperties& properties{Entity::Type::PLAYER, position, {0, 0}, {
                     {"resources/assets/texture/small_mario_sunglasses.png", entityBodyRect, entityBodyRect, TILE_SIZE, 0, 4, {0, 1.0f/10.0f}, bodyOrigin, 0}
@@ -147,43 +203,6 @@ void EntitySpawnSystem::createLevel()
                                 0.0f, 0.0f, // jump velocity
                                 400.0f, 600.0f) // gravity
                         },
-                        {Component::Type::COLLISION, std::make_shared<CCollision>()}
-                };
-
-                createEntity(properties, components);
-            }
-        }
-        else if (row.entityType == "WEAPON")
-        {
-            if (row.animation == "PISTOL")
-            {
-                sf::IntRect entityRect{0, 0, TILE_SIZE, TILE_SIZE};
-                sf::Vector2f origin{entityRect.width/2.0f, entityRect.height/2.0f};
-                sf::Vector2f velocity{0.0f, 0};
-                const EntityProperties& properties{Entity::Type::WEAPON_PISTOL, position, velocity, {
-                        {"resources/assets/texture/pistol_32x32.png", entityRect, entityRect, TILE_SIZE, 0, 0, {0, 0}, origin, 0},
-                }};
-
-                std::unordered_map<Component::Type, std::shared_ptr<Component>> components{
-                        {Component::Type::TRANSFORM, std::make_shared<CTransform>(properties.position, properties.velocity)},
-                        {Component::Type::STATIC_MOVEMENT, std::make_shared<CMovement>()},
-                        {Component::Type::COLLISION, std::make_shared<CCollision>()}
-                };
-
-                createEntity(properties, components);
-            }
-            if (row.animation == "SHOTGUN")
-            {
-                sf::IntRect entityRect{0, 0, 81, TILE_SIZE*2};
-                sf::Vector2f origin{entityRect.width/2.0f, entityRect.height/2.0f};
-                sf::Vector2f velocity{0.0f, 0};
-                const EntityProperties& properties{Entity::Type::WEAPON_SHOTGUN, position, velocity, {
-                        {"resources/assets/texture/shotgun.png", entityRect, entityRect, TILE_SIZE, 0, 0, {0, 0}, origin, 0},
-                }};
-
-                std::unordered_map<Component::Type, std::shared_ptr<Component>> components{
-                        {Component::Type::TRANSFORM, std::make_shared<CTransform>(properties.position, properties.velocity)},
-                        {Component::Type::STATIC_MOVEMENT, std::make_shared<CMovement>()},
                         {Component::Type::COLLISION, std::make_shared<CCollision>()}
                 };
 
@@ -241,6 +260,23 @@ void EntitySpawnSystem::createLevel()
                         {Component::Type::COLLISION, std::make_shared<CCollision>()},
                         {Component::Type::INTERACTABLE, std::make_shared<CInteractable>()}
                 };
+
+                if (row.item == "WEAPON_PISTOL")
+                {
+                    components.insert({
+                        Component::Type::WEAPON, std::make_shared<CWeapon>(WeaponType::PISTOL, 5)
+                    });
+                }
+                else if (row.item == "WEAPON_SHOTGUN")
+                {
+                    components.insert({
+                            Component::Type::WEAPON, std::make_shared<CWeapon>(WeaponType::SHOTGUN, 3)
+                    });
+                }
+                else if (row.item == "COIN")
+                {
+                    // NOT IMPLEMENTED
+                }
 
                 createEntity(properties, components);
             }
@@ -301,7 +337,7 @@ void EntitySpawnSystem::createLevel()
 }
 
 void EntitySpawnSystem::createEntity(const EntityProperties& entityProperties,
-        std::unordered_map<Component::Type, std::shared_ptr<Component>>& componentGroup)
+        std::unordered_map<Component::Type, std::shared_ptr<Component>> componentGroup)
 {
     std::shared_ptr<Entity>& entity = m_entityManager.addEntity(entityProperties.entityType);
 
@@ -428,7 +464,7 @@ std::vector<EntitySpawnSystem::Row> EntitySpawnSystem::LoadLevelData(uint8_t lev
     while (getline(file, line))
     {
         Row row{};
-        file >> row.entityType >> row.animation >> row.locationX >> row.locationY;
+        file >> row.entityType >> row.animation >> row.locationX >> row.locationY >> row.item;
         rows.push_back(row);
     }
     return rows;

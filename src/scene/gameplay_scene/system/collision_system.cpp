@@ -206,8 +206,10 @@ void CollisionSystem::resolve(std::shared_ptr<Entity>& entity, std::shared_ptr<E
                     otherEntity->getComponentByType(Component::Type::INTERACTABLE));
             if (otherEntityInteractableState->isInteractable())
             {
+                // Play Sfx
                 m_audioManager->playSound(AudioManager::AudioType::POWER_UP_APPEARS, DEFAULT_SFX_VOLUME);
 
+                // Update block to be a blank block
                 std::shared_ptr<CSpriteGroup> otherEntitySpriteGroup = std::static_pointer_cast<CSpriteGroup>(
                         otherEntity->getComponentByType(Component::Type::SPRITE_GROUP));
                 otherEntitySpriteGroup->animations.at(0)->animationRectStartBounds = sf::IntRect(96, 0, TILE_SIZE,
@@ -217,6 +219,17 @@ void CollisionSystem::resolve(std::shared_ptr<Entity>& entity, std::shared_ptr<E
                 otherEntitySpriteGroup->animations.at(0)->currentFrame = 0;
                 otherEntitySpriteGroup->animations.at(0)->totalAnimationFrames = 1;
 
+                // If block contains item, have item rise from block.
+                if (otherEntity->hasComponent(Component::Type::WEAPON))
+                {
+                    // Block contains weapon
+                    std::shared_ptr<CWeapon> cWeapon = std::static_pointer_cast<CWeapon>(
+                            otherEntity->getComponentByType(Component::Type::WEAPON));
+                    cWeapon->shouldSpawnWeapon = true;
+                    cWeapon->weaponSpawnLocation = {cTransform->m_position.x, cTransform->m_position.y - (TILE_SIZE*2)};
+                }
+
+                // Deactivate 'active' state of block
                 otherEntityInteractableState->deactivate();
             }
             else
