@@ -228,7 +228,9 @@ void CollisionSystem::resolve(std::shared_ptr<Entity>& entity, std::shared_ptr<E
                     std::shared_ptr<CWeapon> cWeapon = std::static_pointer_cast<CWeapon>(
                             otherEntity->getComponentByType(Component::Type::WEAPON));
                     cWeapon->shouldSpawnWeapon = true;
-                    cWeapon->weaponSpawnLocation = {cTransform->m_position.x, cTransform->m_position.y - (TILE_SIZE*2)};
+
+                    std::shared_ptr<CTransform> otherEntityTransform = std::static_pointer_cast<CTransform>(otherEntity->getComponentByType(Component::Type::TRANSFORM));
+                    cWeapon->weaponSpawnLocation = {otherEntityTransform->m_position.x, otherEntityTransform->m_position.y - TILE_SIZE};
                 }
 
                 // Deactivate 'active' state of block
@@ -236,7 +238,7 @@ void CollisionSystem::resolve(std::shared_ptr<Entity>& entity, std::shared_ptr<E
             }
             else
             {
-                m_audioManager->playSound(AudioManager::AudioType::BUMP, DEFAULT_SFX_VOLUME);
+                AudioManager::playSound(AudioManager::AudioType::BUMP, DEFAULT_SFX_VOLUME);
             }
         }
     }
