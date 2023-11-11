@@ -27,11 +27,10 @@ class AudioManager {
         void operator=(const AudioManager&) = delete;
 
         static AudioManager* getInstance();
-        void playSound(AudioType audioType, float volume);
-        void playMusic(uint8_t sceneIndex, float volume, bool shouldLoop);
-        bool isMusicPlaying();
-        void stopActiveMusic();
-        sf::Time getCurrentMusicDuration();
+        static void playSound(AudioType audioType, float volume);
+        static void playMusic(uint8_t sceneIndex, float volume, bool shouldLoop);
+        static bool isMusicPlaying();
+        static void stopActiveMusic();
 
     private:
         AudioManager();

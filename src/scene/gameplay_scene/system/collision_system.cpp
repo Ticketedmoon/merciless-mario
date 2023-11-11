@@ -63,7 +63,7 @@ void CollisionSystem::checkForEntityCollision(std::shared_ptr<Entity>& dynamicEn
                 otherEntity->destroy();
             }
         }
-        if (dynamicEntity->getType() == Entity::Type::PLAYER && otherEntity->getType() == Entity::Type::WEAPON_PISTOL)
+        else  if (dynamicEntity->getType() == Entity::Type::PLAYER && otherEntity->getType() == Entity::Type::WEAPON_PISTOL)
         {
             // Add new weapon to player sprite
             dynamicEntity->addComponent(Component::WEAPON, std::make_shared<CWeapon>(WeaponType::PISTOL, 6));
@@ -71,7 +71,7 @@ void CollisionSystem::checkForEntityCollision(std::shared_ptr<Entity>& dynamicEn
             // Remove weapon from map
             otherEntity->destroy();
         }
-        if (dynamicEntity->getType() == Entity::Type::PLAYER && otherEntity->getType() == Entity::Type::WEAPON_SHOTGUN)
+        else if (dynamicEntity->getType() == Entity::Type::PLAYER && otherEntity->getType() == Entity::Type::WEAPON_SHOTGUN)
         {
             // Remove existing weapon
             dynamicEntity->removeComponent(Component::WEAPON);
@@ -82,11 +82,13 @@ void CollisionSystem::checkForEntityCollision(std::shared_ptr<Entity>& dynamicEn
             // Remove weapon from map
             otherEntity->destroy();
         }
-
-        auto collisionNormal = dynamicEntitySpriteGroup->sprites.at(0)->getPosition() -
-                staticEntitySpriteGroup->sprites.at(0)->getPosition();
-        auto manifold = getManifold(overlap, collisionNormal);
-        resolve(dynamicEntity, otherEntity, manifold);
+        else
+        {
+            auto collisionNormal = dynamicEntitySpriteGroup->sprites.at(0)->getPosition() -
+                    staticEntitySpriteGroup->sprites.at(0)->getPosition();
+            auto manifold = getManifold(overlap, collisionNormal);
+            resolve(dynamicEntity, otherEntity, manifold);
+        }
     }
 }
 

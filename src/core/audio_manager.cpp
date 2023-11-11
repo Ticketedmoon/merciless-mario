@@ -79,9 +79,3 @@ void AudioManager::stopActiveMusic()
     sf::Music& currentMusic = *m_sceneMusic[currentSceneIndex];
     currentMusic.stop();
 }
-
-sf::Time AudioManager::getCurrentMusicDuration()
-{
-    sf::Music& currentMusic = *m_sceneMusic[currentSceneIndex];
-    return currentMusic.getDuration();
-}
