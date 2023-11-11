@@ -1,6 +1,25 @@
 ## Merciless Mario
 
+### What is this project?
 A c++ game where the player plays as the classic NES 1983 protagonist with a few malevolent twists.
+
+### Controls
+
+**All Scenes**
+- Push `escape` to return to the previous scene, or if on the menu scene, exit the game.
+
+**Menu Scene**
+- Select menu item with `mouse-left`
+- Move up and down menu items with `arrow-up` or `arrow-down`
+- Select current menu item with `enter`
+
+**Gameplay Scene**
+- Move around with `W, S, A, D` or the arrow keys.
+- `space` to jump.
+- `left-click` to shoot with your mouse.
+- `right-click` to reload.
+
+---
 
 ### Tools
 - C++
@@ -71,5 +90,14 @@ Date: `07/11/2023`
 - Added ammo text rendering into the UI (temporary) for resource visibility.
 
 ![Tue 07 Nov 2023 20:48:03 GMT](https://github.com/Ticketedmoon/merciless-mario/assets/21260839/56a5335d-fe5b-4360-a6af-7c3965c4edf9)
+
+---
+
+Date: `09/11/2023`
+
+- Fixed bug where weapon spawning was relative to the player position, not the question block.
+- Fixed bug with the weapon rotation when mouse is behind the player.
+
+![Sat 11 Nov 2023 23:00:38 GMT](https://github.com/Ticketedmoon/merciless-mario/assets/21260839/bc276ccd-207f-4011-9b1c-c7acbc841dd1)
 
 ---
