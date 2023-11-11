@@ -63,7 +63,7 @@ void CollisionSystem::checkForEntityCollision(std::shared_ptr<Entity>& dynamicEn
                 otherEntity->destroy();
             }
         }
-        else  if (dynamicEntity->getType() == Entity::Type::PLAYER && otherEntity->getType() == Entity::Type::WEAPON_PISTOL)
+        else if (dynamicEntity->getType() == Entity::Type::PLAYER && otherEntity->getType() == Entity::Type::WEAPON_PISTOL)
         {
             // Add new weapon to player sprite
             dynamicEntity->addComponent(Component::WEAPON, std::make_shared<CWeapon>(WeaponType::PISTOL, 6));

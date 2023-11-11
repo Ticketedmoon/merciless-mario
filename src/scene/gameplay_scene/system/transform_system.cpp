@@ -149,7 +149,24 @@ void TransformSystem::updatePlayerArmPositionByMousePosition(std::shared_ptr<Ent
     cWeapon->weaponPointLocation = m_window.mapPixelToCoords(mousePos, m_renderTexture.getView());
 
     std::shared_ptr<CSpriteGroup> cSpriteGroup = std::static_pointer_cast<CSpriteGroup>(player->getComponentByType(Component::Type::SPRITE_GROUP));
-    std::shared_ptr<sf::Sprite>& arm = cSpriteGroup->sprites.at(1);
-    float armRotationDegrees = cWeapon->getArmPointAngleDegrees(arm->getPosition()) + SPRITE_TEXTURE_OFFSET_DEGREES;
-    arm->setRotation(armRotationDegrees);
+    std::shared_ptr<sf::Sprite>& weaponSprite = cSpriteGroup->sprites.at(1);
+    float weaponRotationDegrees = cWeapon->getArmPointAngleDegrees(weaponSprite->getPosition()) + SPRITE_TEXTURE_OFFSET_DEGREES;
+    weaponSprite->setRotation(weaponRotationDegrees);
+
+    std::shared_ptr<CTransform> cTransform = std::static_pointer_cast<CTransform>(
+            player->getComponentByType(Component::TRANSFORM));
+    const sf::Vector2i& playerPositionScreenCoords = m_window.mapCoordsToPixel(cTransform->m_position, m_renderTexture.getView());
+
+    // If mouse is behind player, then rotate weapon to face that direction
+    if (mousePos.x < playerPositionScreenCoords.x)
+    {
+        weaponSprite->rotate(180);
+        weaponSprite->setScale({-1.0f, 1.0f});
+    }
+    else
+    {
+        // If mouse is in-front of player, keep the same rotation
+        weaponSprite->setScale({1.0f, 1.0f});
+    }
+
 }
