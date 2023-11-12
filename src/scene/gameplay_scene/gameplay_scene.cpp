@@ -1,6 +1,6 @@
 #include "scene/gameplay_scene/gameplay_scene.h"
 
-GameplayScene::GameplayScene(GameEngine& engine) : Scene(engine)
+GameplayScene::GameplayScene(GameEngine& engine, const std::string& levelName) : Scene(engine), m_levelName(levelName)
 {
     m_renderTexture.create(WINDOW_WIDTH, WINDOW_HEIGHT);
     m_renderSprite.setTexture(m_renderTexture.getTexture());
@@ -125,7 +125,7 @@ void GameplayScene::registerActions()
 void GameplayScene::registerSystems()
 {
     m_systemManager.registerSystem(
-            std::make_shared<EntitySpawnSystem>(m_entityManager), SystemManager::SystemType::UPDATE);
+            std::make_shared<EntitySpawnSystem>(m_entityManager, m_levelName), SystemManager::SystemType::UPDATE);
     m_systemManager.registerSystem(
             std::make_shared<ProjectileSystem>(m_entityManager), SystemManager::SystemType::UPDATE);
     m_systemManager.registerSystem(

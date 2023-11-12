@@ -29,7 +29,7 @@
 class GameplayScene : public Scene
 {
     public:
-        explicit GameplayScene(GameEngine& gameEngine);
+        explicit GameplayScene(GameEngine& gameEngine, const std::string& levelName);
 
         void update() override;
         void render() override;
@@ -47,6 +47,8 @@ class GameplayScene : public Scene
 
         sf::RenderTexture m_renderTexture;
         sf::Sprite m_renderSprite;
+
+        const std::string& m_levelName;
 };
 
 

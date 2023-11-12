@@ -1,0 +1,35 @@
+ENTITY_TYPE     ANIMATION        LOCATION_X     LOCATION_Y         TOTAL_TILES_IN_WIDTH       TOTAL_TILES_IN_HEIGHT       ITEM
+
+PLAYER          _                        3              3          1                          1                           -
+
+TILE            GROUND                   0              0          1                          1                           -
+TILE            GROUND                   1              0          1                          1                           -
+TILE            GROUND                   2              0          1                          1                           -
+TILE            GROUND                   3              0          1                          1                           -
+TILE            GROUND                   4              0          1                          1                           -
+TILE            GROUND                   5              0          1                          1                           -
+TILE            GROUND                   6              0          1                          1                           -
+TILE            GROUND                   7              0          1                          1                           -
+TILE            GROUND                   8              0          1                          1                           -
+TILE            GROUND                   9              0          1                          1                           -
+TILE            GROUND                   10             0          1                          1                           -
+TILE            GROUND                   11             0          1                          1                           -
+TILE            GROUND                   12             0          1                          1                           -
+TILE            GROUND                   13             0          1                          1                           -
+TILE            GROUND                   14             0          1                          1                           -
+
+TILE            GROUND                   0              1          1                          1                           -
+TILE            GROUND                   1              1          1                          1                           -
+TILE            GROUND                   2              1          1                          1                           -
+TILE            GROUND                   3              1          1                          1                           -
+TILE            GROUND                   4              1          1                          1                           -
+TILE            GROUND                   5              1          1                          1                           -
+TILE            GROUND                   6              1          1                          1                           -
+TILE            GROUND                   7              1          1                          1                           -
+TILE            GROUND                   8              1          1                          1                           -
+TILE            GROUND                   9              1          1                          1                           -
+TILE            GROUND                   10             1          1                          1                           -
+TILE            GROUND                   11             1          1                          1                           -
+TILE            GROUND                   12             1          1                          1                           -
+TILE            GROUND                   13             1          1                          1                           -
+TILE            GROUND                   14             1          1                          1                           -

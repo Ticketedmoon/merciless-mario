@@ -1,0 +1,82 @@
+ENTITY_TYPE     ANIMATION        LOCATION_X     LOCATION_Y         TOTAL_TILES_IN_WIDTH       TOTAL_TILES_IN_HEIGHT       ITEM
+
+PLAYER          _                        3              3          1                          1                           -
+
+
+TILE            QUESTION_BLOCK           22             5          1                          1                           COIN
+TILE            BRICK                    26             5          1                          1                           -
+TILE            QUESTION_BLOCK           27             5          1                          1                           WEAPON_PISTOL
+TILE            BRICK                    28             5          1                          1                           -
+TILE            QUESTION_BLOCK           28             9          1                          1                           WEAPON_SHOTGUN
+TILE            QUESTION_BLOCK           29             5          1                          1                           COIN
+TILE            BRICK                    30             5          1                          1                           -
+
+
+TILE            QUESTION_BLOCK           42             5          1                          1                           COIN
+TILE            BRICK                    46             5          1                          1                           -
+TILE            QUESTION_BLOCK           47             5          1                          1                           WEAPON_PISTOL
+TILE            BRICK                    48             5          1                          1                           -
+TILE            QUESTION_BLOCK           48             9          1                          1                           WEAPON_SHOTGUN
+TILE            QUESTION_BLOCK           49             5          1                          1                           COIN
+TILE            BRICK                    50             5          1                          1                           -
+
+TILE            QUESTION_BLOCK           62             5          1                          1                           COIN
+TILE            BRICK                    66             5          1                          1                           -
+TILE            QUESTION_BLOCK           67             5          1                          1                           WEAPON_PISTOL
+TILE            BRICK                    68             5          1                          1                           -
+TILE            QUESTION_BLOCK           68             9          1                          1                           WEAPON_SHOTGUN
+TILE            QUESTION_BLOCK           69             5          1                          1                           COIN
+TILE            BRICK                    70             5          1                          1                           -
+
+TILE            GROUND                   22              0          1                          1                           -
+TILE            GROUND                   23              0          1                          1                           -
+TILE            GROUND                   24              0          1                          1                           -
+TILE            GROUND                   25              0          1                          1                           -
+TILE            GROUND                   26              0          1                          1                           -
+TILE            GROUND                   27              0          1                          1                           -
+
+TILE            GROUND                   42              0          1                          1                           -
+TILE            GROUND                   43              0          1                          1                           -
+TILE            GROUND                   44              0          1                          1                           -
+TILE            GROUND                   45              0          1                          1                           -
+TILE            GROUND                   46              0          1                          1                           -
+TILE            GROUND                   47              0          1                          1                           -
+
+TILE            GROUND                   62              0          1                          1                           -
+TILE            GROUND                   63              0          1                          1                           -
+TILE            GROUND                   64              0          1                          1                           -
+TILE            GROUND                   65              0          1                          1                           -
+TILE            GROUND                   66              0          1                          1                           -
+TILE            GROUND                   67              0          1                          1                           -
+
+TILE            GROUND                   0              0          1                          1                           -
+TILE            GROUND                   1              0          1                          1                           -
+TILE            GROUND                   2              0          1                          1                           -
+TILE            GROUND                   3              0          1                          1                           -
+TILE            GROUND                   4              0          1                          1                           -
+TILE            GROUND                   5              0          1                          1                           -
+TILE            GROUND                   6              0          1                          1                           -
+TILE            GROUND                   7              0          1                          1                           -
+TILE            GROUND                   8              0          1                          1                           -
+TILE            GROUND                   9              0          1                          1                           -
+TILE            GROUND                   10             0          1                          1                           -
+TILE            GROUND                   11             0          1                          1                           -
+TILE            GROUND                   12             0          1                          1                           -
+TILE            GROUND                   13             0          1                          1                           -
+TILE            GROUND                   14             0          1                          1                           -
+
+TILE            GROUND                   0              1          1                          1                           -
+TILE            GROUND                   1              1          1                          1                           -
+TILE            GROUND                   2              1          1                          1                           -
+TILE            GROUND                   3              1          1                          1                           -
+TILE            GROUND                   4              1          1                          1                           -
+TILE            GROUND                   5              1          1                          1                           -
+TILE            GROUND                   6              1          1                          1                           -
+TILE            GROUND                   7              1          1                          1                           -
+TILE            GROUND                   8              1          1                          1                           -
+TILE            GROUND                   9              1          1                          1                           -
+TILE            GROUND                   10             1          1                          1                           -
+TILE            GROUND                   11             1          1                          1                           -
+TILE            GROUND                   12             1          1                          1                           -
+TILE            GROUND                   13             1          1                          1                           -
+TILE            GROUND                   14             1          1                          1                           -

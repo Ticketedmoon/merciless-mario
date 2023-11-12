@@ -6,45 +6,22 @@ MenuScene::MenuScene(GameEngine& gameEngine) : Scene(gameEngine)
     bool isFontLoaded = m_font.loadFromFile(FONT_PATH);
     assert(isFontLoaded);
 
-    createTextElements();
+    buildLevelButtonSelection();
 }
 
 void MenuScene::update()
 {
-    sf::Color& levelOneButtonColour = levelOneTextButton.first;
-    sf::Color& levelTwoButtonColour = levelTwoTextButton.first;
-    sf::Color& levelThreeButtonColour = levelThreeTextButton.first;
-
-    levelOneButtonColour.a = 48;
-    levelTwoButtonColour.a = 48;
-    levelThreeButtonColour.a = 48;
-
-    levelOneTextButton.second.setOutlineColor(levelOneButtonColour);
-    levelTwoTextButton.second.setOutlineColor(levelOneButtonColour);
-    levelThreeTextButton.second.setOutlineColor(levelOneButtonColour);
-
-    if (currentSelectItem == 0)
+    for (std::pair<sf::Color, sf::Text>& buttonPair: levelSelectButtons)
     {
-        levelOneTextButton.second.setFillColor(LEVEL_BUTTON_TEXT_COLOUR);
-        levelOneTextButton.second.setOutlineColor(sf::Color::Black);
+        sf::Color& levelButtonColour = buttonPair.first;
+        buttonPair.second.setFillColor({levelButtonColour.r, levelButtonColour.g, levelButtonColour.b, 48});
+        buttonPair.second.setOutlineColor(LEVEL_BUTTON_TEXT_COLOUR);
+        buttonPair.second.setOutlineThickness(1.0f);
+    }
 
-        levelTwoTextButton.second.setFillColor(levelTwoButtonColour);
-        levelThreeTextButton.second.setFillColor(levelThreeButtonColour);
-    }
-    else if (currentSelectItem == 1)
-    {
-        levelOneTextButton.second.setFillColor(levelOneButtonColour);
-        levelTwoTextButton.second.setFillColor(LEVEL_BUTTON_TEXT_COLOUR);
-        levelTwoTextButton.second.setOutlineColor(sf::Color::Black);
-        levelThreeTextButton.second.setFillColor(levelThreeButtonColour);
-    }
-    else if (currentSelectItem == 2)
-    {
-        levelOneTextButton.second.setFillColor(levelOneButtonColour);
-        levelTwoTextButton.second.setFillColor(levelTwoButtonColour);
-        levelThreeTextButton.second.setFillColor(LEVEL_BUTTON_TEXT_COLOUR);
-        levelThreeTextButton.second.setOutlineColor(sf::Color::Black);
-    }
+    std::pair<sf::Color, sf::Text>& currentSelectedButtonPair = levelSelectButtons.at(currentSelectItem);
+    currentSelectedButtonPair.second.setFillColor(LEVEL_BUTTON_TEXT_COLOUR);
+    currentSelectedButtonPair.second.setOutlineColor(sf::Color::Black);
 }
 
 void MenuScene::render()
@@ -52,9 +29,11 @@ void MenuScene::render()
     gameEngine.window.clear(BACKGROUND_COLOR);
 
     gameEngine.window.draw(titleText.second);
-    gameEngine.window.draw(levelOneTextButton.second);
-    gameEngine.window.draw(levelTwoTextButton.second);
-    gameEngine.window.draw(levelThreeTextButton.second);
+
+    for (const std::pair<sf::Color, sf::Text>& buttonPair: levelSelectButtons)
+    {
+        gameEngine.window.draw(buttonPair.second);
+    }
 
     gameEngine.window.display();
 }
@@ -88,13 +67,13 @@ void MenuScene::performAction(Action& action)
         case Action::Type::MENU_OPTION_MOVE_DOWN:
             if (action.getMode() == Action::Mode::PRESS)
             {
-                currentSelectItem = (currentSelectItem + 1) % TOTAL_TEXT_BUTTONS;
+                currentSelectItem = (currentSelectItem + 1) % totalLevelSelectButtons;
             }
             break;
         case Action::Type::MENU_OPTION_MOVE_UP:
             if (action.getMode() == Action::Mode::PRESS)
             {
-                currentSelectItem = (currentSelectItem == 0 ? TOTAL_TEXT_BUTTONS-1 : currentSelectItem - 1) % TOTAL_TEXT_BUTTONS;
+                currentSelectItem = (currentSelectItem == 0 ? totalLevelSelectButtons-1 : currentSelectItem - 1) % totalLevelSelectButtons;
             }
             break;
         case Action::Type::CURSOR_MOVE:
@@ -127,48 +106,33 @@ void MenuScene::performAction(Action& action)
 
 void MenuScene::handleButtonSelect()
 {
-    if (currentSelectItem == 0)
-    {
-        gameEngine.changeScene(Scene::Type::LEVEL_ONE_GAMEPLAY_SCENE, std::make_shared<GameplayScene>(gameEngine));
-    }
-    else if (currentSelectItem == 1)
-    {
-        // TODO Update me to different level
-        gameEngine.changeScene(Scene::Type::LEVEL_TWO_GAMEPLAY_SCENE, std::make_shared<GameplayScene>(gameEngine));
-    }
-    else if (currentSelectItem == 2)
-    {
-        // TODO Update me to different level
-        gameEngine.changeScene(Scene::Type::LEVEL_THREE_GAMEPLAY_SCENE, std::make_shared<GameplayScene>(gameEngine));
-    }
+    // TODO add way to interact with more levels.
+    std::string levelFileName = levelSelectButtons.at(currentSelectItem).second.getString();
+    std::ranges::replace(levelFileName, ' ', '_');
+
+    gameEngine.changeScene(Scene::Type::LEVEL_ONE_GAMEPLAY_SCENE, std::make_shared<GameplayScene>(gameEngine, levelFileName));
 }
 
 void MenuScene::handleMouseClick()
 {
     sf::Vector2i mousePos = sf::Mouse::getPosition(gameEngine.window);
     sf::Vector2f mousePosF(static_cast<float>( mousePos.x ), static_cast<float>( mousePos.y ));
-
-    if (levelOneTextButton.second.getGlobalBounds().contains(mousePosF))
+    bool clickedOnMenuItem;
+    
+    for (int i = 0; i < levelSelectButtons.size(); i++)
     {
-        currentSelectItem = 0;
-        handleButtonSelect();
-        return;
+        const sf::Text& button = levelSelectButtons.at(i).second;
+        if (button.getGlobalBounds().contains(mousePosF))
+        {
+            currentSelectItem = i;
+            clickedOnMenuItem = true;
+        }
     }
 
-    if (levelTwoTextButton.second.getGlobalBounds().contains(mousePosF))
+    if (clickedOnMenuItem)
     {
-        currentSelectItem = 1;
         handleButtonSelect();
-        return;
     }
-
-    if (levelThreeTextButton.second.getGlobalBounds().contains(mousePosF))
-    {
-        currentSelectItem = 2;
-        handleButtonSelect();
-        return;
-    }
-
 }
 
 void MenuScene::handleMouseHover()
@@ -176,29 +140,19 @@ void MenuScene::handleMouseHover()
     sf::Vector2i mousePos = sf::Mouse::getPosition(gameEngine.window);
     sf::Vector2f mousePosF(static_cast<float>( mousePos.x ), static_cast<float>( mousePos.y ));
 
-    auto& [originalLevelOneTextButtonColor, levelOneButton] = levelOneTextButton;
-    auto& [originalLevelTwoTextButtonColor, levelTwoButton] = levelTwoTextButton;
-    auto& [originalLevelThreeTextButtonColor, levelThreeButton] = levelThreeTextButton;
+    bool isHoveringOverButton = false;
+    for (int i = 0; i < levelSelectButtons.size(); i++)
+    {
+        const sf::Text& button = levelSelectButtons.at(i).second;
+        if (button.getGlobalBounds().contains(mousePosF))
+        {
+            currentSelectItem = i;
+            onHoverModifyCursorDesign(sf::Cursor::Hand);
+            isHoveringOverButton = true;
+        }
+    }
 
-    if (levelOneButton.getGlobalBounds().contains(mousePosF))
-    {
-        currentSelectItem = 0;
-        onHoverModifyCursorDesign(sf::Cursor::Hand);
-        return;
-    }
-    else if (levelTwoButton.getGlobalBounds().contains(mousePosF))
-    {
-        currentSelectItem = 1;
-        onHoverModifyCursorDesign(sf::Cursor::Hand);
-        return;
-    }
-    else if (levelThreeButton.getGlobalBounds().contains(mousePosF))
-    {
-        currentSelectItem = 2;
-        onHoverModifyCursorDesign(sf::Cursor::Hand);
-        return;
-    }
-    else
+    if (!isHoveringOverButton)
     {
         onHoverModifyCursorDesign(sf::Cursor::Arrow);
     }
@@ -212,19 +166,35 @@ void MenuScene::onHoverModifyCursorDesign(sf::Cursor::Type cursorTypeOnHover)
     }
 }
 
-void MenuScene::createTextElements()
+void MenuScene::buildLevelButtonSelection()
 {
     titleText = createTextElementPair("Merciless Mario", TITLE_FONT_SIZE, TITLE_TEXT_COLOUR, sf::Color::Black, 2.0f,
             sf::Vector2f(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - 250));
 
-    levelOneTextButton = createTextElementPair("Level 1", BUTTON_FONT_SIZE, LEVEL_BUTTON_TEXT_COLOUR, sf::Color::Black, 2.0f,
-            sf::Vector2f(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - 50));
+    // Open directory, read each file, all with name structure: `level_X.txt`
+    // For each file, create a new button element using the file name.
+    std::set<std::filesystem::path> sortedLevels;
 
-    levelTwoTextButton = createTextElementPair("Level 2", BUTTON_FONT_SIZE, LEVEL_BUTTON_TEXT_COLOUR, sf::Color::Black, 2.0f,
-            sf::Vector2f(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 + 100));
+    std::string directory_path = "resources/level";
+    for (const auto & file: std::filesystem::directory_iterator(directory_path))
+    {
+        std::string fileNameStr = file.path().filename().string();
+        std::ranges::replace(fileNameStr, '_', ' ');
+        const auto& levelName = fileNameStr.substr(0, fileNameStr.size() - 4);
+        sortedLevels.insert(levelName);
+    }
 
-    levelThreeTextButton = createTextElementPair("Level 3", BUTTON_FONT_SIZE, LEVEL_BUTTON_TEXT_COLOUR, sf::Color::Black, 2.0f,
-            sf::Vector2f(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 + 250));
+    for (const std::filesystem::path& levelName : sortedLevels)
+    {
+        totalLevelSelectButtons++;
+        uint16_t screenPositionOffsetY = 100 * totalLevelSelectButtons;
+        const sf::Vector2f& position = sf::Vector2f(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 3 + screenPositionOffsetY);
+        std::pair<sf::Color, sf::Text> levelButton = createTextElementPair(levelName, BUTTON_FONT_SIZE,
+                LEVEL_BUTTON_TEXT_COLOUR, sf::Color::Black, 2.0f, position);
+        levelSelectButtons.emplace_back(levelButton);
+    }
+
+    std::cout << "Total levels found: " << std::to_string(totalLevelSelectButtons) << '\n';
 }
 
 /**

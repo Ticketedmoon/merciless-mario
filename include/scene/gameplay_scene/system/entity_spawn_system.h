@@ -28,7 +28,7 @@
 class EntitySpawnSystem : public System
 {
     public:
-        explicit EntitySpawnSystem(EntityManager& entityManager);
+        explicit EntitySpawnSystem(EntityManager& entityManager, const std::string& levelName);
 
         void execute() override;
 
@@ -69,13 +69,13 @@ class EntitySpawnSystem : public System
         };
 
     private:
+        [[nodiscard]] std::vector<Row> LoadLevelData();
+
         void createLevel();
         void createEntity(const EntityProperties& entityProperties,
                 std::unordered_map<Component::Type, std::shared_ptr<Component>> componentGroup);
         void createLevelDecoration(const EntityProperties& entityProperties, const LevelSprite& levelSprite);
         void createLevelCollidableSprite(const EntityProperties& entityProperties, const LevelSprite& levelSprite);
-
-        [[nodiscard]] static std::vector<Row> LoadLevelData(uint8_t levelNumber);
 
         // TODO Refactor this method
         void addAnimationTextureComponent(std::shared_ptr<CSpriteGroup>& spriteGroup,
@@ -98,6 +98,8 @@ class EntitySpawnSystem : public System
         TextureManager m_textureManager;
 
         AudioManager* m_audioManager = AudioManager::getInstance();
+
+        const std::string m_levelName;
 };
 
 

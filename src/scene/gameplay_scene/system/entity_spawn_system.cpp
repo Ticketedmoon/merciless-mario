@@ -1,8 +1,8 @@
 #include "entity_spawn_system.h"
 
-EntitySpawnSystem::EntitySpawnSystem(EntityManager& entityManager) : m_entityManager(entityManager)
+EntitySpawnSystem::EntitySpawnSystem(EntityManager& entityManager, const std::string& levelName)
+    : m_entityManager(entityManager), m_levelName(levelName)
 {
-    createLevel();
 }
 
 void EntitySpawnSystem::execute()
@@ -158,7 +158,8 @@ void EntitySpawnSystem::execute()
 
 void EntitySpawnSystem::createLevel()
 {
-    std::vector<Row> levelRows = LoadLevelData(1);
+    std::vector<Row> levelRows = LoadLevelData();
+
     for (const auto& row: levelRows)
     {
         sf::Vector2f position = sf::Vector2f(row.locationX * TILE_SIZE, WINDOW_HEIGHT - (row.locationY * TILE_SIZE));
@@ -428,9 +429,9 @@ std::shared_ptr<sf::Texture> EntitySpawnSystem::buildSpriteTexture(std::shared_p
     return animationTexture;
 }
 
-std::vector<EntitySpawnSystem::Row> EntitySpawnSystem::LoadLevelData(uint8_t levelNumber)
+std::vector<EntitySpawnSystem::Row> EntitySpawnSystem::LoadLevelData()
 {
-    const std::string path = "resources/level/level_" + std::to_string(levelNumber) + ".txt";
+    const std::string path = "resources/level/" + m_levelName + ".txt";
     std::ifstream file(path, std::ifstream::in);
     assert(file.is_open());
 
@@ -444,5 +445,7 @@ std::vector<EntitySpawnSystem::Row> EntitySpawnSystem::LoadLevelData(uint8_t lev
              >> row.totalTilesInWidth >> row.totalTilesInHeight >> row.item;
         rows.push_back(row);
     }
+
+    file.close();
     return rows;
 }
