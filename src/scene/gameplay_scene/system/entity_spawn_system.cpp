@@ -280,58 +280,34 @@ void EntitySpawnSystem::createLevel()
 
                 createEntity(properties, components);
             }
-            if (row.animation == "PIPE_SMALL")
+            if (row.animation.find("PIPE_") != std::string::npos)
             {
-                createLevelCollidableSprite({Entity::Type::PIPE, position}, {"pipe", LevelSpriteSizeType::SMALL, 2, 3});
-            }
-            if (row.animation == "PIPE_MEDIUM")
-            {
-                createLevelCollidableSprite({Entity::Type::PIPE, position}, {"pipe", LevelSpriteSizeType::MEDIUM, 2, 5});
-            }
-            if (row.animation == "PIPE_LARGE")
-            {
-                createLevelCollidableSprite({Entity::Type::PIPE, position}, {"pipe", LevelSpriteSizeType::LARGE, 2, 7});
+                const LevelSpriteSizeType decorationSizeInfo =
+                        row.animation.find("_SMALL") != std::string::npos ? LevelSpriteSizeType::SMALL
+                                : row.animation.find("_MID") != std::string::npos ? LevelSpriteSizeType::MEDIUM
+                                : row.animation.find("_LARGE") != std::string::npos ? LevelSpriteSizeType::LARGE
+                                        : LevelSpriteSizeType::NONE;
+
+                const EntityProperties& decorationProperties{Entity::Type::PIPE, position};
+                createLevelCollidableSprite(decorationProperties, {"pipe", decorationSizeInfo, row.totalTilesInWidth, row.totalTilesInHeight});
             }
         }
         else if (row.entityType == "DECORATION")
         {
-            // Bush
-            if (row.animation == "BUSH_SMALL")
-            {
-                createLevelDecoration({Entity::Type::BUSH, position}, {"bush", LevelSpriteSizeType::SMALL, 3, 1});
-            }
-            if (row.animation == "BUSH_MID")
-            {
-                createLevelDecoration({Entity::Type::BUSH, position}, {"bush", LevelSpriteSizeType::MEDIUM, 4, 1});
-            }
-            if (row.animation == "BUSH_BIG")
-            {
-                createLevelDecoration({Entity::Type::BUSH, position}, {"bush", LevelSpriteSizeType::LARGE, 5, 1});
-            }
+            const std::pair<Entity::Type, const std::string&> decorationEntityInfo =
+                    row.animation.find("BUSH_") != std::string::npos ? std::make_pair<Entity::Type, const std::string&>(Entity::Type::BUSH, "bush")
+                    : row.animation.find("HILL_") != std::string::npos ? std::make_pair<Entity::Type, const std::string&>(Entity::Type::HILL, "hill")
+                    : row.animation.find("CLOUD_") != std::string::npos ? std::make_pair<Entity::Type, const std::string&>(Entity::Type::CLOUD, "cloud")
+                    : std::make_pair(Entity::Type::NONE, nullptr);
 
-            // Hill
-            if (row.animation == "HILL_SMALL")
-            {
-                createLevelDecoration({Entity::Type::HILL, position}, {"hill", LevelSpriteSizeType::SMALL, 5, 3});
-            }
-            if (row.animation == "HILL_LARGE")
-            {
-                createLevelDecoration({Entity::Type::HILL, position}, {"hill", LevelSpriteSizeType::LARGE, 5, 3});
-            }
+            const LevelSpriteSizeType decorationSizeInfo =
+                    row.animation.find("_SMALL") != std::string::npos ? LevelSpriteSizeType::SMALL
+                            : row.animation.find("_MID") != std::string::npos ? LevelSpriteSizeType::MEDIUM
+                            : row.animation.find("_LARGE") != std::string::npos ? LevelSpriteSizeType::LARGE
+                            : LevelSpriteSizeType::NONE;
 
-            // Cloud
-            if (row.animation == "CLOUD_SMALL")
-            {
-                createLevelDecoration({Entity::Type::CLOUD, position}, {"cloud", LevelSpriteSizeType::SMALL, 3, 2});
-            }
-            if (row.animation == "CLOUD_MID")
-            {
-                createLevelDecoration({Entity::Type::CLOUD, position}, {"cloud", LevelSpriteSizeType::MEDIUM, 4, 2});
-            }
-            if (row.animation == "CLOUD_LARGE")
-            {
-                createLevelDecoration({Entity::Type::CLOUD, position}, {"cloud", LevelSpriteSizeType::LARGE, 5, 2});
-            }
+            const EntityProperties& decorationProperties{decorationEntityInfo.first, position};
+            createLevelDecoration(decorationProperties, {decorationEntityInfo.second, decorationSizeInfo, row.totalTilesInWidth, row.totalTilesInHeight});
         }
     }
 }
@@ -390,7 +366,7 @@ void EntitySpawnSystem::applySpriteGroupForEntity(const sf::Vector2f& position,
     const std::string& animationTextureFilePath = "resources/assets/texture/mario_1_1_" + levelSprite.type + "_" +
             decorationSizeString + ".png";
 
-    sf::Rect<int> rectBounds = sf::IntRect(0, 0, levelSprite.sizeValueX * TILE_SIZE, levelSprite.sizeValueY * TILE_SIZE);
+    sf::Rect<int> rectBounds = sf::IntRect(0, 0, levelSprite.totalTilesInWidth * TILE_SIZE, levelSprite.totalTilesInHeight * TILE_SIZE);
 
     addAnimationTextureComponent(animationComponent, animationTextureFilePath, position, rectBounds,
             sf::Vector2f(rectBounds.width / 2, rectBounds.height / 2), 1, 0, 0, 0);
@@ -464,7 +440,8 @@ std::vector<EntitySpawnSystem::Row> EntitySpawnSystem::LoadLevelData(uint8_t lev
     while (getline(file, line))
     {
         Row row{};
-        file >> row.entityType >> row.animation >> row.locationX >> row.locationY >> row.item;
+        file >> row.entityType >> row.animation >> row.locationX >> row.locationY
+             >> row.totalTilesInWidth >> row.totalTilesInHeight >> row.item;
         rows.push_back(row);
     }
     return rows;

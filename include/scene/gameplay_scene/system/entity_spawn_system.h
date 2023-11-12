@@ -39,6 +39,8 @@ class EntitySpawnSystem : public System
             std::string animation;
             uint16_t locationX;
             uint16_t locationY;
+            uint16_t totalTilesInWidth;
+            uint16_t totalTilesInHeight;
             std::string item;
         };
 
@@ -54,15 +56,16 @@ class EntitySpawnSystem : public System
         {
                 SMALL,
                 MEDIUM,
-                LARGE
+                LARGE,
+                NONE
         };
 
         struct LevelSprite
         {
             std::string type;
             LevelSpriteSizeType sizeType;
-            uint8_t sizeValueX;
-            uint8_t sizeValueY;
+            uint16_t totalTilesInWidth;
+            uint16_t totalTilesInHeight;
         };
 
     private:

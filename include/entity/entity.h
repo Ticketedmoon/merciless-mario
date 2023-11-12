@@ -40,7 +40,8 @@ class Entity
             CLOUD,
             HILL,
             PIPE,
-            QUESTION_BLOCK
+            QUESTION_BLOCK,
+            NONE
         };
 
         [[nodiscard]] size_t getId() const;
