@@ -23,7 +23,7 @@ class MenuScene : public Scene
         void handleMouseHover();
         void handleMouseClick();
         void handleButtonSelect();
-        void onHover(sf::Text& text, sf::Color color, sf::Cursor::Type cursorTypeOnHover);
+        void onHoverModifyCursorDesign(sf::Cursor::Type cursorTypeOnHover);
 
         void createTextElements();
 

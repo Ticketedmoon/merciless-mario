@@ -16,10 +16,11 @@ void MenuScene::update()
     sf::Color& levelThreeButtonColour = levelThreeTextButton.first;
 
     levelOneButtonColour.a = 48;
-    levelOneTextButton.second.setOutlineColor(levelOneButtonColour);
     levelTwoButtonColour.a = 48;
-    levelTwoTextButton.second.setOutlineColor(levelOneButtonColour);
     levelThreeButtonColour.a = 48;
+
+    levelOneTextButton.second.setOutlineColor(levelOneButtonColour);
+    levelTwoTextButton.second.setOutlineColor(levelOneButtonColour);
     levelThreeTextButton.second.setOutlineColor(levelOneButtonColour);
 
     if (currentSelectItem == 0)
@@ -176,41 +177,39 @@ void MenuScene::handleMouseHover()
     sf::Vector2f mousePosF(static_cast<float>( mousePos.x ), static_cast<float>( mousePos.y ));
 
     auto& [originalLevelOneTextButtonColor, levelOneButton] = levelOneTextButton;
+    auto& [originalLevelTwoTextButtonColor, levelTwoButton] = levelTwoTextButton;
+    auto& [originalLevelThreeTextButtonColor, levelThreeButton] = levelThreeTextButton;
+
     if (levelOneButton.getGlobalBounds().contains(mousePosF))
     {
-        currentSelectItem = -1;
-        onHover(levelOneButton, LEVEL_BUTTON_TEXT_COLOUR, sf::Cursor::Hand);
+        currentSelectItem = 0;
+        onHoverModifyCursorDesign(sf::Cursor::Hand);
         return;
     }
-
-    auto& [originalLevelTwoTextButtonColor, levelTwoButton] = levelTwoTextButton;
-    if (levelTwoButton.getGlobalBounds().contains(mousePosF))
+    else if (levelTwoButton.getGlobalBounds().contains(mousePosF))
     {
-        currentSelectItem = -1;
-        onHover(levelTwoButton, LEVEL_BUTTON_TEXT_COLOUR, sf::Cursor::Hand);
+        currentSelectItem = 1;
+        onHoverModifyCursorDesign(sf::Cursor::Hand);
         return;
     }
-
-    auto& [originalLevelThreeTextButtonColor, levelThreeButton] = levelThreeTextButton;
-    if (levelThreeButton.getGlobalBounds().contains(mousePosF))
+    else if (levelThreeButton.getGlobalBounds().contains(mousePosF))
     {
-        currentSelectItem = -1;
-        onHover(levelThreeButton, LEVEL_BUTTON_TEXT_COLOUR, sf::Cursor::Hand);
+        currentSelectItem = 2;
+        onHoverModifyCursorDesign(sf::Cursor::Hand);
         return;
     }
-
-    onHover(levelOneButton, originalLevelOneTextButtonColor, sf::Cursor::Arrow);
-    onHover(levelTwoButton, originalLevelTwoTextButtonColor, sf::Cursor::Arrow);
-    onHover(levelThreeButton, originalLevelThreeTextButtonColor, sf::Cursor::Arrow);
+    else
+    {
+        onHoverModifyCursorDesign(sf::Cursor::Arrow);
+    }
 }
 
-void MenuScene::onHover(sf::Text& text, sf::Color color, sf::Cursor::Type cursorTypeOnHover)
+void MenuScene::onHoverModifyCursorDesign(sf::Cursor::Type cursorTypeOnHover)
 {
     if (cursor.loadFromSystem(cursorTypeOnHover))
     {
         gameEngine.window.setMouseCursor(cursor);
     }
-    text.setFillColor(color);
 }
 
 void MenuScene::createTextElements()
