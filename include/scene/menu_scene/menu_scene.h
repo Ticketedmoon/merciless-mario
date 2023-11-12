@@ -36,8 +36,8 @@ class MenuScene : public Scene
         static inline const sf::Color& BACKGROUND_COLOR = sf::Color{4, 154, 199, 255};
         // Have this based on the amount of level files in directory.
         static inline const uint8_t TOTAL_TEXT_BUTTONS = 3;
-        static inline const sf::Color& TITLE_TEXT_COLOUR = sf::Color::Red;
-        static inline const sf::Color& LEVEL_BUTTON_TEXT_COLOUR = sf::Color::Blue;
+        static inline const sf::Color& TITLE_TEXT_COLOUR{255, 32, 0};
+        static inline const sf::Color& LEVEL_BUTTON_TEXT_COLOUR{0, 0, 255};
         static inline const uint8_t TITLE_FONT_SIZE = 96;
         static inline const uint8_t BUTTON_FONT_SIZE = 64;
 
