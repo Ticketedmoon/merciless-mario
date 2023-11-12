@@ -10,6 +10,10 @@ AudioManager::AudioManager()
     loadSfx(AudioType::SHOTGUN_FIRE, SHOTGUN_FIRE_APPEARS_SFX_PATH);
     loadSfx(AudioType::SHOTGUN_RELOAD, SHOTGUN_RELOAD_APPEARS_SFX_PATH);
 
+    // Menu music: None
+    m_sceneMusic.emplace_back(nullptr);
+
+    // Level music
     auto* levelOneTheme = new sf::Music();
     assert(levelOneTheme->openFromFile(LEVEL_ONE_MUSIC));
     m_sceneMusic.emplace_back(levelOneTheme);
@@ -76,6 +80,11 @@ bool AudioManager::isMusicPlaying()
 
 void AudioManager::stopActiveMusic()
 {
+    if (m_sceneMusic[currentSceneIndex] == nullptr)
+    {
+        return;
+    }
+
     sf::Music& currentMusic = *m_sceneMusic[currentSceneIndex];
     currentMusic.stop();
 }

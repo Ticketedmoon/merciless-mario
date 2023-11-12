@@ -3,7 +3,7 @@
 GameEngine::GameEngine()
 {
     createGameWindow();
-    gameScenes[currentScene] = std::make_shared<GameplayScene>(*this);
+    gameScenes[currentScene] = std::make_shared<MenuScene>(*this);
 }
 
 GameEngine::~GameEngine()
@@ -78,7 +78,7 @@ void GameEngine::handleInput()
     sf::Event event{};
     while (window.pollEvent(event))
     {
-        if (event.type == sf::Event::Closed || event.key.code == sf::Keyboard::Escape)
+        if (event.type == sf::Event::Closed)
         {
             window.close();
         }

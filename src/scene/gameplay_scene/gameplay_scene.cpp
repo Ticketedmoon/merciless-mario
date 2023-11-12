@@ -6,7 +6,7 @@ GameplayScene::GameplayScene(GameEngine& engine) : Scene(engine)
     m_renderSprite.setTexture(m_renderTexture.getTexture());
     m_renderSprite.setTextureRect(sf::IntRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT));
 
-    m_audioManager->playMusic(static_cast<uint8_t>(Scene::Type::LEVEL_ONE_GAMEPLAY_SCENE), 30.0f, true);
+    AudioManager::playMusic(static_cast<uint8_t>(Scene::Type::LEVEL_ONE_GAMEPLAY_SCENE), 30.0f, true);
 
     registerActions();
     registerSystems();
@@ -43,6 +43,12 @@ void GameplayScene::performAction(Action& action)
     std::shared_ptr<CAction> actionComponent = std::static_pointer_cast<CAction>(
             player->getComponentByType(Component::Type::USER_INPUT));
 
+    if (action.getType() == Action::Type::SCENE_EXIT)
+    {
+        AudioManager::stopActiveMusic();
+        const std::shared_ptr<MenuScene>& nextScene = std::make_shared<MenuScene>(gameEngine);
+        gameEngine.changeScene(Scene::Type::MENU_SCENE, nextScene);
+    }
     if (action.getType() == Action::Type::MOVE_LEFT)
     {
         actionComponent->isMovingLeft = action.getMode() == Action::Mode::PRESS;
@@ -83,13 +89,13 @@ void GameplayScene::performAction(Action& action)
             return;
         }
 
-        if (m_audioManager->isMusicPlaying())
+        if (AudioManager::isMusicPlaying())
         {
-            m_audioManager->stopActiveMusic();
+            AudioManager::stopActiveMusic();
         }
         else
         {
-            m_audioManager->playMusic(static_cast<uint8_t>(Scene::Type::LEVEL_ONE_GAMEPLAY_SCENE), 30.0f, true);
+            AudioManager::playMusic(static_cast<uint8_t>(Scene::Type::LEVEL_ONE_GAMEPLAY_SCENE), 30.0f, true);
         }
     }
 }
@@ -108,6 +114,7 @@ void GameplayScene::registerActions()
     registerActionType(sf::Keyboard::W, Action::Type::LOOK_UP);
     registerActionType(sf::Keyboard::S, Action::Type::CROUCH);
 
+    registerActionType(sf::Keyboard::Escape, Action::Type::SCENE_EXIT);
     registerActionType(sf::Keyboard::M, Action::Type::START_OR_STOP_MUSIC);
 
     // Mouse

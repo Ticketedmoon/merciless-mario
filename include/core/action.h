@@ -15,7 +15,13 @@ class Action
             JUMP = 4,
             SHOOT = 5,
             RELOAD = 6,
-            START_OR_STOP_MUSIC = 7 // DEBUG
+            CURSOR_MOVE = 7,
+            CURSOR_SELECT = 8,
+            MENU_SELECT = 9,
+            MENU_OPTION_MOVE_UP = 10,
+            MENU_OPTION_MOVE_DOWN = 11,
+            SCENE_EXIT = 12,
+            START_OR_STOP_MUSIC = 13 // DEBUG
         };
         enum class Mode
         {
