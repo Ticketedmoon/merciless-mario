@@ -1,0 +1,21 @@
+ENTITY_TYPE     ANIMATION        LOCATION_X     LOCATION_Y         TOTAL_TILES_IN_WIDTH       TOTAL_TILES_IN_HEIGHT       ITEM
+
+PLAYER          _                        3              3          1                          1                           -
+
+
+TILE            QUESTION_BLOCK           4              5          1                          1                           WEAPON_PISTOL
+
+TILE            QUESTION_BLOCK           1              1          1                          1                           COIN
+TILE            QUESTION_BLOCK           2              1          1                          1                           COIN
+TILE            QUESTION_BLOCK           3              1          1                          1                           COIN
+TILE            QUESTION_BLOCK           4              1          1                          1                           COIN
+TILE            QUESTION_BLOCK           5              1          1                          1                           COIN
+TILE            QUESTION_BLOCK           6              1          1                          1                           COIN
+TILE            QUESTION_BLOCK           7              1          1                          1                           COIN
+TILE            QUESTION_BLOCK           1              2          1                          1                           COIN
+TILE            QUESTION_BLOCK           2              2          1                          1                           COIN
+TILE            QUESTION_BLOCK           3              2          1                          1                           COIN
+TILE            QUESTION_BLOCK           4              2          1                          1                           COIN
+TILE            QUESTION_BLOCK           5              2          1                          1                           COIN
+TILE            QUESTION_BLOCK           6              2          1                          1                           COIN
+TILE            QUESTION_BLOCK           7              2          1                          1                           COIN

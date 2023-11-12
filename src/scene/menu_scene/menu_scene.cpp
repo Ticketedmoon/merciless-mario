@@ -44,8 +44,16 @@ void MenuScene::registerActions()
     registerCursorActionType(sf::Event::MouseMoved, Action::Type::CURSOR_MOVE);
     registerActionType(CURSOR_LEFT, Action::Type::CURSOR_SELECT);
 
+    registerActionType(sf::Keyboard::Left, Action::Type::MENU_OPTION_MOVE_LEFT);
+    registerActionType(sf::Keyboard::Right, Action::Type::MENU_OPTION_MOVE_RIGHT);
     registerActionType(sf::Keyboard::Up, Action::Type::MENU_OPTION_MOVE_UP);
     registerActionType(sf::Keyboard::Down, Action::Type::MENU_OPTION_MOVE_DOWN);
+
+    registerActionType(sf::Keyboard::A, Action::Type::MENU_OPTION_MOVE_LEFT);
+    registerActionType(sf::Keyboard::D, Action::Type::MENU_OPTION_MOVE_RIGHT);
+    registerActionType(sf::Keyboard::W, Action::Type::MENU_OPTION_MOVE_UP);
+    registerActionType(sf::Keyboard::S, Action::Type::MENU_OPTION_MOVE_DOWN);
+
     registerActionType(sf::Keyboard::Enter, Action::Type::MENU_SELECT);
     registerActionType(sf::Keyboard::Escape, Action::Type::SCENE_EXIT);
 }
@@ -64,16 +72,35 @@ void MenuScene::performAction(Action& action)
             gameEngine.window.close();
             break;
         }
-        case Action::Type::MENU_OPTION_MOVE_DOWN:
+        case Action::Type::MENU_OPTION_MOVE_LEFT:
+            if (action.getMode() == Action::Mode::PRESS)
+            {
+                currentSelectItem = (currentSelectItem == 0
+                        ? totalLevelSelectButtons - 1
+                        : currentSelectItem - 1) % totalLevelSelectButtons;
+            }
+            break;
+        case Action::Type::MENU_OPTION_MOVE_RIGHT:
             if (action.getMode() == Action::Mode::PRESS)
             {
                 currentSelectItem = (currentSelectItem + 1) % totalLevelSelectButtons;
             }
             break;
+        case Action::Type::MENU_OPTION_MOVE_DOWN:
+            if (action.getMode() == Action::Mode::PRESS)
+            {
+                uint8_t x = currentSelectItem - TOTAL_BUTTONS_IN_ROW;
+                uint8_t y = currentSelectItem + TOTAL_BUTTONS_IN_ROW;
+                currentSelectItem = (y > totalLevelSelectButtons ? x : y) % totalLevelSelectButtons;
+            }
+
+            break;
         case Action::Type::MENU_OPTION_MOVE_UP:
             if (action.getMode() == Action::Mode::PRESS)
             {
-                currentSelectItem = (currentSelectItem == 0 ? totalLevelSelectButtons-1 : currentSelectItem - 1) % totalLevelSelectButtons;
+                uint8_t x = totalLevelSelectButtons - TOTAL_BUTTONS_IN_ROW;
+                uint8_t y = currentSelectItem - TOTAL_BUTTONS_IN_ROW;
+                currentSelectItem = (y < 0 ? x : y) % totalLevelSelectButtons;
             }
             break;
         case Action::Type::CURSOR_MOVE:
@@ -106,10 +133,14 @@ void MenuScene::performAction(Action& action)
 
 void MenuScene::handleButtonSelect()
 {
-    // TODO add way to interact with more levels.
+    // Get level name
     std::string levelFileName = levelSelectButtons.at(currentSelectItem).second.getString();
+
+    // Replace the space with underscore since that is our level file naming structure.
+    // @cleanup: This is a little hacky, we could just store the file names alongside the level names.
     std::ranges::replace(levelFileName, ' ', '_');
 
+    // Update the scene.
     gameEngine.changeScene(Scene::Type::LEVEL_ONE_GAMEPLAY_SCENE, std::make_shared<GameplayScene>(gameEngine, levelFileName));
 }
 
@@ -169,7 +200,7 @@ void MenuScene::onHoverModifyCursorDesign(sf::Cursor::Type cursorTypeOnHover)
 void MenuScene::buildLevelButtonSelection()
 {
     titleText = createTextElementPair("Merciless Mario", TITLE_FONT_SIZE, TITLE_TEXT_COLOUR, sf::Color::Black, 2.0f,
-            sf::Vector2f(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - 250));
+            sf::Vector2f(TITLE_TEXT_POSITION_X, TITLE_TEXT_POSITION_Y));
 
     // Open directory, read each file, all with name structure: `level_X.txt`
     // For each file, create a new button element using the file name.
@@ -184,14 +215,24 @@ void MenuScene::buildLevelButtonSelection()
         sortedLevels.insert(levelName);
     }
 
+    uint16_t yOffset = 1;
     for (const std::filesystem::path& levelName : sortedLevels)
     {
-        totalLevelSelectButtons++;
-        uint16_t screenPositionOffsetY = 100 * totalLevelSelectButtons;
-        const sf::Vector2f& position = sf::Vector2f(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 3 + screenPositionOffsetY);
+        if (totalLevelSelectButtons != 0 && totalLevelSelectButtons % TOTAL_BUTTONS_IN_ROW == 0)
+        {
+            yOffset += 1;
+        }
+
+        uint16_t screenPositionOffsetX = 400 * (totalLevelSelectButtons % TOTAL_BUTTONS_IN_ROW);
+        uint16_t screenPositionOffsetY = 100 * yOffset;
+        uint32_t LEVEL_BUTTON_POSITION_X = WINDOW_WIDTH / (TOTAL_BUTTONS_IN_ROW+2) + screenPositionOffsetX;
+        uint32_t LEVEL_BUTTON_POSITION_Y = WINDOW_HEIGHT / TOTAL_BUTTONS_IN_ROW + screenPositionOffsetY;
+
+        const sf::Vector2f& position = sf::Vector2f(LEVEL_BUTTON_POSITION_X, LEVEL_BUTTON_POSITION_Y);
         std::pair<sf::Color, sf::Text> levelButton = createTextElementPair(levelName, BUTTON_FONT_SIZE,
                 LEVEL_BUTTON_TEXT_COLOUR, sf::Color::Black, 2.0f, position);
         levelSelectButtons.emplace_back(levelButton);
+        totalLevelSelectButtons++;
     }
 
     std::cout << "Total levels found: " << std::to_string(totalLevelSelectButtons) << '\n';

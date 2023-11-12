@@ -18,10 +18,14 @@ class Action
             CURSOR_MOVE = 7,
             CURSOR_SELECT = 8,
             MENU_SELECT = 9,
+
             MENU_OPTION_MOVE_UP = 10,
             MENU_OPTION_MOVE_DOWN = 11,
-            SCENE_EXIT = 12,
-            START_OR_STOP_MUSIC = 13 // DEBUG
+            MENU_OPTION_MOVE_LEFT = 12,
+            MENU_OPTION_MOVE_RIGHT = 13,
+
+            SCENE_EXIT = 14,
+            START_OR_STOP_MUSIC = 15 // DEBUG
         };
         enum class Mode
         {

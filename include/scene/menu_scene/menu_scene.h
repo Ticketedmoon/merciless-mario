@@ -36,13 +36,16 @@ class MenuScene : public Scene
     private:
         static inline const std::string FONT_PATH = "resources/fonts/mario_256.ttf";
         static inline const sf::Color& BACKGROUND_COLOR = sf::Color{4, 154, 199, 255};
+        static inline constexpr uint32_t TITLE_TEXT_POSITION_X = WINDOW_WIDTH / 2;
+        static inline constexpr uint32_t TITLE_TEXT_POSITION_Y = WINDOW_HEIGHT / 2 - 250;
+        static inline constexpr uint8_t TOTAL_BUTTONS_IN_ROW = 3;
 
         // Have this based on the amount of level files in directory.
 
         static inline const sf::Color& TITLE_TEXT_COLOUR{255, 32, 0};
         static inline const sf::Color& LEVEL_BUTTON_TEXT_COLOUR{0, 0, 255};
-        static inline const uint8_t TITLE_FONT_SIZE = 96;
-        static inline const uint8_t BUTTON_FONT_SIZE = 64;
+        static inline constexpr uint8_t TITLE_FONT_SIZE = 96;
+        static inline constexpr uint8_t BUTTON_FONT_SIZE = 64;
 
         sf::Font m_font;
         sf::Cursor cursor;
