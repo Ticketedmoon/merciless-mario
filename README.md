@@ -10,8 +10,8 @@ A c++ game where the player plays as the classic NES 1983 protagonist with a few
 
 **Menu Scene**
 - Select menu item with `mouse-left`
-- Move up and down menu items with `arrow-up` or `arrow-down`
-- Select current menu item with `enter`
+- Or move up and down menu items with `arrow-up` or `arrow-down`
+  - Select current menu item with `enter`
 
 **Gameplay Scene**
 - Move around with `W, S, A, D` or the arrow keys.
@@ -99,5 +99,11 @@ Date: `09/11/2023`
 - Fixed bug with the weapon rotation when mouse is behind the player.
 
 ![Sat 11 Nov 2023 23:00:38 GMT](https://github.com/Ticketedmoon/merciless-mario/assets/21260839/bc276ccd-207f-4011-9b1c-c7acbc841dd1)
+
+Date: `09/11/2023`
+
+- Added main menu / level select scene
+
+![Sun 12 Nov 2023 00:45:17 GMT](https://github.com/Ticketedmoon/merciless-mario/assets/21260839/5ceccd8e-dffd-4fe6-ac66-90ea5b5133dd)
 
 ---
