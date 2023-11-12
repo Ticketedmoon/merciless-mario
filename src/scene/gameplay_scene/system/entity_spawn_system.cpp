@@ -246,6 +246,23 @@ void EntitySpawnSystem::createLevel()
 
                 createEntity(properties, components);
             }
+            if (row.animation == "MARBLE")
+            {
+                sf::IntRect entityRect{TILE_SIZE*2, TILE_SIZE, TILE_SIZE, TILE_SIZE};
+                sf::Vector2f origin{entityRect.width/2.0f, entityRect.height/2.0f};
+                sf::Vector2f velocity{0.0f, 0};
+                const EntityProperties& properties{Entity::Type::BRICK, position, velocity, {
+                        {"resources/assets/texture/blocks.png", entityRect, entityRect, TILE_SIZE, 0, 1, {0, 0}, origin, 0},
+                }};
+
+                std::unordered_map<Component::Type, std::shared_ptr<Component>> components{
+                        {Component::Type::TRANSFORM, std::make_shared<CTransform>(properties.position, properties.velocity)},
+                        {Component::Type::STATIC_MOVEMENT, std::make_shared<CMovement>()},
+                        {Component::Type::COLLISION, std::make_shared<CCollision>()}
+                };
+
+                createEntity(properties, components);
+            }
             if (row.animation == "QUESTION_BLOCK")
             {
                 sf::IntRect entityRect{0, 0, TILE_SIZE, TILE_SIZE};
