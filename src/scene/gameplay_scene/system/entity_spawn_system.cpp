@@ -156,6 +156,9 @@ void EntitySpawnSystem::execute()
     }
 }
 
+// TODO
+// @Performance: When playing a level with a lot of assets, that's a lot to load into memory.
+//               It would be a lot better to cull tiles outside of the view of the game, similar to Vanquish.
 void EntitySpawnSystem::createLevel()
 {
     std::vector<Row> levelRows = LoadLevelData();
