@@ -25,7 +25,7 @@ class CSpriteGroup : public Component
             sf::IntRect animationRectBounds;
             const uint16_t animationIncrement;
 
-            uint16_t  currentFrame;
+            uint16_t currentFrame;
             uint16_t totalAnimationFrames;
 
             SpriteAnimationTicker animationTicker{};
