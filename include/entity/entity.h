@@ -36,6 +36,7 @@ class Entity
             BULLET,
             GROUND,
             BRICK,
+            MARBLE,
             BUSH,
             CLOUD,
             HILL,

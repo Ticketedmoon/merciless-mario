@@ -251,7 +251,7 @@ void EntitySpawnSystem::createLevel()
                 sf::IntRect entityRect{TILE_SIZE*2, TILE_SIZE, TILE_SIZE, TILE_SIZE};
                 sf::Vector2f origin{entityRect.width/2.0f, entityRect.height/2.0f};
                 sf::Vector2f velocity{0.0f, 0};
-                const EntityProperties& properties{Entity::Type::BRICK, position, velocity, {
+                const EntityProperties& properties{Entity::Type::MARBLE, position, velocity, {
                         {"resources/assets/texture/blocks.png", entityRect, entityRect, TILE_SIZE, 0, 1, {0, 0}, origin, 0},
                 }};
 

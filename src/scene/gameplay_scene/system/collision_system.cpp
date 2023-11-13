@@ -1,6 +1,4 @@
 #include "scene/gameplay_scene/system/collision_system.h"
-#include "c_lifespan.h"
-#include "c_weapon.h"
 
 CollisionSystem::CollisionSystem(EntityManager& entityManager) : m_entityManager(entityManager)
 {
@@ -193,7 +191,7 @@ void CollisionSystem::resolve(std::shared_ptr<Entity>& entity, std::shared_ptr<E
 
         if (otherEntity->getType() == Entity::Type::BRICK)
         {
-            m_audioManager->playSound(AudioManager::AudioType::BREAK_BRICK, DEFAULT_SFX_VOLUME);
+            AudioManager::playSound(AudioManager::AudioType::BREAK_BRICK, DEFAULT_SFX_VOLUME);
             otherEntity->destroy();
         }
 
@@ -209,7 +207,7 @@ void CollisionSystem::resolve(std::shared_ptr<Entity>& entity, std::shared_ptr<E
             if (otherEntityInteractableState->isInteractable())
             {
                 // Play Sfx
-                m_audioManager->playSound(AudioManager::AudioType::POWER_UP_APPEARS, DEFAULT_SFX_VOLUME);
+                AudioManager::playSound(AudioManager::AudioType::POWER_UP_APPEARS, DEFAULT_SFX_VOLUME);
 
                 // Update block to be a blank block
                 std::shared_ptr<CSpriteGroup> otherEntitySpriteGroup = std::static_pointer_cast<CSpriteGroup>(

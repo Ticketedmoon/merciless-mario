@@ -31,8 +31,6 @@ DECORATION      HILL_SMALL               123            2          5            
 
 PLAYER          _                        3              3          1                          1                           -
 
-ENEMY           GOOMBA                   10             3          1                          1                           -
-ENEMY           GOOMBA                   15             3          1                          1                           -
 ENEMY           GOOMBA                   28             7          1                          1                           -
 ENEMY           GOOMBA                   38             3          1                          1                           -
 ENEMY           GOOMBA                   38             3          1                          1                           -
@@ -43,9 +41,15 @@ ENEMY           GOOMBA                   50             3          1            
 ENEMY           GOOMBA                   52             3          1                          1                           -
 ENEMY           GOOMBA                   55             3          1                          1                           -
 ENEMY           GOOMBA                   60             3          1                          1                           -
-ENEMY           GOOMBA                   6              3          1                          1                           -
-ENEMY           GOOMBA                   9              3          1                          1                           -
-ENEMY           GOOMBA                   11             3          1                          1                           -
+ENEMY           GOOMBA                   75             3          1                          1                           -
+ENEMY           GOOMBA                   90             10         1                          1                           -
+ENEMY           GOOMBA                   95             10         1                          1                           -
+ENEMY           GOOMBA                   130            3          1                          1                           -
+ENEMY           GOOMBA                   135            3          1                          1                           -
+ENEMY           GOOMBA                   150            3          1                          1                           -
+ENEMY           GOOMBA                   175            3          1                          1                           -
+ENEMY           GOOMBA                   185            3          1                          1                           -
+ENEMY           GOOMBA                   186            3          1                          1                           -
 
 TILE            BRICK                    26             5          1                          1                           -
 TILE            BRICK                    28             5          1                          1                           -

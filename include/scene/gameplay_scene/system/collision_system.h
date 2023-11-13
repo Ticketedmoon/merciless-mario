@@ -10,15 +10,21 @@
 #include <SFML/Graphics/Sprite.hpp>
 
 #include "common_constants.h"
+
 #include "system.h"
+
 #include "entity/entity_manager.h"
-#include "c_interactable.h"
 #include "entity/entity.h"
+
+#include "c_interactable.h"
+#include "c_lifespan.h"
+#include "c_weapon.h"
 #include "c_transform.h"
 #include "c_collision.h"
 #include "c_sprite_group.h"
 #include "c_action.h"
 #include "c_movement.h"
+
 #include "audio_manager.h"
 
 class CollisionSystem : public System
